@@ -61,7 +61,7 @@ void plant_state_callback(const std_msgs::Float64& state_msg)
 
   error.at(2) = error.at(1);
   error.at(1) = error.at(0);
-  error.at(0) = setpoint - plant_state; // Current error goes to slot 0
+  error.at(0) = plant_state - setpoint; // Current error goes to slot 0
 
   std::cout << "Error: " << error.at(0) << std::endl;
 
