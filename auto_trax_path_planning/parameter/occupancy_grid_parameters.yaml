@@ -44,7 +44,7 @@ rrt_max_iteration: 1000
 
 frame_id: robot
 
-obstacle_padding: 0.2
+obstacle_padding: 0.225
 
 sensor_available_range: 8                        # This is a scaling parameter for the resoluion
                                                 # of the grid in meters
