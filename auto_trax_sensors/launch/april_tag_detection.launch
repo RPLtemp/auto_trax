@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+
+<launch>
+  <node name="april_tag_detection_node" pkg="auto_trax_sensors" type="april_tag_detection_node" output="screen">
+    <param name="image_sub_topic" value="/gazebo_left_camera/image_raw" />
+    <param name="image_pub_topic" value="detected_tag_image" />
+  </node>
+</launch>

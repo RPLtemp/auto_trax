@@ -1,7 +1,7 @@
 /*
- * move_cart.cpp
+ * move_cart_plugin.cpp
  *
- *  Created on: Jan 22, 2016
+ *  Created on: Jun 22, 2016
  *      Author: pvechersky
  */
 
@@ -26,7 +26,7 @@ namespace gazebo
         main_link_ = model_->GetLink("chassis");
 
         // Subscribe to receive the next desired position
-        steering_sub_ = nh_.subscribe("steering_control_effort", 10, &MoveCart::SteeringCallback, this);
+        steering_sub_ = nh_.subscribe("/steering/steering_control_effort", 10, &MoveCart::SteeringCallback, this);
       }
 
       void SteeringCallback(const std_msgs::Float64ConstPtr& msg) {

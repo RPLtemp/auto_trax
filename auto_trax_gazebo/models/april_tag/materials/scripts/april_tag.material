@@ -1,0 +1,17 @@
+material April_Tag/Tag1
+{
+  technique
+  {
+    pass
+    {
+      depth_write off
+      lighting off
+
+      texture_unit
+      {
+        texture april_tag.png
+      }
+    }
+  }
+}
+

@@ -1,0 +1,435 @@
+<?xml version="1.0" ?>
+<sdf version="1.4">
+  <model name="auto_trax_car">
+    <link name="chassis">
+      <pose>0 0 0.15  0 0 0</pose>
+      <inertial>
+        <pose>0 0 0  0 0 0</pose>
+        <mass>5</mass>
+        <inertia>
+          <ixx>0.21666666666666667</ixx>
+          <iyy>0.8416666666666667</iyy>
+          <izz>1.0416666666666667</izz>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyz>0</iyz>
+        </inertia>
+      </inertial>
+      <collision name="collision">
+        <geometry>
+          <box>
+            <size>1.0 0.5 0.1</size>
+          </box>
+        </geometry>
+      </collision>
+      <visual name="visual">
+        <cast_shadows>false</cast_shadows>
+        <geometry>
+          <box>
+            <size>1.0 0.5 0.1</size>
+          </box>
+        </geometry>
+        <material>
+          <script>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+            <name>Gazebo/Grey</name>
+          </script>
+        </material>
+      </visual>
+    </link>
+    
+    <link name="wheel_front_left">
+      <pose>0.5 0.298 0.15  -1.5707963267948966 -0.08726646259971647 0</pose>
+      <inertial>
+        <mass>0.5</mass>
+        <inertia>
+          <ixx>0.0030791666666666667</ixx>
+          <iyy>0.0030791666666666667</iyy>
+          <izz>0.005625</izz>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyz>0</iyz>
+        </inertia>
+      </inertial>
+      <collision name="collision">
+        <geometry>
+          <cylinder>
+            <radius>0.15</radius>
+            <length>0.08</length>
+          </cylinder>
+        </geometry>
+      </collision>
+      <visual name="visual">
+        <cast_shadows>false</cast_shadows>
+        <geometry>
+          <cylinder>
+            <radius>0.15</radius>
+            <length>0.08</length>
+          </cylinder>
+        </geometry>
+        <material>
+          <script>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+            <name>Gazebo/Black</name>
+          </script>
+        </material>
+      </visual>
+    </link>
+    
+    <joint name="wheel_front_left_steer_spin" type="fixed">
+      <parent>chassis</parent>
+      <child>wheel_front_left</child>
+      <axis>
+        <xyz>0 0 -1</xyz>
+      </axis>
+    </joint>
+    
+    <link name="wheel_front_right">
+      <pose>0.5 -0.298 0.15  -1.5707963267948966 -0.08726646259971647 0</pose>
+      <inertial>
+        <mass>0.5</mass>
+        <inertia>
+          <ixx>0.0030791666666666667</ixx>
+          <iyy>0.0030791666666666667</iyy>
+          <izz>0.005625</izz>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyz>0</iyz>
+        </inertia>
+      </inertial>
+      <collision name="collision">
+        <geometry>
+          <cylinder>
+            <radius>0.15</radius>
+            <length>0.08</length>
+          </cylinder>
+        </geometry>
+      </collision>
+      <visual name="visual">
+        <cast_shadows>false</cast_shadows>
+        <geometry>
+          <cylinder>
+            <radius>0.15</radius>
+            <length>0.08</length>
+          </cylinder>
+        </geometry>
+        <material>
+          <script>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+            <name>Gazebo/Black</name>
+          </script>
+        </material>
+      </visual>
+    </link>
+    
+    <joint name="wheel_front_right_steer_spin" type="fixed">
+      <parent>chassis</parent>
+      <child>wheel_front_right</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+      </axis>
+    </joint>
+    
+    <link name="wheel_rear_left">
+      <pose>-0.5 0.298 0.15  -1.5707963267948966 0 0</pose>
+      <inertial>
+        <mass>0.5</mass>
+        <inertia>
+          <ixx>0.0030791666666666667</ixx>
+          <iyy>0.0030791666666666667</iyy>
+          <izz>0.005625</izz>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyz>0</iyz>
+        </inertia>
+      </inertial>
+      <collision name="collision">
+        <geometry>
+          <cylinder>
+            <radius>0.15</radius>
+            <length>0.08</length>
+          </cylinder>
+        </geometry>
+      </collision>
+      <visual name="visual">
+        <cast_shadows>false</cast_shadows>
+        <geometry>
+          <cylinder>
+            <radius>0.15</radius>
+            <length>0.08</length>
+          </cylinder>
+        </geometry>
+        <material>
+          <script>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+            <name>Gazebo/Black</name>
+          </script>
+        </material>
+      </visual>
+    </link>
+
+    <joint name="wheel_rear_left_spin" type="fixed">
+      <parent>chassis</parent>
+      <child>wheel_rear_left</child>
+      <axis>
+        <xyz>0 0 -1</xyz>
+      </axis>
+    </joint>
+    
+    <link name="wheel_rear_right">
+      <pose>-0.5 -0.298 0.15  -1.5707963267948966 0 0</pose>
+      <inertial>
+        <mass>0.5</mass>
+        <inertia>
+          <ixx>0.0030791666666666667</ixx>
+          <iyy>0.0030791666666666667</iyy>
+          <izz>0.005625</izz>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyz>0</iyz>
+        </inertia>
+      </inertial>
+      <collision name="collision">
+        <geometry>
+          <cylinder>
+            <radius>0.15</radius>
+            <length>0.08</length>
+          </cylinder>
+        </geometry>
+      </collision>
+      <visual name="visual">
+        <cast_shadows>false</cast_shadows>
+        <geometry>
+          <cylinder>
+            <radius>0.15</radius>
+            <length>0.08</length>
+          </cylinder>
+        </geometry>
+        <material>
+          <script>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+            <name>Gazebo/Black</name>
+          </script>
+        </material>
+      </visual>
+    </link>
+
+    <joint name="wheel_rear_right_spin" type="fixed">
+      <parent>chassis</parent>
+      <child>wheel_rear_right</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+      </axis>
+    </joint>
+
+    <link name="left_kinect_link">
+      <pose>0.45 0.2 0.4 0 0 0.349066</pose>
+      <collision name="collision">
+        <geometry>
+          <box>
+            <size>0.1 0.1 0.1</size>
+          </box>
+        </geometry>
+      </collision>
+      <visual name="visual">
+        <cast_shadows>false</cast_shadows>
+        <geometry>
+          <box>
+            <size>0.1 0.1 0.1</size>
+          </box>
+        </geometry>
+        <material name="orange">
+          <ambient>1 0 0 1</ambient>
+          <diffuse>1 0 0 1</diffuse>
+          <specular>0.1 0.1 0.1 1</specular>
+        </material>
+      </visual>
+      <sensor type="ray" name="ray_left">
+	<pose>0 0 0 0 0 0</pose>
+        <update_rate>35.0</update_rate>
+	<visualize>true</visualize>
+        <ray name="laser_scan_left">
+          <scan>
+            <horizontal>
+              <samples>360</samples>
+              <resolution>1</resolution>
+              <min_angle>-0.4974188</min_angle>
+              <max_angle>0.4974188</max_angle>
+            </horizontal>
+          </scan>
+          <range>
+            <min>0.3</min>
+            <max>2.0</max>
+            <resolution>0.01</resolution>
+          </range> 
+        </ray>
+        <plugin name="laser_scan_controller_left" filename="libgazebo_ros_laser.so">
+          <frameName>camera_left</frameName>
+          <topicName>scan</topicName>
+        </plugin>
+      </sensor>
+      <sensor type="camera" name="camera_left">
+	<pose>0 0 0 0 0 0</pose>
+        <update_rate>30.0</update_rate>
+        <camera name="left_camera">
+	  <pose>0 0 0 0 0 0</pose>
+          <horizontal_fov>1.55</horizontal_fov>
+          <image>
+            <width>640</width>
+            <height>480</height>
+            <format>L8</format>
+          </image>
+          <clip>
+            <near>0.02</near>
+            <far>50</far>
+          </clip>
+	  <noise>
+            <type>gaussian</type>
+            <mean>0.0</mean>
+            <stddev>0.007</stddev>
+          </noise>
+        </camera>
+        <plugin name="left_camera_controller" filename="libgazebo_ros_camera.so">
+          <alwaysOn>true</alwaysOn>
+          <updateRate>30.0</updateRate>
+          <cameraName>gazebo_left_camera</cameraName>
+          <imageTopicName>image_raw</imageTopicName>
+          <cameraInfoTopicName>camera_info</cameraInfoTopicName>
+          <hackBaseline>0.07</hackBaseline>
+          <frameName>left_kinect_link</frameName>
+        </plugin>
+      </sensor>
+    </link>
+
+    <joint name="kinect_joint_left" type="fixed">
+      <parent>chassis</parent>
+      <child>left_kinect_link</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+      </axis>
+    </joint>
+
+    <link name="right_kinect_link">
+      <pose>0.45 -0.2 0.4 0 0 -0.349066</pose>
+      <collision name="collision">
+        <geometry>
+          <box>
+            <size>0.1 0.1 0.1</size>
+          </box>
+        </geometry>
+      </collision>
+      <visual name="visual">
+        <cast_shadows>false</cast_shadows>
+        <geometry>
+          <box>
+            <size>0.1 0.1 0.1</size>
+          </box>
+        </geometry>
+        <material name="orange">
+          <ambient>1 0 0 1</ambient>
+          <diffuse>1 0 0 1</diffuse>
+          <specular>0.1 0.1 0.1 1</specular>
+        </material>
+      </visual>
+      <sensor type="ray" name="ray_right">
+	<pose>0 0 0 0 0 0</pose>
+        <update_rate>35.0</update_rate>
+	<visualize>true</visualize>
+        <ray name="laser_scan_right">
+          <scan>
+            <horizontal>
+              <samples>360</samples>
+              <resolution>1</resolution>
+              <min_angle>-0.4974188</min_angle>
+              <max_angle>0.4974188</max_angle>
+            </horizontal>
+          </scan>
+          <range>
+            <min>0.3</min>
+            <max>2.0</max>
+            <resolution>0.01</resolution>
+          </range> 
+        </ray>
+        <plugin name="laser_scan_controller_right" filename="libgazebo_ros_laser.so">
+          <frameName>camera_right</frameName>
+          <topicName>scan</topicName>
+        </plugin>
+      </sensor>
+      <sensor type="camera" name="camera_right">
+	<pose>0 0 0 0 0 0</pose>
+        <update_rate>30.0</update_rate>
+        <camera name="right_camera">
+	  <pose>0 0 0 0 0 0</pose>
+          <horizontal_fov>1.55</horizontal_fov>
+          <image>
+            <width>640</width>
+            <height>480</height>
+            <format>L8</format>
+          </image>
+          <clip>
+            <near>0.02</near>
+            <far>50</far>
+          </clip>
+	  <noise>
+            <type>gaussian</type>
+            <mean>0.0</mean>
+            <stddev>0.007</stddev>
+          </noise>
+        </camera>
+        <plugin name="right_camera_controller" filename="libgazebo_ros_camera.so">
+          <alwaysOn>true</alwaysOn>
+          <updateRate>30.0</updateRate>
+          <cameraName>gazebo_right_camera</cameraName>
+          <imageTopicName>image_raw</imageTopicName>
+          <cameraInfoTopicName>camera_info</cameraInfoTopicName>
+          <hackBaseline>0.07</hackBaseline>
+          <frameName>right_kinect_link</frameName>
+        </plugin>
+      </sensor>
+    </link>
+
+    <joint name="kinect_joint_right" type="fixed">
+      <parent>chassis</parent>
+      <child>right_kinect_link</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+      </axis>
+    </joint>
+
+    <link name="tag_link">
+      <pose>-0.525 0 0.15 0 -1.57079632679 0</pose>
+      <collision name="collision">
+        <geometry>
+          <box>
+            <size>0.2 0.2 0.05</size>
+          </box>
+        </geometry>
+      </collision>
+      <visual name="visual">
+        <cast_shadows>false</cast_shadows>
+        <geometry>
+          <box>
+            <size>0.2 0.2 0.05</size>
+          </box>
+        </geometry>
+        <material>
+          <script>
+            <uri>model://april_tag/materials/scripts</uri>
+            <uri>model://april_tag/materials/textures</uri>
+            <name>April_Tag/Tag1</name>
+          </script>
+        </material>
+      </visual>
+    </link>
+
+    <joint name="tag_joint" type="fixed">
+      <parent>chassis</parent>
+      <child>tag_link</child>
+      <axis>
+        <xyz>1 0 0</xyz>
+      </axis>
+    </joint>
+
+    <plugin name="move_cart" filename="libmove_cart.so"/>
+  </model>
+</sdf>

@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<launch>
+  <node name="sign_detection_node" pkg="auto_trax_sensors" type="sign_detection_node" output="screen">
+    <param name="image_sub_topic" value="/camera/rgb/image_raw" />
+    <param name="image_pub_topic" value="detected_signs" />
+    <param name="scale_factor" value="1.1" />
+    <param name="min_neighbors" value="3" />
+    <param name="size_min" value="40" />
+    <param name="size_max" value="40" />
+    <param name="classifier_path" value="$(find auto_trax_sensors)/config/cascade.xml" />
+    <param name="sign_image_path" value="$(find auto_trax_sensors)/resources/sign.jpg" />
+  </node>
+</launch>
