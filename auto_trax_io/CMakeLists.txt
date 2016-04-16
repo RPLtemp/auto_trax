@@ -21,7 +21,9 @@ include_directories(
 
 ## Declare a C++ executable
 add_executable(auto_trax_io_node
-                    src/io_node.cpp)
+                    src/auto_trax_io_node.cpp
+                    src/JHPWMPCA9685.cpp)
+                    
 
 
 ## Specify libraries to link a library or executable target against
