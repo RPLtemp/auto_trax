@@ -6,6 +6,7 @@ project(sensor_processing)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
   roscpp
+  nav_msgs
   sensor_msgs
 )
 
