@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+
+<launch>
+  <node name="imu_integration" pkg="sensor_processing" type="imu_integration">
+    <param name="imu_topic" value="imu/data" />
+  </node>
+</launch>

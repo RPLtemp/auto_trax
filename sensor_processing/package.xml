@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<package>
+  <name>sensor_processing</name>
+  <version>0.0.1</version>
+  <description>Package for processing sensor data</description>
+
+  <maintainer email="pavelv@student.ethz.ch">Pavel Vechersky</maintainer>
+
+  <author>Pavel Vechersky</author>
+
+  <license>TODO</license>
+
+  <url type="website">https://github.com/pvechersky/auto_trax</url>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <build_depend>roscpp</build_depend>
+  <build_depend>sensor_msgs</build_depend>
+
+  <run_depend>roscpp</run_depend>
+  <run_depend>sensor_msgs</run_depend>
+</package>
