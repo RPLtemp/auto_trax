@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+
+<launch>
+  <node name="imu_integration" pkg="sensor_processing" type="imu_integration" output="screen">
+    <param name="imu_topic" value="imu" />
+    <param name="odom_topic" value="odometry" />
+  </node>
+</launch>
