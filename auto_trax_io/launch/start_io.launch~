@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+
+<launch>
+  
+  <!-- Start "auto_trax_io" to control Skye in Gazebo. -->
+  <node name="auto_trax_io_node" pkg="auto_trax_io_node" type="auto_trax_io_node"/>
+
+  <!-- Start "rtimulib_ros" to control Skye in Gazebo. -->
+  <node name="rtimulib_ros_node" pkg="rtimulib_ros" type="rtimulib_ros"/>
+
+
+  <!-- Start parameters 
+  <rosparam command="load" file="$(find skye_controls)/inputs/skye_controls.yaml"/>  -->
+
+</launch>

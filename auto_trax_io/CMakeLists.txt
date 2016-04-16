@@ -20,12 +20,12 @@ include_directories(
 )
 
 ## Declare a C++ executable
-add_executable(auto_trax_node
+add_executable(auto_trax_io_node
                     src/io_node.cpp)
 
 
 ## Specify libraries to link a library or executable target against
-target_link_libraries(auto_trax_node
+target_link_libraries(auto_trax_io_node
                           ${catkin_LIBRARIES}
                           ${roslib_LIBRARIES}
  )
