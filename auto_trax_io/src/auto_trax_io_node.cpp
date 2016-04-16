@@ -1,20 +1,30 @@
-#include <ros/ros.h>
-#include <stdio.h>
+#include <auto_trax_io/auto_trax_io_node.h>
 
+AutoTraxIoNode::AutoTraxIoNode(){
+    ros::NodeHandle nh;
+
+//    ros::ServiceServer service = nh.advertiseService("apply_steering_angle", &AutoTraxIoNode::serviceCallback);
+
+}
+
+void AutoTraxIoNode::serviceCallback(auto_trax_io::ApplySteeringAngle::Request  &req,
+                                     auto_trax_io::ApplySteeringAngle::Response &res){
+
+}
 
 int main(int argc, char **argv){
     //Init ros and create node handle
     ros::init(argc, argv, "auto_trax_io_node");
-    ros::NodeHandle nh;
 
-    std::cout << "Hello world!" << std::endl;
+
+
+    AutoTraxIoNode node();
 
     ros::Rate r(50); // 50 hz
-    while (nh.ok())
+    while (ros::ok())
     {
         ros::spinOnce();
         r.sleep();
     }
-
-return 0;
+    return 0;
 }
