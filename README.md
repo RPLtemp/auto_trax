@@ -8,14 +8,30 @@ The io package takes care of using ROS and interfacing with the low level hardwa
 The sensors package collects data from the sensors and convert it to more meaningful data for the control of the car.
 
 ## Dependencies
- 1. The RTIMULib needs to be installed. It can be found here: https://github.com/richards-tech/RTIMULib
-
- 2. Install the I2C tools and development libraries:
+ 1. Install RTIMULib in a directory of your choice:
 
  ```
+ $ git clone git@github.com:richards-tech/RTIMULib.git
+ ```
+ Go to the directory where RTIMULib was cloned and enter:
+
+ ```
+ $ cd RTIMULib
+ $ mkdir build
+ $ cd build
+ $ cmake ..
+ $ make -j4
+ $ sudo make install
+ $ sudo ldconfig
+ ```
+ 2. Install the following packages:
+
+ ```
+ $ sudo apt-get update
  $ sudo apt-get install i2c-tools libi2c-dev
+ $ sudo apt-get install ros-indigo-ackermann-msgs
  ```
- 3. Clone the additional ros packages into your src folder:
+ 3. Clone the additional ros packages into your workspace src folder:
 
  ```
  $ git clone git@github.com:jetsonhacks/rtimulib_ros.git
