@@ -3,7 +3,7 @@
 <launch>
   
   <!-- Start "auto_trax_io" to provide IO interface for auto_trax  -->
-  <node name="auto_trax_io_node" pkg="auto_trax_io" type="auto_trax_io_node"/>
+  <node name="steering_interface" pkg="auto_trax_io" type="steering_interface"/>
 
   <!-- Start "rtimulib_ros" to provide IMU topics. >
   <node name="rtimulib_ros_node" pkg="rtimulib_ros" type="rtimulib_ros"/ -->

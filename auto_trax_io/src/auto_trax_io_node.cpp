@@ -3,16 +3,16 @@
 AutoTraxIoNode::AutoTraxIoNode() :
     steering_(0x40)
 {
-    ros::NodeHandle nh;
-    ros::ServiceServer service = nh.advertiseService("apply_steering_angle", &AutoTraxIoNode::serviceCallback, this);
     if (steering_.openPCA9685() < 0) {
            ROS_ERROR("COULD NOT OPEN PCA9685");
+    } else {
+        ROS_INFO("PCA9685 Device Address: 0x%02X\n",steering_.kI2CAddress) ;
+        servo_range_ = servo_max_ - servo_min_;
+        steering_.setAllPWM(0,0) ;
+        steering_.reset() ;
+        steering_.setPWMFrequency(60);
     }
-    ROS_INFO("PCA9685 Device Address: 0x%02X\n",steering_.kI2CAddress) ;
-    servo_range_ = servo_max_ - servo_min_;
-    steering_.setAllPWM(0,0) ;
-    steering_.reset() ;
-    steering_.setPWMFrequency(60);
+
 }
 
 AutoTraxIoNode::~AutoTraxIoNode(){
@@ -37,16 +37,12 @@ bool AutoTraxIoNode::serviceCallback(auto_trax_io::ApplySteeringAngle::Request  
 
 int main(int argc, char **argv){
     //Init ros and create node handle
-    ros::init(argc, argv, "auto_trax_io_node");
+    ros::init(argc, argv, "auto trax io node");
 
     AutoTraxIoNode node;
+    ros::NodeHandle nh;
+    ros::ServiceServer service = nh.advertiseService("auto_trax_io/apply_steering_angle", &AutoTraxIoNode::serviceCallback, &node);
 
-
-    ros::Rate r(50); // 50 hz
-    while (ros::ok())
-    {
-        ros::spinOnce();
-        r.sleep();
-    }
+    ros::spin();
     return 0;
 }
