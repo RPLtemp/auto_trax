@@ -50,6 +50,10 @@
 #include <string>
 #include <iostream>
 
+#include <auto_trax_io/ApplySteeringAngle.h>
+#include <ackermann_msgs/AckermannDrive.h>
+
+
 // Primary PID controller input & output variables
 double plant_state;                 // current output of plant
 double control_effort;              // output of pid controller
@@ -90,6 +94,7 @@ int loop_counter = 0; // Counts # of times through the control loop. Used to sta
 
 // Topic and node names and message objects
 ros::Publisher control_effort_pub;
+ros::ServiceClient client;
 
 std::string topic_from_controller;
 std::string topic_from_plant;
