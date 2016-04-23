@@ -1,0 +1,13 @@
+node_name: auto_trax_controller_node                           # name of the node
+
+subscribed_rostopic_img: /camX/image_raw                       # subscribed rostopic
+queue_size_subscriber_img: 1                                   # queue size of the subscriber
+
+subscribed_rostopic_imu: /imu0                                 # subscribed rostopic
+queue_size_subscriber_imu: 1                                   # queue size of the subscriber
+
+subscribed_rostopic_calib: /camX/calibration                   # subscribed rostopic
+queue_size_subscriber_calib: 1                                 # queue size of the subscriber
+
+subscribed_rostopic_cam: /camX/camera_info                     # subscribed rostopic
+queue_size_subscriber_cam: 1                                   # queue size of the subscriber
