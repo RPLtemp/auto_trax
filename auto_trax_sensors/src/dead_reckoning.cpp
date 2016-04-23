@@ -34,9 +34,9 @@ void DeadReckoning::ImuCallback(const sensor_msgs::ImuConstPtr& imu_msg) {
   odom_msg_.header.stamp.nsec = current_time.nsec;
 
   // Integrate linear velocity to get position
-  odom_msg_.pose.pose.position.x = odom_msg_.pose.pose.position.x + odom_msg_.twist.twist.linear.x * dt;
-  odom_msg_.pose.pose.position.y = odom_msg_.pose.pose.position.y + odom_msg_.twist.twist.linear.y * dt;
-  odom_msg_.pose.pose.position.z = odom_msg_.pose.pose.position.z + odom_msg_.twist.twist.linear.z * dt;
+  odom_msg_.pose.pose.position.x = odom_msg_.pose.pose.position.x + odom_msg_.twist.twist.linear.x * dt + 0.5 * imu_msg->linear_acceleration.x / kG * dt * dt;
+  odom_msg_.pose.pose.position.y = odom_msg_.pose.pose.position.y + odom_msg_.twist.twist.linear.y * dt + 0.5 * imu_msg->linear_acceleration.y / kG * dt * dt;
+  odom_msg_.pose.pose.position.z = odom_msg_.pose.pose.position.z + odom_msg_.twist.twist.linear.z * dt + 0.5 * (imu_msg->linear_acceleration.z + 1.0f) / kG * dt * dt;
 
   // Orientation comes straight from IMU
   odom_msg_.pose.pose.orientation = imu_msg->orientation;
