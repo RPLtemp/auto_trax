@@ -32,7 +32,12 @@ bool AutoTraxIoNode::serviceCallback(auto_trax_io::ApplySteeringAngle::Request  
 
     if (steering_.error >= 0){
         steering_.setPWM(0,0,AngleConversion(angle_in_radians));
+        res.success = true;
+        return true;
     }
+    res.success = false;
+    return false;
+
 }
 
 int main(int argc, char **argv){
