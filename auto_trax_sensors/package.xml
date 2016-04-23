@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <package>
-  <name>sensor_processing</name>
+  <name>auto_trax_sensors</name>
   <version>0.0.1</version>
   <description>Package for processing sensor data</description>
 

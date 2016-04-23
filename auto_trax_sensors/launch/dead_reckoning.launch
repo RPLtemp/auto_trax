@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 
 <launch>
-  <node name="dead_reckoning" pkg="sensor_processing" type="dead_reckoning" output="screen">
+  <node name="dead_reckoning" pkg="auto_trax_sensors" type="dead_reckoning" output="screen">
     <param name="imu_topic" value="imu" />
     <param name="odom_topic" value="odometry" />
   </node>

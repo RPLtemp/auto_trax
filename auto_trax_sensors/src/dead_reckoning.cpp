@@ -1,4 +1,4 @@
-#include "sensor_processing/dead_reckoning.h"
+#include "auto_trax_sensors/dead_reckoning.h"
 
 DeadReckoning::DeadReckoning():
     odom_seq_(0),
