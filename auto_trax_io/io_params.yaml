@@ -1,0 +1,5 @@
+steering_service_name: auto_trax_io/apply_steering_angle
+pwm_frequency: 60
+i2c_channel: 0
+servo_min: 120
+servo_max: 720

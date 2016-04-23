@@ -10,14 +10,25 @@ AutoTraxIoNode::AutoTraxIoNode() :
         servo_range_ = servo_max_ - servo_min_;
         steering_.setAllPWM(0,0) ;
         steering_.reset() ;
-        steering_.setPWMFrequency(60);
+        steering_.setPWMFrequency(pwm_frequency_);
     }
-
 }
 
 AutoTraxIoNode::~AutoTraxIoNode(){
     steering_.closePCA9685();
 }
+
+void AutoTraxIoNode::InitParams(int servo_max,
+                int servo_min,
+                int pwm_frequency,
+                int i2c_channel){
+    servo_max_ = servo_max;
+    servo_min_ = servo_min;
+    pwm_frequency_ = pwm_frequency;
+    i2c_channel_ = i2c_channel;
+    parameter_initialized_ = true;
+}
+
 
 inline double AutoTraxIoNode::AngleConversion(double angle_in_rads){
 
@@ -31,8 +42,8 @@ bool AutoTraxIoNode::serviceCallback(auto_trax_io::ApplySteeringAngle::Request  
     angle_in_radians = req.Message.steering_angle;
     double pwm_result = AngleConversion(angle_in_radians);
     std::cout <<"got a call. pwm result is: " << pwm_result << std::endl;
-    if (steering_.error >= 0){
-        steering_.setPWM(0,0,pwm_result);
+    if (steering_.error >= 0 && parameter_initialized_){
+        steering_.setPWM(i2c_channel_,0,pwm_result);
         res.success = true;
         return true;
     }
@@ -45,9 +56,27 @@ int main(int argc, char **argv){
     //Init ros and create node handle
     ros::init(argc, argv, "auto trax io node");
 
-    AutoTraxIoNode node;
     ros::NodeHandle nh;
-    ros::ServiceServer service = nh.advertiseService("auto_trax_io/apply_steering_angle", &AutoTraxIoNode::serviceCallback, &node);
+    std::string steering_service_name;
+    int pwm_frequency, i2c_channel, servo_min, servo_max;
+
+
+    bool read_all_parameters = nh.getParam("steering_service_name", steering_service_name) &&
+                               nh.getParam("pwm_frequency", pwm_frequency) &&
+                               nh.getParam("i2c_channel", i2c_channel) &&
+                               nh.getParam("servo_min", servo_min) &&
+                               nh.getParam("servo_max", servo_max);
+
+    // Check if parameters where imported
+    if (! read_all_parameters){
+        ROS_ERROR("Geometric Parameters not imported");
+        return false;
+    }
+
+    AutoTraxIoNode node;
+    node.InitParams(servo_max, servo_min, pwm_frequency, i2c_channel);
+    ros::ServiceServer service = nh.advertiseService(steering_service_name, &AutoTraxIoNode::serviceCallback, &node);
+
 
     ros::spin();
     return 0;

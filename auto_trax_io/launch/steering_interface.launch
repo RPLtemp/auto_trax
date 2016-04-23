@@ -8,8 +8,7 @@
   <!-- Start "rtimulib_ros" to provide IMU topics. >
   <node name="rtimulib_ros_node" pkg="rtimulib_ros" type="rtimulib_ros"/ -->
 
-
-  <!-- Start parameters 
-  <rosparam command="load" file="$(find skye_controls)/inputs/skye_controls.yaml"/>  -->
+  <!-- Start parameters --> 
+  <rosparam command="load" file="$(find auto_trax_io)/io_params.yaml"/>
 
 </launch>
