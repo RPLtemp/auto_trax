@@ -29,9 +29,10 @@ bool AutoTraxIoNode::serviceCallback(auto_trax_io::ApplySteeringAngle::Request  
                                      auto_trax_io::ApplySteeringAngle::Response &res){
     double angle_in_radians;
     angle_in_radians = req.Message.steering_angle;
-
+    double pwm_result = AngleConversion(angle_in_radians);
+    std::cout <<"got a call. pwm result is: " << pwm_result << std::endl;
     if (steering_.error >= 0){
-        steering_.setPWM(0,0,AngleConversion(angle_in_radians));
+        steering_.setPWM(0,0,pwm_result);
         res.success = true;
         return true;
     }
