@@ -29,8 +29,6 @@ void DeadReckoning::ImuCallback(const sensor_msgs::ImuConstPtr& imu_msg) {
   double dt = (double)(current_time.nsec - last_time_.nsec) * 1.0E-9;
   last_time_ = current_time;
 
-  std::cout << dt << std::endl;
-
   odom_msg_.header.seq = odom_seq_;
   odom_msg_.header.stamp.sec = current_time.sec;
   odom_msg_.header.stamp.nsec = current_time.nsec;

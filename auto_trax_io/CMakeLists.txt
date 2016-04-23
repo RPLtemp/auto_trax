@@ -28,9 +28,9 @@ catkin_package(
 )
 
 include_directories(
+  include
   ${catkin_INCLUDE_DIRS}
   ${roscpp_INCLUDE_DIRS}
-include
 )
 
 ## Declare a C++ executable
