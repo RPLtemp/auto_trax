@@ -7,6 +7,7 @@ project(auto_trax_sensors)
 find_package(catkin REQUIRED COMPONENTS
   cv_bridge
   image_transport
+  nav_msgs
   roscpp
   sensor_msgs
 )
@@ -16,7 +17,8 @@ include_directories(${OpenCV_INCLUDE_DIRS})
 
 catkin_package(
   INCLUDE_DIRS include
-  CATKIN_DEPENDS cv_bridge image_transport roscpp sensor_msgs
+  LIBRARIES occ_grid_manager
+  CATKIN_DEPENDS cv_bridge image_transport nav_msgs roscpp sensor_msgs
   DEPENDS opencv
 )
 
@@ -26,10 +28,15 @@ include_directories(
   ${roscpp_INCLUDE_DIRS}
 )
 
-## Declare a C++ executable
+add_library(occ_grid_manager src/library/occ_grid_manager.cpp)
+
+target_link_libraries(occ_grid_manager ${catkin_LIBRARIES})
+add_dependencies(occ_grid_manager ${catkin_EXPORTED_TARGETS})
+
+## Declare the C++ executables
 add_executable(dead_reckoning src/dead_reckoning.cpp)
 add_executable(line_tracking src/line_tracking.cpp)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(dead_reckoning ${catkin_LIBRARIES} ${roslib_LIBRARIES})
-target_link_libraries(line_tracking ${catkin_LIBRARIES} ${roslib_LIBRARIES} ${OpenCV_LIBRARIES})
+target_link_libraries(line_tracking ${catkin_LIBRARIES} ${roslib_LIBRARIES} ${OpenCV_LIBRARIES} occ_grid_manager)
