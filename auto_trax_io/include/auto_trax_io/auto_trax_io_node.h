@@ -5,6 +5,8 @@
 #include <auto_trax_io/ApplySteeringAngle.h>
 #include <auto_trax_io/JHPWMPCA9685.h>
 #include <iostream>
+#include <stdio.h>
+#include <stdlib.h>
 
 
 class AutoTraxIoNode{

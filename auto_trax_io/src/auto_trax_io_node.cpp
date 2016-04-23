@@ -21,6 +21,7 @@ AutoTraxIoNode::AutoTraxIoNode(int servo_max,
         steering_.reset() ;
         steering_.setPWMFrequency(pwm_frequency_);
     }
+    std::cout << "parameters initialized: " << parameter_initialized_ << std::endl;
 }
 
 AutoTraxIoNode::~AutoTraxIoNode(){
@@ -56,7 +57,7 @@ int main(int argc, char **argv){
     ros::NodeHandle nh;
     std::string steering_service_name;
     int pwm_frequency, i2c_channel, servo_min, servo_max;
-
+std::cout << "TEST" << std::endl;
 
     bool read_all_parameters = nh.getParam("steering_service_name", steering_service_name) &&
                                nh.getParam("pwm_frequency", pwm_frequency) &&
