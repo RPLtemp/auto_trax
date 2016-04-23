@@ -1,6 +1,8 @@
 #ifndef AUTO_TRAX_LINE_TRACKING_H
 #define AUTO_TRAX_LINE_TRACKING_H
 
+#include <cv_bridge/cv_bridge.h>
+#include <image_transport/image_transport.h>
 #include <ros/ros.h>
 #include <sensor_msgs/Image.h>
 
@@ -16,7 +18,8 @@ class LineTracking {
 
   private:
     ros::NodeHandle nh_;
-    ros::Subscriber image_sub_;
+    image_transport::ImageTransport it_;
+    image_transport::Subscriber image_sub_;
 };
 
 
