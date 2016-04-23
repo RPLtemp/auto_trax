@@ -21,16 +21,14 @@ private:
     inline double AngleConversion(double angle_in_radians);
 
 public:
-    AutoTraxIoNode();
+    AutoTraxIoNode(int servo_max,
+                   int servo_min,
+                   int pwm_frequency,
+                   int i2c_channel);
     ~AutoTraxIoNode();
 
     bool serviceCallback(auto_trax_io::ApplySteeringAngle::Request  &req,
                          auto_trax_io::ApplySteeringAngle::Response &res);
-
-    void InitParams(int servo_max,
-                    int servo_min,
-                    int pwm_frequency,
-                    int i2c_channel);
 };
 
 #endif // AUTO_TRAX_IO_NODE_H

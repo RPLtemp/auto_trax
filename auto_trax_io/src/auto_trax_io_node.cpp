@@ -1,8 +1,17 @@
 #include <auto_trax_io/auto_trax_io_node.h>
 
-AutoTraxIoNode::AutoTraxIoNode() :
+AutoTraxIoNode::AutoTraxIoNode(int servo_max,
+                               int servo_min,
+                               int pwm_frequency,
+                               int i2c_channel) :
     steering_(0x40)
 {
+    servo_max_ = servo_max;
+    servo_min_ = servo_min;
+    pwm_frequency_ = pwm_frequency;
+    i2c_channel_ = i2c_channel;
+    parameter_initialized_ = true;
+
     if (steering_.openPCA9685() < 0) {
            ROS_ERROR("COULD NOT OPEN PCA9685");
     } else {
@@ -17,18 +26,6 @@ AutoTraxIoNode::AutoTraxIoNode() :
 AutoTraxIoNode::~AutoTraxIoNode(){
     steering_.closePCA9685();
 }
-
-void AutoTraxIoNode::InitParams(int servo_max,
-                int servo_min,
-                int pwm_frequency,
-                int i2c_channel){
-    servo_max_ = servo_max;
-    servo_min_ = servo_min;
-    pwm_frequency_ = pwm_frequency;
-    i2c_channel_ = i2c_channel;
-    parameter_initialized_ = true;
-}
-
 
 inline double AutoTraxIoNode::AngleConversion(double angle_in_rads){
 
@@ -73,8 +70,11 @@ int main(int argc, char **argv){
         return false;
     }
 
-    AutoTraxIoNode node;
-    node.InitParams(servo_max, servo_min, pwm_frequency, i2c_channel);
+    AutoTraxIoNode node(servo_max,
+                        servo_min,
+                        pwm_frequency,
+                        i2c_channel);
+
     ros::ServiceServer service = nh.advertiseService(steering_service_name, &AutoTraxIoNode::serviceCallback, &node);
 
 
