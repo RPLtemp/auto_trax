@@ -1,23 +1,9 @@
 <launch>
-    <node name="controller" pkg="pid" type="controller" ns="left_wheel" output="screen" >
+    <node name="controller" pkg="pid" type="controller" output="screen" >
       <param name="node_name" value="left_wheel_pid" />
       <param name="Kp" value="5.0" />
       <param name="Ki" value="0.0" />
       <param name="Kd" value="0.1" />
-      <param name="upper_limit" value="10" />
-      <param name="lower_limit" value="-10" />
-      <param name="windup_limit" value="10" />
-      <param name="diagnostic_period" value="0.25" />
-      <param name="max_loop_frequency" value="100.0" />
-      <param name="min_loop_frequency" value="100.0" />
-      <remap from="setpoint" to="/setpoint" />
-     </node>
-
-    <node name="controller" pkg="pid" type="controller" ns="right_wheel" output="screen" >
-      <param name="node_name" value="right_wheel_pid" />
-      <param name="Kp" value="-4.0" />
-      <param name="Ki" value="-0.0" />
-      <param name="Kd" value="-0.3" />
       <param name="upper_limit" value="10" />
       <param name="lower_limit" value="-10" />
       <param name="windup_limit" value="10" />
@@ -33,9 +19,5 @@
       <rosparam command="delete" param="/diagnostic_aggregator" />
       <rosparam command="load" file="$(find pid)/config/pid_diags.yaml" />
    </node>
-
-    <node name="rqt_plot" pkg="rqt_plot" type="rqt_plot"
-    args="/right_wheel/control_effort/data /right_wheel/state/data
-    /left_wheel/control_effort/data /left_wheel/state/data /setpoint/data" />
 
 </launch>

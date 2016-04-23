@@ -49,10 +49,15 @@ int main(int argc, char **argv)
   }
 
   std_msgs::Float64 setpoint;
-  setpoint.data = 1.0;
-  ros::Publisher setpoint_pub = setpoint_node.advertise<std_msgs::Float64>("setpoint", 1);
+  std_msgs::Float64 state;
 
-  ros::Rate loop_rate(0.2);   // change setpoint every 5 seconds
+  setpoint.data = 0.0;
+  state.data = 1.0;
+  ros::Publisher setpoint_pub = setpoint_node.advertise<std_msgs::Float64>("setpoint", 1);
+  ros::Publisher state_pub = setpoint_node.advertise<std_msgs::Float64>("state", 1);
+
+
+  ros::Rate loop_rate(0.5);   // change setpoint every 2 seconds
 
   while (ros::ok())
   {
@@ -61,6 +66,9 @@ int main(int argc, char **argv)
     setpoint_pub.publish(setpoint);     // publish twice so graph gets it as a step
     setpoint.data = 0 - setpoint.data;
     setpoint_pub.publish(setpoint);
+
+    //state.data += 1.0;
+    state_pub.publish(state);
 
     loop_rate.sleep();
   }

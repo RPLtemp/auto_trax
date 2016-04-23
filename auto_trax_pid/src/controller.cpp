@@ -45,11 +45,11 @@
 void setpoint_callback(const std_msgs::Float64& setpoint_msg)
 {
   setpoint = setpoint_msg.data;
+  std::cout << "Setpoint: " << setpoint << std::endl;
 }
 
 void plant_state_callback(const std_msgs::Float64& state_msg)
 {
-
   if ( !((Kp<=0. && Ki<=0. && Kd<=0.) || (Kp>=0. && Ki>=0. && Kd>=0.)) ) // All 3 gains should have the same sign
   {
     ROS_WARN("All three gains (Kp, Ki, Kd) should have the same sign for stability.");
@@ -57,9 +57,13 @@ void plant_state_callback(const std_msgs::Float64& state_msg)
 
   plant_state = state_msg.data;
 
+  std::cout << "Plant_state: " << plant_state << std::endl;
+
   error.at(2) = error.at(1);
   error.at(1) = error.at(0);
   error.at(0) = setpoint - plant_state; // Current error goes to slot 0
+
+  std::cout << "Error: " << error.at(0) << std::endl;
 
   // calculate delta_t
   if (!prev_time.isZero()) // Not first time through the program  
@@ -128,6 +132,8 @@ void plant_state_callback(const std_msgs::Float64& state_msg)
   derivative = Kd * filtered_error_deriv.at(0);
   control_effort = proportional + integral + derivative;
 
+  std::cout << "P: " << proportional << " | I: " << integral << " | D: " << derivative << std::endl;
+
   // Apply saturation limits
   if (control_effort > upper_limit)
   {
@@ -152,6 +158,22 @@ void plant_state_callback(const std_msgs::Float64& state_msg)
   {
     control_msg.data = control_effort;
     control_effort_pub.publish(control_msg);
+
+    std::cout << "Control_effort: " << control_effort << std::endl;
+
+    float steering_angle = static_cast<float>(control_effort);
+    auto_trax_io::ApplySteeringAngle srv;
+    srv.request.Message.steering_angle = steering_angle;
+
+    if (client.call(srv))
+    {
+      ROS_INFO("Steering Angle: %d | %f \n", srv.response.success, srv.request.Message.steering_angle);
+      std::cout << "--Steering" << std::endl;
+    }
+    else
+    {
+      ROS_INFO("Failed to call service!!");
+    }
   }
   else
   {
@@ -281,6 +303,7 @@ int main(int argc, char **argv)
 
   // instantiate publishers & subscribers
   control_effort_pub = node.advertise<std_msgs::Float64>(topic_from_controller, 1);
+  client = node.serviceClient<auto_trax_io::ApplySteeringAngle>("auto_trax_io/apply_steering_angle");
 
   ros::Subscriber sub = node.subscribe(topic_from_plant, 1, plant_state_callback );
   ros::Subscriber setpoint_sub = node.subscribe(setpoint_topic, 1, setpoint_callback );
