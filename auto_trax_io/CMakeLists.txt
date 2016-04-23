@@ -9,6 +9,7 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
   ackermann_msgs
   message_generation
+  rtimulib_ros
 )
 
 add_service_files(
@@ -24,7 +25,7 @@ generate_messages(
 
 catkin_package(
   INCLUDE_DIRS include
-  CATKIN_DEPENDS roscpp std_msgs ackermann_msgs message_runtime
+  CATKIN_DEPENDS roscpp std_msgs ackermann_msgs message_runtime rtimulib_ros
 )
 
 include_directories(
