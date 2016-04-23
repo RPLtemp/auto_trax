@@ -28,21 +28,21 @@ catkin_package(
 )
 
 include_directories(
+  include
   ${catkin_INCLUDE_DIRS}
   ${roscpp_INCLUDE_DIRS}
-include
 )
 
 ## Declare a C++ executable
-add_executable(auto_trax_io
+add_executable(steering_interface
                     src/auto_trax_io_node.cpp
                     src/JHPWMPCA9685.cpp)
                     
 
-add_dependencies(auto_trax_io auto_trax_io_generate_messages_cpp)
+add_dependencies(steering_interface auto_trax_io_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
-target_link_libraries(auto_trax_io
+target_link_libraries(steering_interface
                           ${catkin_LIBRARIES}
                           ${roslib_LIBRARIES}
  )

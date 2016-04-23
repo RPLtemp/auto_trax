@@ -1,7 +1,6 @@
 #ifndef AUTO_TRAX_DEAD_RECKONING_H
 #define AUTO_TRAX_DEAD_RECKONING_H
 
-#include <iostream>
 #include <ros/ros.h>
 #include <nav_msgs/Odometry.h>
 #include <sensor_msgs/Imu.h>
