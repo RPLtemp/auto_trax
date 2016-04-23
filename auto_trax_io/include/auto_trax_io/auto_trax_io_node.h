@@ -1,3 +1,5 @@
+#ifndef AUTO_TRAX_IO_NODE_H
+#define AUTO_TRAX_IO_NODE_H
 
 #include <ros/ros.h>
 #include <auto_trax_io/ApplySteeringAngle.h>
@@ -14,3 +16,4 @@ public:
 
 };
 
+#endif // AUTO_TRAX_IO_NODE_H

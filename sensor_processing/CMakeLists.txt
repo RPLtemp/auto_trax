@@ -21,7 +21,7 @@ include_directories(
 )
 
 ## Declare a C++ executable
-add_executable(imu_integration src/imu_integration.cpp)
+add_executable(dead_reckoning src/dead_reckoning.cpp)
 
 ## Specify libraries to link a library or executable target against
-target_link_libraries(imu_integration ${catkin_LIBRARIES} ${roslib_LIBRARIES})
+target_link_libraries(dead_reckoning ${catkin_LIBRARIES} ${roslib_LIBRARIES})

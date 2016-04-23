@@ -1,6 +1,6 @@
-#include "sensor_processing/imu_integration.h"
+#include "sensor_processing/dead_reckoning.h"
 
-ImuIntegration::ImuIntegration():
+DeadReckoning::DeadReckoning():
     odom_seq_(0),
     received_first_imu_data_(false) {
   ros::NodeHandle pnh("~");
@@ -10,15 +10,15 @@ ImuIntegration::ImuIntegration():
   pnh.param("imu_topic", imu_sub_topic, kDefaultImuSubTopic);
   pnh.param("odom_topic", odom_pub_topic, kDefaultOdometryPubTopic);
 
-  imu_sub_ = nh_.subscribe(imu_sub_topic, 1, &ImuIntegration::ImuCallback, this);
+  imu_sub_ = nh_.subscribe(imu_sub_topic, 1, &DeadReckoning::ImuCallback, this);
   odom_pub_ = nh_.advertise<nav_msgs::Odometry>(odom_pub_topic, 1);
 }
 
-ImuIntegration::~ImuIntegration() {
+DeadReckoning::~DeadReckoning() {
 
 }
 
-void ImuIntegration::ImuCallback(const sensor_msgs::ImuConstPtr& imu_msg) {
+void DeadReckoning::ImuCallback(const sensor_msgs::ImuConstPtr& imu_msg) {
   if (!received_first_imu_data_) {
     last_time_ = ros::Time::now();
     received_first_imu_data_ = true;
@@ -57,9 +57,9 @@ void ImuIntegration::ImuCallback(const sensor_msgs::ImuConstPtr& imu_msg) {
 }
 
 int main(int argc, char **argv) {
-  ros::init(argc, argv, "imu_integration");
+  ros::init(argc, argv, "dead_reckoning");
 
-  ImuIntegration imu_integration;
+  DeadReckoning dead_reckoning;
 
   ros::spin();
 
