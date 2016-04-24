@@ -3,7 +3,7 @@
 void OccGridManager::OccGridFromBinaryImage(cv::Mat& img, nav_msgs::OccupancyGridPtr& occ_grid) {
   occ_grid->info.width = img.rows;
   occ_grid->info.height = img.cols;
-  occ_grid->info.resolution = 0.01;
+  occ_grid->info.resolution = 0.001;
 
   occ_grid->data.assign(occ_grid->info.width * occ_grid->info.height, 0);
 

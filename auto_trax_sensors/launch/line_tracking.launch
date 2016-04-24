@@ -5,10 +5,10 @@
     <param name="image_sub_topic" value="/camera/rgb/image_raw" />
     <param name="image_pub_topic" value="image_segmented" />
     <param name="occ_grid_pub_topic" value="occupancy_grid" />
-    <param name="horizon_pixels" value="200" />
-    <param name="r_thresh" value="0" /> <!-- 255 -->
-    <param name="g_thresh" value="0" /> <!-- 230 -->
-    <param name="b_thresh" value="0" /> <!-- 160 -->
+    <param name="horizon_pixels" value="100" />
+    <param name="r_thresh" value="255" /> <!-- 255 -->
+    <param name="g_thresh" value="230" /> <!-- 230 -->
+    <param name="b_thresh" value="160" /> <!-- 160 -->
     <param name="rgb_thresh" value="15" />
   </node>
 </launch>

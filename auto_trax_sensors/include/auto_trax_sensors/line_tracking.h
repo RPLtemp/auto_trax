@@ -12,7 +12,6 @@
 
 // Default values
 static const std::string kDefaultImageSubTopic = "image_raw";
-static const std::string kDefaultImagePubTopic = "image_segmented";
 static const std::string kDefaultOccGridPubTopic = "occupancy_grid";
 static const int kDefaultHorizonPixels = 200;
 static const int kDefaultRThresh = 255;
@@ -33,7 +32,6 @@ class LineTracking {
     ros::NodeHandle nh_;
     image_transport::ImageTransport it_;
     image_transport::Subscriber image_sub_;
-    image_transport::Publisher image_pub_;
     ros::Publisher occ_grid_pub_;
 
     int horizon_pixels_;
