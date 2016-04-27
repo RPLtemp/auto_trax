@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 
 <launch>
-  <node name="line_tracking" pkg="auto_trax_sensors" type="line_tracking" output="screen">
+  <node name="line_tracking_node" pkg="auto_trax_sensors" type="line_tracking_node" output="screen">
     <param name="image_sub_topic" value="/camera/rgb/image_raw" />
     <param name="image_pub_topic" value="image_segmented" />
     <param name="occ_grid_pub_topic" value="occupancy_grid" />

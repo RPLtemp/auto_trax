@@ -1,5 +1,14 @@
 #include "auto_trax_sensors/occ_grid_manager.h"
 
+namespace auto_trax {
+
+OccGridManager::OccGridManager() {
+
+}
+
+OccGridManager::~OccGridManager() {
+}
+
 void OccGridManager::OccGridFromBinaryImage(cv::Mat& img, nav_msgs::OccupancyGridPtr& occ_grid) {
   occ_grid->info.width = img.rows;
   occ_grid->info.height = img.cols;
@@ -16,4 +25,5 @@ void OccGridManager::OccGridFromBinaryImage(cv::Mat& img, nav_msgs::OccupancyGri
       }
     }
   }
+}
 }
