@@ -10,7 +10,7 @@ ImageProcessing::~ImageProcessing() {
 }
 
 void ImageProcessing::UpdateDerivedParameters(ImageProcessingParameters& params) {
-  params.lower_bound_ = cv::Scalar(params.b_thresh_- params.rgb_range_,
+  params.lower_bound_ = cv::Scalar(params.b_thresh_ - params.rgb_range_,
                                    params.g_thresh_ - params.rgb_range_,
                                    params.r_thresh_ - params.rgb_range_);
   params.upper_bound_ = cv::Scalar(params.b_thresh_ + params.rgb_range_,

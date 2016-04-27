@@ -1,6 +1,8 @@
-#include "auto_trax_sensors/dead_reckoning.h"
+#include "auto_trax_sensors/dead_reckoning_node.h"
 
-DeadReckoning::DeadReckoning():
+namespace auto_trax {
+
+DeadReckoningNode::DeadReckoningNode():
     odom_seq_(0),
     received_first_imu_data_(false) {
   ros::NodeHandle pnh("~");
@@ -10,15 +12,15 @@ DeadReckoning::DeadReckoning():
   pnh.param("imu_topic", imu_sub_topic, kDefaultImuSubTopic);
   pnh.param("odom_topic", odom_pub_topic, kDefaultOdometryPubTopic);
 
-  imu_sub_ = nh_.subscribe(imu_sub_topic, 1, &DeadReckoning::ImuCallback, this);
+  imu_sub_ = nh_.subscribe(imu_sub_topic, 1, &DeadReckoningNode::ImuCallback, this);
   odom_pub_ = nh_.advertise<nav_msgs::Odometry>(odom_pub_topic, 1);
 }
 
-DeadReckoning::~DeadReckoning() {
+DeadReckoningNode::~DeadReckoningNode() {
 
 }
 
-void DeadReckoning::ImuCallback(const sensor_msgs::ImuConstPtr& imu_msg) {
+void DeadReckoningNode::ImuCallback(const sensor_msgs::ImuConstPtr& imu_msg) {
   if (!received_first_imu_data_) {
     last_time_ = ros::Time::now();
     received_first_imu_data_ = true;
@@ -53,11 +55,12 @@ void DeadReckoning::ImuCallback(const sensor_msgs::ImuConstPtr& imu_msg) {
 
   odom_seq_++;
 }
+}
 
 int main(int argc, char **argv) {
-  ros::init(argc, argv, "dead_reckoning");
+  ros::init(argc, argv, "dead_reckoning_node");
 
-  DeadReckoning dead_reckoning;
+  auto_trax::DeadReckoningNode dead_reckoning;
 
   ros::spin();
 
