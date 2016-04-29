@@ -11,7 +11,11 @@ class OccGridManager {
     OccGridManager();
     virtual ~OccGridManager();
 
-    void OccGridFromBinaryImage(cv::Mat& img, nav_msgs::OccupancyGridPtr& occ_grid);
+    void OccGridFromBinaryImage(cv::Mat& img, nav_msgs::OccupancyGridPtr& occ_grid, int horizon_pixel);
+
+    std::pair<double, double> GetRequiredOccGridDimensions(cv::Mat& img);
+
+    std::pair<double, double> ProjectPixelToGround(int p_x, int p_y);
 };
 }
 

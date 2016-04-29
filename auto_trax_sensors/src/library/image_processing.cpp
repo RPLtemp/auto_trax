@@ -9,15 +9,6 @@ ImageProcessing::ImageProcessing() {
 ImageProcessing::~ImageProcessing() {
 }
 
-void ImageProcessing::UpdateDerivedParameters(ImageProcessingParameters& params) {
-  params.lower_bound_ = cv::Scalar(params.b_thresh_ - params.rgb_range_,
-                                   params.g_thresh_ - params.rgb_range_,
-                                   params.r_thresh_ - params.rgb_range_);
-  params.upper_bound_ = cv::Scalar(params.b_thresh_ + params.rgb_range_,
-                                   params.g_thresh_ + params.rgb_range_,
-                                   params.r_thresh_ + params.rgb_range_);
-}
-
 void ImageProcessing::SegmentByColoredTracks(const cv::Mat& img_in, cv::Mat& img_out) {
   //
   // 1. Add Canny/Hough parameters
@@ -26,11 +17,14 @@ void ImageProcessing::SegmentByColoredTracks(const cv::Mat& img_in, cv::Mat& img
   //
 
   // Crop out only the bottom part of the image (the immediate ground area)
-  cv::Rect area_to_crop(0, img_in.rows - params_.horizon_pixels_, img_in.cols, params_.horizon_pixels_);
+  cv::Rect area_to_crop(0, img_in.rows - seg_params_.horizon_pixels_, img_in.cols, seg_params_.horizon_pixels_);
   img_out = img_in(area_to_crop);
 
   // Detect all the pixels within the desired RGB interval
-  cv::inRange(img_out, params_.lower_bound_, params_.upper_bound_, img_out);
+  cv::Scalar lower_bound;
+  cv::Scalar upper_bound;
+  seg_params_.GetRPGBounds(lower_bound, upper_bound);
+  cv::inRange(img_out, lower_bound, upper_bound, img_out);
 
   // Canny edge detector
   cv::Canny(img_out, img_out, 80, 250);
@@ -94,5 +88,9 @@ void ImageProcessing::SegmentByColoredTracks(const cv::Mat& img_in, cv::Mat& img
 
   const cv::Point* right[1] = {right_wall[0]};
   cv::fillPoly(img_out, right, npt, 1, kBlack);
+}
+
+void ImageProcessing::UndistortImage(const cv::Mat& img_in, cv::Mat& img_out) {
+
 }
 }

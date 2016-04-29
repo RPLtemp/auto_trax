@@ -6,7 +6,17 @@
 #include <opencv2/highgui/highgui.hpp>
 
 namespace auto_trax {
-// Default values
+// Default camera intrinsic parameter values
+static const double kDefaultFx = 538.82572;
+static const double kDefaultFy = 538.46549;
+static const double kDefaultCx = 317.85920;
+static const double kDefaultCy = 239.92291;
+static const double kDefaultD0 = 0.018918;
+static const double kDefaultD1 = -0.085798;
+static const double kDefaultD2 = 0.001551;
+static const double kDefaultD3 = 0.000980;
+
+// Default segmentation parameter values
 static const int kDefaultHorizonPixels = 200;
 static const int kDefaultRThresh = 255;
 static const int kDefaultGThresh = 230;
@@ -18,25 +28,53 @@ static const cv::Scalar kBlack(0.0, 0.0, 0.0);
 static const cv::Scalar kWhite(255.0, 255.0, 255.0);
 static const int kPolygonPoints = 4;
 
-struct ImageProcessingParameters {
-  ImageProcessingParameters():
+struct CameraIntrinsicParameters {
+  CameraIntrinsicParameters():
+      f_x_(kDefaultFx),
+      f_y_(kDefaultFy),
+      c_x_(kDefaultCx),
+      c_y_(kDefaultCy),
+      d_0_(kDefaultD0),
+      d_1_(kDefaultD1),
+      d_2_(kDefaultD2),
+      d_3_(kDefaultD3) {
+  }
+
+  // Focal lengths
+  double f_x_;
+  double f_y_;
+
+  // Principal point pixel coordinates
+  double c_x_;
+  double c_y_;
+
+  // Distortion coefficients
+  double d_0_;
+  double d_1_;
+  double d_2_;
+  double d_3_;
+};
+
+struct SegmentationParameters {
+  SegmentationParameters():
       horizon_pixels_(kDefaultHorizonPixels),
       r_thresh_(kDefaultRThresh),
       g_thresh_(kDefaultGThresh),
       b_thresh_(kDefaultBThresh),
       rgb_range_(kDefaultRGBRange) {
-    lower_bound_ = cv::Scalar(b_thresh_ - rgb_range_, g_thresh_ - rgb_range_, r_thresh_ - rgb_range_);
-    upper_bound_ = cv::Scalar(b_thresh_ + rgb_range_, g_thresh_ + rgb_range_, r_thresh_ + rgb_range_);
   }
 
+  void GetRPGBounds(cv::Scalar& lower, cv::Scalar& upper) {
+    lower = cv::Scalar(b_thresh_ - rgb_range_, g_thresh_ - rgb_range_, r_thresh_ - rgb_range_);
+    upper = cv::Scalar(b_thresh_ + rgb_range_, g_thresh_ + rgb_range_, r_thresh_ + rgb_range_);
+  }
+
+  // Parameters for segmenting out the track lines
   int horizon_pixels_;
   int r_thresh_;
   int g_thresh_;
   int b_thresh_;
   int rgb_range_;
-
-  cv::Scalar lower_bound_;
-  cv::Scalar upper_bound_;
 };
 
 class ImageProcessing {
@@ -44,11 +82,12 @@ class ImageProcessing {
     ImageProcessing();
     virtual ~ImageProcessing();
 
-    void UpdateDerivedParameters(ImageProcessingParameters& params);
-
     void SegmentByColoredTracks(const cv::Mat& img_in, cv::Mat& img_out);
 
-    ImageProcessingParameters params_;
+    void UndistortImage(const cv::Mat& img_in, cv::Mat& img_out);
+
+    CameraIntrinsicParameters camera_intrinsics_;
+    SegmentationParameters seg_params_;
 };
 }
 

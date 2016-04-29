@@ -23,7 +23,7 @@ class LineTrackingNode {
 
     void InitializeParameters();
 
-    //void Test();
+    void Test();
 
   private:
     ros::NodeHandle nh_;
