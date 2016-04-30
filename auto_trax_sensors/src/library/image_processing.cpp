@@ -3,10 +3,21 @@
 namespace auto_trax {
 
 ImageProcessing::ImageProcessing() {
-
+  transform_matrix_ = Eigen::MatrixXd(3, 4);
+  transform_matrix_ << 1, 0, 0, 0,
+                       0, 1, 0, 0,
+                       0, 0, 1, 0;
 }
 
 ImageProcessing::~ImageProcessing() {
+}
+
+void ImageProcessing::Project3DPtToPixels(const Eigen::Vector4d pt_3d, Eigen::Vector3d& pixels, double scale) {
+  pixels = (camera_matrix_ * transform_matrix_ * pt_3d * (1.0 / scale));
+}
+
+void ImageProcessing::ProjectPixelsTo3D(const Eigen::Vector3d pixels, Eigen::Vector4d& pt_3d, double scale) {
+  pt_3d = transform_matrix_.transpose() * camera_matrix_.inverse() * scale * pixels;
 }
 
 void ImageProcessing::SegmentByColoredTracks(const cv::Mat& img_in, cv::Mat& img_out) {
@@ -21,10 +32,7 @@ void ImageProcessing::SegmentByColoredTracks(const cv::Mat& img_in, cv::Mat& img
   img_out = img_in(area_to_crop);
 
   // Detect all the pixels within the desired RGB interval
-  cv::Scalar lower_bound;
-  cv::Scalar upper_bound;
-  seg_params_.GetRPGBounds(lower_bound, upper_bound);
-  cv::inRange(img_out, lower_bound, upper_bound, img_out);
+  cv::inRange(img_out, lower_bounds_, upper_bounds_, img_out);
 
   // Canny edge detector
   cv::Canny(img_out, img_out, 80, 250);
@@ -92,5 +100,20 @@ void ImageProcessing::SegmentByColoredTracks(const cv::Mat& img_in, cv::Mat& img
 
 void ImageProcessing::UndistortImage(const cv::Mat& img_in, cv::Mat& img_out) {
 
+}
+
+void ImageProcessing::UpdateDerivedParameters() {
+  // Update the camera matrix
+  camera_matrix_ << camera_intrinsics_.f_x_, 0.0, camera_intrinsics_.c_x_,
+                    0.0, camera_intrinsics_.f_y_, camera_intrinsics_.c_y_,
+                    0.0, 0.0, 1.0;
+
+  // Update the RGB thresholding bounds
+  lower_bounds_ = cv::Scalar(seg_params_.b_thresh_ - seg_params_.rgb_range_,
+                             seg_params_.g_thresh_ - seg_params_.rgb_range_,
+                             seg_params_.r_thresh_ - seg_params_.rgb_range_);
+  upper_bounds_ = cv::Scalar(seg_params_.b_thresh_ + seg_params_.rgb_range_,
+                             seg_params_.g_thresh_ + seg_params_.rgb_range_,
+                             seg_params_.r_thresh_ + seg_params_.rgb_range_);
 }
 }

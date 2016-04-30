@@ -7,10 +7,14 @@
     <param name="image_sub_topic" value="/camera/rgb/image_raw" />
     <param name="image_pub_topic" value="image_segmented" />
     <param name="occ_grid_pub_topic" value="occupancy_grid" />
-    <param name="horizon_pixels" value="150" />
+    <param name="horizon_pixels" value="200" />
     <param name="r_thresh" value="185" /> <!-- 255 -->
     <param name="g_thresh" value="174" /> <!-- 230 -->
     <param name="b_thresh" value="142" /> <!-- 160 -->
     <param name="rgb_thresh" value="15" />
+
+    <param name="cam_angle" value="0.15" />
+    <param name="cam_height" value="0.1" />
+    <param name="grid_resolution" value="0.001" />
   </node>
 </launch>

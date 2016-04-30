@@ -6,6 +6,8 @@ LineTrackingNode::LineTrackingNode():
     it_(nh_) {
   InitializeParameters();
 
+  occ_grid_manager_.SetImageProcessor(image_processing_);
+
   image_sub_ = it_.subscribe(image_sub_topic_, 1, &LineTrackingNode::ImageCallback, this);
   occ_grid_pub_ = nh_.advertise<nav_msgs::OccupancyGrid>(occ_grid_pub_topic_, 1, true);
 }
@@ -33,7 +35,7 @@ void LineTrackingNode::ImageCallback(const sensor_msgs::ImageConstPtr &image_msg
 
   // Create an occupancy grid from the segmented image
   nav_msgs::OccupancyGridPtr occ_grid(new nav_msgs::OccupancyGrid);
-  occ_grid_manager_.OccGridFromBinaryImage(segmented_image, occ_grid, image_processing_.seg_params_.horizon_pixels_);
+  occ_grid_manager_.OccGridFromBinaryImage(segmented_image, occ_grid);
 
   // Publish the occupancy grid
   ros::Time current_time = ros::Time::now();
@@ -70,7 +72,14 @@ void LineTrackingNode::InitializeParameters() {
   pnh.param("b_thresh", image_processing_.seg_params_.b_thresh_, image_processing_.seg_params_.b_thresh_);
   pnh.param("rgb_thresh", image_processing_.seg_params_.rgb_range_, image_processing_.seg_params_.rgb_range_);
 
+  image_processing_.UpdateDerivedParameters();
+
   // Get the occupancy grid parameters
+  pnh.param("cam_angle", occ_grid_manager_.params_.angle_, occ_grid_manager_.params_.angle_);
+  pnh.param("cam_height", occ_grid_manager_.params_.height_, occ_grid_manager_.params_.height_);
+  pnh.param("grid_resolution", occ_grid_manager_.params_.resolution_, occ_grid_manager_.params_.resolution_);
+
+  occ_grid_manager_.UpdateDerivedParameters();
 }
 
 void LineTrackingNode::Test() {
@@ -93,7 +102,7 @@ void LineTrackingNode::Test() {
 
   // Create an occupancy grid from the segmented image
   nav_msgs::OccupancyGridPtr occ_grid(new nav_msgs::OccupancyGrid);
-  occ_grid_manager_.OccGridFromBinaryImage(segmented_image, occ_grid, image_processing_.seg_params_.horizon_pixels_);
+  occ_grid_manager_.OccGridFromBinaryImage(segmented_image, occ_grid);
 
   // Publish the occupancy grid
   occ_grid->header.frame_id = occ_grid_frame_id_;
@@ -109,7 +118,7 @@ int main(int argc, char **argv) {
   //
   // Testing
   //
-  //line_tracking_node.Test();
+  line_tracking_node.Test();
 
   ros::spin();
 

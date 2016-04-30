@@ -2,6 +2,7 @@
 #define AUTO_TRAX_IMAGE_PROCESSING_H
 
 #include <cv_bridge/cv_bridge.h>
+#include <eigen3/Eigen/Dense>
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 
@@ -64,11 +65,6 @@ struct SegmentationParameters {
       rgb_range_(kDefaultRGBRange) {
   }
 
-  void GetRPGBounds(cv::Scalar& lower, cv::Scalar& upper) {
-    lower = cv::Scalar(b_thresh_ - rgb_range_, g_thresh_ - rgb_range_, r_thresh_ - rgb_range_);
-    upper = cv::Scalar(b_thresh_ + rgb_range_, g_thresh_ + rgb_range_, r_thresh_ + rgb_range_);
-  }
-
   // Parameters for segmenting out the track lines
   int horizon_pixels_;
   int r_thresh_;
@@ -82,12 +78,26 @@ class ImageProcessing {
     ImageProcessing();
     virtual ~ImageProcessing();
 
+    void Project3DPtToPixels(const Eigen::Vector4d pt_3d, Eigen::Vector3d &pixels, double scale);
+
+    void ProjectPixelsTo3D(const Eigen::Vector3d pixels, Eigen::Vector4d &pt_3d, double scale);
+
     void SegmentByColoredTracks(const cv::Mat& img_in, cv::Mat& img_out);
 
     void UndistortImage(const cv::Mat& img_in, cv::Mat& img_out);
 
+    void UpdateDerivedParameters();
+
     CameraIntrinsicParameters camera_intrinsics_;
+
     SegmentationParameters seg_params_;
+
+    Eigen::Matrix3d camera_matrix_;
+
+    Eigen::MatrixXd transform_matrix_;
+
+    cv::Scalar lower_bounds_;
+    cv::Scalar upper_bounds_;
 };
 }
 
