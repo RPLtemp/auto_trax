@@ -77,7 +77,9 @@ bool AutoTraxIoNode::serviceCallback(auto_trax_io::ApplySteeringAngle::Request  
     double pwm_angle = AngleConversion(angle_in_radians);
     double pwm_speed = SpeedConversion(speed_in_m_s);
 
-    std::cout <<"got a call. pwm result is: " << pwm_angle << std::endl;
+    std::cout <<"Pwm angle: " << pwm_angle <<
+               "Pwm speed: " << pwm_speed <<
+                std::endl;
     if (pwm_driver_.error >= 0 && parameter_initialized_){
         pwm_driver_.setPWM(angle_i2c_channel_,0,pwm_angle);
         pwm_driver_.setPWM(speed_i2c_channel_,0,pwm_speed);
