@@ -3,13 +3,16 @@
 namespace auto_trax {
 
 LineTrackingNode::LineTrackingNode():
-    it_(nh_) {
+    it_(nh_),
+    save_image_(false) {
   InitializeParameters();
 
   occ_grid_manager_.SetImageProcessor(image_processing_);
 
   image_sub_ = it_.subscribe(image_sub_topic_, 1, &LineTrackingNode::ImageCallback, this);
   occ_grid_pub_ = nh_.advertise<nav_msgs::OccupancyGrid>(occ_grid_pub_topic_, 1, true);
+
+  save_image_sub_ = nh_.subscribe("save_image", 1, &LineTrackingNode::SaveImageCallback, this);
 }
 
 LineTrackingNode::~LineTrackingNode() {
@@ -26,8 +29,13 @@ void LineTrackingNode::ImageCallback(const sensor_msgs::ImageConstPtr &image_msg
     return;
   }
 
+  if (save_image_) {
+    cv::imwrite("/home/pavel/primesense_track.jpg", cv_ptr->image);
+    save_image_ = false;
+  }
+
   // Segment the occupied/unoccupied space by the colored tracks
-  cv::Mat segmented_image;
+  /*cv::Mat segmented_image;
   image_processing_.SegmentByColoredTracks(cv_ptr->image, segmented_image);
 
   // Convert the image to gray-scale
@@ -44,7 +52,7 @@ void LineTrackingNode::ImageCallback(const sensor_msgs::ImageConstPtr &image_msg
   occ_grid->header.stamp.sec = current_time.sec;
   occ_grid->header.stamp.nsec = current_time.nsec;
 
-  occ_grid_pub_.publish(*occ_grid);
+  occ_grid_pub_.publish(*occ_grid);*/
 }
 
 void LineTrackingNode::InitializeParameters() {
@@ -84,7 +92,7 @@ void LineTrackingNode::InitializeParameters() {
 
 void LineTrackingNode::Test() {
   cv::Mat test_image;
-  test_image = cv::imread("/home/pavel/tape-track.jpg", CV_LOAD_IMAGE_COLOR);
+  test_image = cv::imread("/home/pavel/primesense_track_3.jpg", CV_LOAD_IMAGE_COLOR);
 
   if (!test_image.data ) {
     std::cout <<  "Could not open or find the image" << std::endl ;
@@ -107,6 +115,11 @@ void LineTrackingNode::Test() {
   // Publish the occupancy grid
   occ_grid->header.frame_id = occ_grid_frame_id_;
   occ_grid_pub_.publish(*occ_grid);
+}
+
+void LineTrackingNode::SaveImageCallback(const std_msgs::BoolConstPtr& save_img_msg) {
+  save_image_ = true;
+  std::cout << "Saving image" << std::endl;
 }
 }
 

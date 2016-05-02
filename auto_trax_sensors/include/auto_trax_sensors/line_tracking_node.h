@@ -8,9 +8,11 @@
 #include "auto_trax_sensors/image_processing.h"
 #include "auto_trax_sensors/occ_grid_manager.h"
 
+#include "std_msgs/Bool.h"
+
 namespace auto_trax {
 // Default values
-static const std::string kDefaultFrameId = "map";
+static const std::string kDefaultFrameId = "world";
 static const std::string kDefaultImageSubTopic = "image_raw";
 static const std::string kDefaultOccGridPubTopic = "occupancy_grid";
 
@@ -20,6 +22,8 @@ class LineTrackingNode {
     virtual ~LineTrackingNode();
 
     void ImageCallback(const sensor_msgs::ImageConstPtr& image_msg);
+
+    void SaveImageCallback(const std_msgs::BoolConstPtr& save_img_msg);
 
     void InitializeParameters();
 
@@ -31,12 +35,16 @@ class LineTrackingNode {
     image_transport::Subscriber image_sub_;
     ros::Publisher occ_grid_pub_;
 
+    ros::Subscriber save_image_sub_;
+
     ImageProcessing image_processing_;
     OccGridManager occ_grid_manager_;
 
     std::string occ_grid_frame_id_;
     std::string image_sub_topic_;
     std::string occ_grid_pub_topic_;
+
+    bool save_image_;
 };
 }
 

@@ -11,6 +11,7 @@ find_package(catkin REQUIRED COMPONENTS
   nav_msgs
   roscpp
   sensor_msgs
+  std_msgs
 )
 
 find_package(Eigen REQUIRED)
