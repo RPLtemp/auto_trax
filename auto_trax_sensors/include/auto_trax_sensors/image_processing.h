@@ -28,6 +28,8 @@ static const int kDefaultRGBRange = 10;
 static const cv::Scalar kBlack(0.0, 0.0, 0.0);
 static const cv::Scalar kWhite(255.0, 255.0, 255.0);
 static const int kPolygonPoints = 4;
+static const int kFrameWidth = 640;
+static const int kFrameHeight = 480;
 
 struct CameraIntrinsicParameters {
   CameraIntrinsicParameters():
@@ -78,20 +80,23 @@ class ImageProcessing {
     ImageProcessing();
     virtual ~ImageProcessing();
 
-    void Project3DPtToPixels(const Eigen::Vector4d pt_3d, Eigen::Vector3d &pixels, double scale);
+    inline void Project3DPtToPixels(const Eigen::Vector4d pt_3d, Eigen::Vector3d &pixels, double scale) {
+      pixels = (camera_matrix_ * transform_matrix_ * pt_3d * (1.0 / scale));
+    }
 
-    void ProjectPixelsTo3D(const Eigen::Vector3d pixels, Eigen::Vector4d &pt_3d, double scale);
+    inline void ProjectPixelsTo3D(const Eigen::Vector3d pixels, Eigen::Vector4d &pt_3d, double scale) {
+      pt_3d = transform_matrix_.transpose() * camera_matrix_.inverse() * scale * pixels;
+    }
 
     void SegmentByColoredTracks(const cv::Mat& img_in, cv::Mat& img_out);
 
-    void UndistortImage(const cv::Mat& img_in, cv::Mat& img_out);
-
-    void UpdateDerivedParameters();
+    void UpdateParameters();
 
     CameraIntrinsicParameters camera_intrinsics_;
 
     SegmentationParameters seg_params_;
 
+  private:
     Eigen::Matrix3d camera_matrix_;
 
     Eigen::MatrixXd transform_matrix_;

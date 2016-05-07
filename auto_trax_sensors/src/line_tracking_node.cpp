@@ -4,15 +4,13 @@ namespace auto_trax {
 
 LineTrackingNode::LineTrackingNode():
     it_(nh_),
-    save_image_(false) {
+    occ_grid_manager_(&image_processing_) {
   InitializeParameters();
 
-  occ_grid_manager_.SetImageProcessor(image_processing_);
-
   image_sub_ = it_.subscribe(image_sub_topic_, 1, &LineTrackingNode::ImageCallback, this);
+  goal_point_pub_ = nh_.advertise<geometry_msgs::Point>(goal_point_pub_topic_, 1, true);
+  marker_pub_ = nh_.advertise<visualization_msgs::Marker>("goal_marker", 1, true);
   occ_grid_pub_ = nh_.advertise<nav_msgs::OccupancyGrid>(occ_grid_pub_topic_, 1, true);
-
-  save_image_sub_ = nh_.subscribe("save_image", 1, &LineTrackingNode::SaveImageCallback, this);
 }
 
 LineTrackingNode::~LineTrackingNode() {
@@ -29,13 +27,8 @@ void LineTrackingNode::ImageCallback(const sensor_msgs::ImageConstPtr &image_msg
     return;
   }
 
-  if (save_image_) {
-    cv::imwrite("/home/pavel/primesense_track.jpg", cv_ptr->image);
-    save_image_ = false;
-  }
-
   // Segment the occupied/unoccupied space by the colored tracks
-  /*cv::Mat segmented_image;
+  cv::Mat segmented_image;
   image_processing_.SegmentByColoredTracks(cv_ptr->image, segmented_image);
 
   // Convert the image to gray-scale
@@ -45,6 +38,10 @@ void LineTrackingNode::ImageCallback(const sensor_msgs::ImageConstPtr &image_msg
   nav_msgs::OccupancyGridPtr occ_grid(new nav_msgs::OccupancyGrid);
   occ_grid_manager_.OccGridFromBinaryImage(segmented_image, occ_grid);
 
+  // Extract the goal point from the occupancy grid
+  std::pair<double, double> goal;
+  occ_grid_manager_.GetGoalPoint(*occ_grid, goal);
+
   // Publish the occupancy grid
   ros::Time current_time = ros::Time::now();
 
@@ -52,15 +49,46 @@ void LineTrackingNode::ImageCallback(const sensor_msgs::ImageConstPtr &image_msg
   occ_grid->header.stamp.sec = current_time.sec;
   occ_grid->header.stamp.nsec = current_time.nsec;
 
-  occ_grid_pub_.publish(*occ_grid);*/
+  occ_grid_pub_.publish(*occ_grid);
+
+  // Publish the goal point
+  geometry_msgs::Point goal_point;
+  goal_point.x = goal.first;
+  goal_point.y = goal.second;
+  goal_point.z = 0.0;
+  goal_point_pub_.publish(goal_point);
+
+  // Publish the goal point marker
+  visualization_msgs::Marker goal_marker;
+  goal_marker.header.frame_id = "map";
+  goal_marker.ns = "line_tracking";
+  goal_marker.id = 0;
+  goal_marker.type = visualization_msgs::Marker::SPHERE;
+  goal_marker.action = visualization_msgs::Marker::ADD;
+  goal_marker.pose.position.x = goal.first;
+  goal_marker.pose.position.y = goal.second;
+  goal_marker.pose.position.z = 0.0;
+  goal_marker.pose.orientation.x = 0.0;
+  goal_marker.pose.orientation.y = 0.0;
+  goal_marker.pose.orientation.z = 0.0;
+  goal_marker.pose.orientation.w = 1.0;
+  goal_marker.scale.x = 0.02;
+  goal_marker.scale.y = 0.02;
+  goal_marker.scale.z = 0.02;
+  goal_marker.color.a = 1.0; // Don't forget to set the alpha!
+  goal_marker.color.r = 0.0;
+  goal_marker.color.g = 1.0;
+  goal_marker.color.b = 0.0;
+  marker_pub_.publish(goal_marker);
 }
 
 void LineTrackingNode::InitializeParameters() {
   ros::NodeHandle pnh("~");
 
   // Get the node parameters
-  pnh.param("occ_grid_frame_id", occ_grid_frame_id_, kDefaultFrameId);
+  pnh.param("goal_point_pub_topic", goal_point_pub_topic_, kDefaultGoalPointPubTopic);
   pnh.param("image_sub_topic", image_sub_topic_, kDefaultImageSubTopic);
+  pnh.param("occ_grid_frame_id", occ_grid_frame_id_, kDefaultFrameId);
   pnh.param("occ_grid_pub_topic", occ_grid_pub_topic_, kDefaultOccGridPubTopic);
 
   // Get the intrinsic camera parameters
@@ -80,14 +108,14 @@ void LineTrackingNode::InitializeParameters() {
   pnh.param("b_thresh", image_processing_.seg_params_.b_thresh_, image_processing_.seg_params_.b_thresh_);
   pnh.param("rgb_thresh", image_processing_.seg_params_.rgb_range_, image_processing_.seg_params_.rgb_range_);
 
-  image_processing_.UpdateDerivedParameters();
+  image_processing_.UpdateParameters();
 
   // Get the occupancy grid parameters
-  pnh.param("cam_angle", occ_grid_manager_.params_.angle_, occ_grid_manager_.params_.angle_);
-  pnh.param("cam_height", occ_grid_manager_.params_.height_, occ_grid_manager_.params_.height_);
+  pnh.param("cam_angle", occ_grid_manager_.params_.cam_angle, occ_grid_manager_.params_.cam_angle);
+  pnh.param("cam_height", occ_grid_manager_.params_.cam_height_, occ_grid_manager_.params_.cam_height_);
   pnh.param("grid_resolution", occ_grid_manager_.params_.resolution_, occ_grid_manager_.params_.resolution_);
 
-  occ_grid_manager_.UpdateDerivedParameters();
+  occ_grid_manager_.UpdateParameters();
 }
 
 void LineTrackingNode::Test() {
@@ -112,14 +140,42 @@ void LineTrackingNode::Test() {
   nav_msgs::OccupancyGridPtr occ_grid(new nav_msgs::OccupancyGrid);
   occ_grid_manager_.OccGridFromBinaryImage(segmented_image, occ_grid);
 
+  std::pair<double, double> goal;
+  occ_grid_manager_.GetGoalPoint(*occ_grid, goal);
+
   // Publish the occupancy grid
   occ_grid->header.frame_id = occ_grid_frame_id_;
   occ_grid_pub_.publish(*occ_grid);
-}
 
-void LineTrackingNode::SaveImageCallback(const std_msgs::BoolConstPtr& save_img_msg) {
-  save_image_ = true;
-  std::cout << "Saving image" << std::endl;
+  // Publish the goal point
+  geometry_msgs::Point goal_point;
+  goal_point.x = goal.first;
+  goal_point.y = goal.second;
+  goal_point.z = 0.0;
+  goal_point_pub_.publish(goal_point);
+
+  // Publish the goal point marker
+  visualization_msgs::Marker goal_marker;
+  goal_marker.header.frame_id = "map";
+  goal_marker.ns = "line_tracking";
+  goal_marker.id = 0;
+  goal_marker.type = visualization_msgs::Marker::SPHERE;
+  goal_marker.action = visualization_msgs::Marker::ADD;
+  goal_marker.pose.position.x = goal.first;
+  goal_marker.pose.position.y = goal.second;
+  goal_marker.pose.position.z = 0.0;
+  goal_marker.pose.orientation.x = 0.0;
+  goal_marker.pose.orientation.y = 0.0;
+  goal_marker.pose.orientation.z = 0.0;
+  goal_marker.pose.orientation.w = 1.0;
+  goal_marker.scale.x = 0.02;
+  goal_marker.scale.y = 0.02;
+  goal_marker.scale.z = 0.02;
+  goal_marker.color.a = 1.0; // Don't forget to set the alpha!
+  goal_marker.color.r = 0.0;
+  goal_marker.color.g = 1.0;
+  goal_marker.color.b = 0.0;
+  marker_pub_.publish(goal_marker);
 }
 }
 

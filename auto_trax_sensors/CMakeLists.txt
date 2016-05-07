@@ -7,11 +7,13 @@ project(auto_trax_sensors)
 find_package(catkin REQUIRED COMPONENTS
   cmake_modules
   cv_bridge
+  geometry_msgs
   image_transport
   nav_msgs
   roscpp
   sensor_msgs
   std_msgs
+  visualization_msgs
 )
 
 find_package(Eigen REQUIRED)
@@ -21,7 +23,7 @@ include_directories(${OpenCV_INCLUDE_DIRS})
 catkin_package(
   INCLUDE_DIRS include ${Eigen_INCLUDE_DIRS}
   LIBRARIES auto_trax_image_processing auto_trax_occ_grid_manager
-  CATKIN_DEPENDS cv_bridge image_transport nav_msgs roscpp sensor_msgs
+  CATKIN_DEPENDS cv_bridge geometry_msgs image_transport nav_msgs roscpp sensor_msgs visualization_msgs
   DEPENDS opencv
 )
 

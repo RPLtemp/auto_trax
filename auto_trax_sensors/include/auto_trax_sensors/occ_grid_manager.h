@@ -5,24 +5,27 @@
 
 #include <auto_trax_sensors/image_processing.h>
 
-#include <iostream>
-
 namespace auto_trax {
 // Default values
-static const double kDefaultAngle = 0.25 * M_PI;
+static const double kDefaultAngle = 0.5 * M_PI;
 static const double kDefaultHeight = 0.1;
 static const double kDefaultResolution = 0.005;
 
+// Constants
+static const int kThresh = 0.5 * kWhite(1);
+static const int kValueOccupied = 100;
+static const int kValueUnoccupied = 0;
+
 struct OccGridManagerParameters {
   OccGridManagerParameters():
-      angle_(kDefaultAngle),
-      height_(kDefaultHeight),
+      cam_angle(kDefaultAngle),
+      cam_height_(kDefaultHeight),
       resolution_(kDefaultResolution) {
   }
 
   // Camera position parameters
-  double angle_;
-  double height_;
+  double cam_angle;
+  double cam_height_;
 
   // Occupancy grid parameters
   double resolution_;
@@ -30,18 +33,24 @@ struct OccGridManagerParameters {
 
 class OccGridManager {
   public:
-    OccGridManager();
+    OccGridManager(ImageProcessing* img_proc);
     virtual ~OccGridManager();
 
-    void OccGridFromBinaryImage(cv::Mat& img, nav_msgs::OccupancyGridPtr& occ_grid);
+    int GetFarthestOpenRow(nav_msgs::OccupancyGrid occ_grid);
+
+    void GetGoalPoint(nav_msgs::OccupancyGrid occ_grid, std::pair<double, double>& goal_pt);
 
     std::pair<double, double> GetRequiredOccGridDimensions(cv::Mat& img);
 
+    std::vector<int> GetRow(nav_msgs::OccupancyGrid occ_grid, int row_ind);
+
+    int GetUnoccupiedRowMidpoint(std::vector<int> row);
+
+    void OccGridFromBinaryImage(cv::Mat& img, nav_msgs::OccupancyGridPtr& occ_grid);
+
     std::pair<double, double> ProjectPixelToGround(int p_x, int p_y);
 
-    void SetImageProcessor(ImageProcessing& img_proc);
-
-    void UpdateDerivedParameters();
+    void UpdateParameters();
 
     OccGridManagerParameters params_;
 

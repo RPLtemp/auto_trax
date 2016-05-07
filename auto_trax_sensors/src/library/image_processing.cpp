@@ -12,14 +12,6 @@ ImageProcessing::ImageProcessing() {
 ImageProcessing::~ImageProcessing() {
 }
 
-void ImageProcessing::Project3DPtToPixels(const Eigen::Vector4d pt_3d, Eigen::Vector3d& pixels, double scale) {
-  pixels = (camera_matrix_ * transform_matrix_ * pt_3d * (1.0 / scale));
-}
-
-void ImageProcessing::ProjectPixelsTo3D(const Eigen::Vector3d pixels, Eigen::Vector4d& pt_3d, double scale) {
-  pt_3d = transform_matrix_.transpose() * camera_matrix_.inverse() * scale * pixels;
-}
-
 void ImageProcessing::SegmentByColoredTracks(const cv::Mat& img_in, cv::Mat& img_out) {
   //
   // 1. Add Canny/Hough parameters
@@ -98,11 +90,7 @@ void ImageProcessing::SegmentByColoredTracks(const cv::Mat& img_in, cv::Mat& img
   cv::fillPoly(img_out, right, npt, 1, kBlack);
 }
 
-void ImageProcessing::UndistortImage(const cv::Mat& img_in, cv::Mat& img_out) {
-
-}
-
-void ImageProcessing::UpdateDerivedParameters() {
+void ImageProcessing::UpdateParameters() {
   // Update the camera matrix
   camera_matrix_ << camera_intrinsics_.f_x_, 0.0, camera_intrinsics_.c_x_,
                     0.0, camera_intrinsics_.f_y_, camera_intrinsics_.c_y_,
