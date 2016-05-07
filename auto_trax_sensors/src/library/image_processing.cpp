@@ -14,9 +14,8 @@ ImageProcessing::~ImageProcessing() {
 
 void ImageProcessing::SegmentTracks(const cv::Mat& img_in, cv::Mat& img_out) {
   //
-  // 1. Add Canny/Hough parameters
-  // 2. Check if lines were detected
-  // 3. Find lines with the lowest slope
+  // 1. Check if lines were detected
+  // 2. Find lines with the lowest slope
   //
 
   // Crop out only the bottom part of the image (the immediate ground area)
@@ -27,11 +26,12 @@ void ImageProcessing::SegmentTracks(const cv::Mat& img_in, cv::Mat& img_out) {
   cv::cvtColor(img_out, img_out, CV_RGB2GRAY);
 
   // Canny edge detector
-  cv::Canny(img_out, img_out, 50, 150);
+  cv::Canny(img_out, img_out, seg_params_.canny_lower_thresh_, seg_params_.canny_lower_thresh_ * kCannyScale);
 
   // Run Hough transform to detect straight lines
   std::vector<cv::Vec4i> lines;
-  cv::HoughLinesP(img_out, lines, 1, CV_PI/180, 50, 50, 10);
+  cv::HoughLinesP(img_out, lines, seg_params_.rho_res_, seg_params_.theta_res_,
+                  seg_params_.hough_thresh_, seg_params_.min_line_length_, seg_params_.max_line_gap_);
 
   cv::Vec4i closest_left_line;
   cv::Vec4i closest_right_line;

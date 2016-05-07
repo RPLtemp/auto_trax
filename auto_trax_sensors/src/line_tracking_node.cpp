@@ -76,6 +76,12 @@ void LineTrackingNode::InitializeParameters() {
 
   // Get the image segmentation paremeters
   pnh.param("horizon_pixels", image_processing_.seg_params_.horizon_pixels_, image_processing_.seg_params_.horizon_pixels_);
+  pnh.param("canny_lower_thresh", image_processing_.seg_params_.canny_lower_thresh_, image_processing_.seg_params_.canny_lower_thresh_);
+  pnh.param("hough_thresh", image_processing_.seg_params_.hough_thresh_, image_processing_.seg_params_.hough_thresh_);
+  pnh.param("rho_res", image_processing_.seg_params_.rho_res_, image_processing_.seg_params_.rho_res_);
+  pnh.param("theta_res", image_processing_.seg_params_.theta_res_, image_processing_.seg_params_.theta_res_);
+  pnh.param("min_line_length", image_processing_.seg_params_.min_line_length_, image_processing_.seg_params_.min_line_length_);
+  pnh.param("max_line_gap", image_processing_.seg_params_.max_line_gap_, image_processing_.seg_params_.max_line_gap_);
 
   image_processing_.UpdateParameters();
 

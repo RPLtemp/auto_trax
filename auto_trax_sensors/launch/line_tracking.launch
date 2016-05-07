@@ -10,6 +10,12 @@
     <param name="occ_grid_pub_topic" value="occupancy_grid" />
 
     <param name="horizon_pixels" value="140" />
+    <param name="canny_lower_thresh" value="50" />
+    <param name="hough_thresh" value="50" />
+    <param name="rho_res" value="1" />
+    <param name="theta_res" value="0.0174533" />
+    <param name="min_line_length" value="50" />
+    <param name="max_line_gap" value="10" />
 
     <param name="cam_angle" value="1.45" />
     <param name="cam_height" value="0.08" />

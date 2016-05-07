@@ -19,13 +19,20 @@ static const double kDefaultD3 = 0.000980;
 
 // Default segmentation parameter values
 static const int kDefaultHorizonPixels = 200;
+static const int kDefaultCannyLowerThreshold = 50;
+static const int kDefaultHoughThreshold = 50;
+static const int kDefaultMinLineLength = 50;
+static const int kDefaultMaxLineGap = 10;
+static const int kDefaultRhoRes = 1;
+static const double kDefaultThetaRes = 0.0174533;
 
 // Constants
 static const int kBlack = 0;
 static const int kWhite = 255;
-static const int kPolygonPoints = 4;
 static const int kFrameWidth = 640;
 static const int kFrameHeight = 480;
+static const int kCannyScale = 3;
+static const int kPolygonPoints = 4;
 
 struct CameraIntrinsicParameters {
   CameraIntrinsicParameters():
@@ -56,11 +63,23 @@ struct CameraIntrinsicParameters {
 
 struct SegmentationParameters {
   SegmentationParameters():
-      horizon_pixels_(kDefaultHorizonPixels) {
+      horizon_pixels_(kDefaultHorizonPixels),
+      canny_lower_thresh_(kDefaultCannyLowerThreshold),
+      hough_thresh_(kDefaultHoughThreshold),
+      min_line_length_(kDefaultMinLineLength),
+      max_line_gap_(kDefaultMaxLineGap),
+      rho_res_(kDefaultRhoRes),
+      theta_res_(kDefaultThetaRes) {
   }
 
   // Parameters for segmenting out the track lines
   int horizon_pixels_;
+  int canny_lower_thresh_;
+  int hough_thresh_;
+  int min_line_length_;
+  int max_line_gap_;
+  int rho_res_;
+  double theta_res_;
 };
 
 class ImageProcessing {
