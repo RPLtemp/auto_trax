@@ -40,7 +40,7 @@ void ImageProcessing::SegmentTracks(const cv::Mat& img_in, cv::Mat& img_out) {
   int left_wall_position = 0;
   int right_wall_position = img_out.cols;
 
-  img_out = cv::Mat(img_out.rows, img_out.cols, CV_8UC3, kWhite);
+  img_out = cv::Mat(img_out.rows, img_out.cols, CV_8UC1, kWhite);
 
   for (size_t i = 0; i < lines.size(); i++) {
     cv::Vec4i l = lines[i];

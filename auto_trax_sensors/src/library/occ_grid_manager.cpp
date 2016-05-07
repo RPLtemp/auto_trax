@@ -42,12 +42,12 @@ bool OccGridManager::GetRequiredOccGridDimensions(cv::Mat& img, std::pair<double
   std::pair<double, double> top_left_corner = ProjectPixelToGround(0, kFrameHeight - img.rows);
   std::pair<double, double> bottom_right_corner = ProjectPixelToGround(img.cols, kFrameHeight);
 
-  x_offset_ = fabs(x_ground_center_ - top_left_corner.first);
+  x_offset_ = x_ground_center_ - top_left_corner.first;
 
   if (top_left_corner.first <= bottom_right_corner.first)
     return false;
 
-  dims.first = fabs(top_left_corner.first - bottom_right_corner.first);
+  dims.first = top_left_corner.first - bottom_right_corner.first;
   dims.second = fabs(top_left_corner.second) * 2.0;
 
   return true;

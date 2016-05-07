@@ -89,7 +89,7 @@ void LineTrackingNode::InitializeParameters() {
 
 void LineTrackingNode::Test() {
   cv::Mat test_image;
-  test_image = cv::imread("/home/pavel/primesense_track_1.jpg", CV_LOAD_IMAGE_COLOR);
+  test_image = cv::imread("/home/pavel/primesense_track_3.jpg", CV_LOAD_IMAGE_COLOR);
 
   if (!test_image.data ) {
     std::cout <<  "Could not open or find the image" << std::endl ;
@@ -107,8 +107,8 @@ void LineTrackingNode::Test() {
   nav_msgs::OccupancyGridPtr occ_grid(new nav_msgs::OccupancyGrid);
   occ_grid_manager_.OccGridFromBinaryImage(segmented_image, occ_grid);
 
-  //std::pair<double, double> goal;
-  //occ_grid_manager_.GetGoalPoint(*occ_grid, goal);
+  std::pair<double, double> goal;
+  occ_grid_manager_.GetGoalPoint(*occ_grid, goal);
 
   // Publish the occupancy grid
   occ_grid->header.frame_id = occ_grid_frame_id_;

@@ -12,7 +12,7 @@ static const double kDefaultHeight = 0.08;
 static const double kDefaultResolution = 0.005;
 
 // Constants
-static const int kThresh = 0.5 * kWhite(1);
+static const int kThresh = 0.5 * kWhite;
 static const int kValueOccupied = 100;
 static const int kValueUnoccupied = 0;
 
@@ -40,7 +40,7 @@ class OccGridManager {
 
     void GetGoalPoint(nav_msgs::OccupancyGrid occ_grid, std::pair<double, double>& goal_pt);
 
-    bool GetRequiredOccGridDimensions(cv::Mat& img, std::pair<double, double> &dims);
+    bool GetRequiredOccGridDimensions(cv::Mat& img, std::pair<double, double>& dims);
 
     std::vector<int> GetRow(nav_msgs::OccupancyGrid occ_grid, int row_ind);
 

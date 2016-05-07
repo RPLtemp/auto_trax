@@ -21,8 +21,8 @@ static const double kDefaultD3 = 0.000980;
 static const int kDefaultHorizonPixels = 200;
 
 // Constants
-static const cv::Scalar kBlack(0.0, 0.0, 0.0);
-static const cv::Scalar kWhite(255.0, 255.0, 255.0);
+static const int kBlack = 0;
+static const int kWhite = 255;
 static const int kPolygonPoints = 4;
 static const int kFrameWidth = 640;
 static const int kFrameHeight = 480;
