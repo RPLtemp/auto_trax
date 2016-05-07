@@ -9,7 +9,6 @@ LineTrackingNode::LineTrackingNode():
 
   image_sub_ = it_.subscribe(image_sub_topic_, 1, &LineTrackingNode::ImageCallback, this);
   goal_point_pub_ = nh_.advertise<geometry_msgs::Point>(goal_point_pub_topic_, 1, true);
-  marker_pub_ = nh_.advertise<visualization_msgs::Marker>("goal_marker", 1, true);
   occ_grid_pub_ = nh_.advertise<nav_msgs::OccupancyGrid>(occ_grid_pub_topic_, 1, true);
 }
 
@@ -29,10 +28,7 @@ void LineTrackingNode::ImageCallback(const sensor_msgs::ImageConstPtr &image_msg
 
   // Segment the occupied/unoccupied space by the colored tracks
   cv::Mat segmented_image;
-  image_processing_.SegmentByColoredTracks(cv_ptr->image, segmented_image);
-
-  // Convert the image to gray-scale
-  cv::cvtColor(segmented_image, segmented_image, CV_RGB2GRAY);
+  image_processing_.SegmentTracks(cv_ptr->image, segmented_image);
 
   // Create an occupancy grid from the segmented image
   nav_msgs::OccupancyGridPtr occ_grid(new nav_msgs::OccupancyGrid);
@@ -57,29 +53,6 @@ void LineTrackingNode::ImageCallback(const sensor_msgs::ImageConstPtr &image_msg
   goal_point.y = goal.second;
   goal_point.z = 0.0;
   goal_point_pub_.publish(goal_point);
-
-  // Publish the goal point marker
-  visualization_msgs::Marker goal_marker;
-  goal_marker.header.frame_id = "map";
-  goal_marker.ns = "line_tracking";
-  goal_marker.id = 0;
-  goal_marker.type = visualization_msgs::Marker::SPHERE;
-  goal_marker.action = visualization_msgs::Marker::ADD;
-  goal_marker.pose.position.x = goal.first;
-  goal_marker.pose.position.y = goal.second;
-  goal_marker.pose.position.z = 0.0;
-  goal_marker.pose.orientation.x = 0.0;
-  goal_marker.pose.orientation.y = 0.0;
-  goal_marker.pose.orientation.z = 0.0;
-  goal_marker.pose.orientation.w = 1.0;
-  goal_marker.scale.x = 0.02;
-  goal_marker.scale.y = 0.02;
-  goal_marker.scale.z = 0.02;
-  goal_marker.color.a = 1.0; // Don't forget to set the alpha!
-  goal_marker.color.r = 0.0;
-  goal_marker.color.g = 1.0;
-  goal_marker.color.b = 0.0;
-  marker_pub_.publish(goal_marker);
 }
 
 void LineTrackingNode::InitializeParameters() {
@@ -103,15 +76,11 @@ void LineTrackingNode::InitializeParameters() {
 
   // Get the image segmentation paremeters
   pnh.param("horizon_pixels", image_processing_.seg_params_.horizon_pixels_, image_processing_.seg_params_.horizon_pixels_);
-  pnh.param("r_thresh", image_processing_.seg_params_.r_thresh_, image_processing_.seg_params_.r_thresh_);
-  pnh.param("g_thresh", image_processing_.seg_params_.g_thresh_, image_processing_.seg_params_.g_thresh_);
-  pnh.param("b_thresh", image_processing_.seg_params_.b_thresh_, image_processing_.seg_params_.b_thresh_);
-  pnh.param("rgb_thresh", image_processing_.seg_params_.rgb_range_, image_processing_.seg_params_.rgb_range_);
 
   image_processing_.UpdateParameters();
 
   // Get the occupancy grid parameters
-  pnh.param("cam_angle", occ_grid_manager_.params_.cam_angle, occ_grid_manager_.params_.cam_angle);
+  pnh.param("cam_angle", occ_grid_manager_.params_.cam_angle_, occ_grid_manager_.params_.cam_angle_);
   pnh.param("cam_height", occ_grid_manager_.params_.cam_height_, occ_grid_manager_.params_.cam_height_);
   pnh.param("grid_resolution", occ_grid_manager_.params_.resolution_, occ_grid_manager_.params_.resolution_);
 
@@ -120,7 +89,7 @@ void LineTrackingNode::InitializeParameters() {
 
 void LineTrackingNode::Test() {
   cv::Mat test_image;
-  test_image = cv::imread("/home/pavel/primesense_track_3.jpg", CV_LOAD_IMAGE_COLOR);
+  test_image = cv::imread("/home/pavel/primesense_track_1.jpg", CV_LOAD_IMAGE_COLOR);
 
   if (!test_image.data ) {
     std::cout <<  "Could not open or find the image" << std::endl ;
@@ -129,33 +98,31 @@ void LineTrackingNode::Test() {
 
   // Segment the occupied/unoccupied space by the colored tracks
   cv::Mat segmented_image;
-  image_processing_.SegmentByColoredTracks(test_image, segmented_image);
+  image_processing_.SegmentTracks(test_image, segmented_image);
 
+  //cv::imwrite("/home/pavel/test.jpg", segmented_image);
   cv::imwrite("/home/pavel/test.jpg", segmented_image);
-
-  // Convert the image to gray-scale
-  cv::cvtColor(segmented_image, segmented_image, CV_RGB2GRAY);
 
   // Create an occupancy grid from the segmented image
   nav_msgs::OccupancyGridPtr occ_grid(new nav_msgs::OccupancyGrid);
   occ_grid_manager_.OccGridFromBinaryImage(segmented_image, occ_grid);
 
-  std::pair<double, double> goal;
-  occ_grid_manager_.GetGoalPoint(*occ_grid, goal);
+  //std::pair<double, double> goal;
+  //occ_grid_manager_.GetGoalPoint(*occ_grid, goal);
 
   // Publish the occupancy grid
   occ_grid->header.frame_id = occ_grid_frame_id_;
   occ_grid_pub_.publish(*occ_grid);
 
   // Publish the goal point
-  geometry_msgs::Point goal_point;
+  /*geometry_msgs::Point goal_point;
   goal_point.x = goal.first;
   goal_point.y = goal.second;
   goal_point.z = 0.0;
-  goal_point_pub_.publish(goal_point);
+  goal_point_pub_.publish(goal_point);*/
 
   // Publish the goal point marker
-  visualization_msgs::Marker goal_marker;
+  /*visualization_msgs::Marker goal_marker;
   goal_marker.header.frame_id = "map";
   goal_marker.ns = "line_tracking";
   goal_marker.id = 0;
@@ -171,11 +138,11 @@ void LineTrackingNode::Test() {
   goal_marker.scale.x = 0.02;
   goal_marker.scale.y = 0.02;
   goal_marker.scale.z = 0.02;
-  goal_marker.color.a = 1.0; // Don't forget to set the alpha!
+  goal_marker.color.a = 1.0;
   goal_marker.color.r = 0.0;
   goal_marker.color.g = 1.0;
   goal_marker.color.b = 0.0;
-  marker_pub_.publish(goal_marker);
+  marker_pub_.publish(goal_marker);*/
 }
 }
 

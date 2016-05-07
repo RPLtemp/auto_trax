@@ -38,15 +38,19 @@ void OccGridManager::GetGoalPoint(nav_msgs::OccupancyGrid occ_grid, std::pair<do
   goal_pt.second = (unoccupied_midpoint - 0.5 * occ_grid.info.height) * occ_grid.info.resolution;
 }
 
-std::pair<double, double> OccGridManager::GetRequiredOccGridDimensions(cv::Mat& img) {
+bool OccGridManager::GetRequiredOccGridDimensions(cv::Mat& img, std::pair<double, double>& dims) {
   std::pair<double, double> top_left_corner = ProjectPixelToGround(0, kFrameHeight - img.rows);
   std::pair<double, double> bottom_right_corner = ProjectPixelToGround(img.cols, kFrameHeight);
 
   x_offset_ = fabs(x_ground_center_ - top_left_corner.first);
 
-  // TODO: Verify the x-dimension range (it may not start at 0)
-  return std::pair<double, double>(fabs(top_left_corner.first - bottom_right_corner.first),
-                                   fabs(top_left_corner.second) * 2.0);
+  if (top_left_corner.first <= bottom_right_corner.first)
+    return false;
+
+  dims.first = fabs(top_left_corner.first - bottom_right_corner.first);
+  dims.second = fabs(top_left_corner.second) * 2.0;
+
+  return true;
 }
 
 std::vector<int> OccGridManager::GetRow(nav_msgs::OccupancyGrid occ_grid, int row_ind) {
@@ -79,7 +83,10 @@ int OccGridManager::GetUnoccupiedRowMidpoint(std::vector<int> row) {
 }
 
 void OccGridManager::OccGridFromBinaryImage(cv::Mat& img, nav_msgs::OccupancyGridPtr& occ_grid) {
-  std::pair<double, double> dims = GetRequiredOccGridDimensions(img);
+  std::pair<double, double> dims;
+  if (!GetRequiredOccGridDimensions(img, dims)) {
+    return;
+  }
 
   occ_grid->info.resolution = params_.resolution_;
   occ_grid->info.width = ceil(dims.first / occ_grid->info.resolution);
@@ -96,10 +103,11 @@ void OccGridManager::OccGridFromBinaryImage(cv::Mat& img, nav_msgs::OccupancyGri
       double x = i * params_.resolution_;
       double y = j * params_.resolution_;
 
+      // TODO: make the calculations more general
       double x_shift = x_offset_ + (dims.first - x);
-      double z_shift = x_shift * cos((M_PI * 0.5) - params_.cam_angle);
+      double z_shift = x_shift * cos((M_PI * 0.5) - params_.cam_angle_);
 
-      double proj_y = sin((M_PI * 0.5) - params_.cam_angle) * x_shift;
+      double proj_y = sin((M_PI * 0.5) - params_.cam_angle_) * x_shift;
       double proj_x = -y + dims.second * 0.5;
       double proj_z = z_center_ - z_shift;
 
@@ -126,22 +134,23 @@ std::pair<double, double> OccGridManager::ProjectPixelToGround(int p_x, int p_y)
   Eigen::Vector3d pixels(p_x, p_y, 1);
   Eigen::Vector4d pt_3d;
 
-  // TODO do calculation for 579.4302
+  // TODO: do calculation for 579.4302
+  // TODO: make calculations more general
   double d_angle = atan((double)(p_y - 0.5 * kFrameHeight) / (double)579.4302);
-  double theta = params_.cam_angle - d_angle;
+  double theta = params_.cam_angle_ - d_angle;
   double z_temp = params_.cam_height_ / cos(theta);
   double z = z_temp * cos(d_angle);
 
   img_processing_->ProjectPixelsTo3D(pixels, pt_3d, z);
 
-  double x_ground = pt_3d.z() * sin(params_.cam_angle);
+  double x_ground = pt_3d.z() * sin(params_.cam_angle_);
   double y_ground = pt_3d.x();
 
   return std::pair<double, double>(x_ground, y_ground);
 }
 
 void OccGridManager::UpdateParameters() {
-  x_ground_center_ = params_.cam_height_ * tan(params_.cam_angle);
-  z_center_ = params_.cam_height_ / cos(params_.cam_angle);
+  x_ground_center_ = params_.cam_height_ * tan(params_.cam_angle_);
+  z_center_ = params_.cam_height_ / cos(params_.cam_angle_);
 }
 }

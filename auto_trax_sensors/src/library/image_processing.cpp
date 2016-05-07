@@ -12,7 +12,7 @@ ImageProcessing::ImageProcessing() {
 ImageProcessing::~ImageProcessing() {
 }
 
-void ImageProcessing::SegmentByColoredTracks(const cv::Mat& img_in, cv::Mat& img_out) {
+void ImageProcessing::SegmentTracks(const cv::Mat& img_in, cv::Mat& img_out) {
   //
   // 1. Add Canny/Hough parameters
   // 2. Check if lines were detected
@@ -23,11 +23,11 @@ void ImageProcessing::SegmentByColoredTracks(const cv::Mat& img_in, cv::Mat& img
   cv::Rect area_to_crop(0, img_in.rows - seg_params_.horizon_pixels_, img_in.cols, seg_params_.horizon_pixels_);
   img_out = img_in(area_to_crop);
 
-  // Detect all the pixels within the desired RGB interval
-  cv::inRange(img_out, lower_bounds_, upper_bounds_, img_out);
+  // Convert the image to gray-scale
+  cv::cvtColor(img_out, img_out, CV_RGB2GRAY);
 
   // Canny edge detector
-  cv::Canny(img_out, img_out, 80, 250);
+  cv::Canny(img_out, img_out, 50, 150);
 
   // Run Hough transform to detect straight lines
   std::vector<cv::Vec4i> lines;
@@ -95,13 +95,5 @@ void ImageProcessing::UpdateParameters() {
   camera_matrix_ << camera_intrinsics_.f_x_, 0.0, camera_intrinsics_.c_x_,
                     0.0, camera_intrinsics_.f_y_, camera_intrinsics_.c_y_,
                     0.0, 0.0, 1.0;
-
-  // Update the RGB thresholding bounds
-  lower_bounds_ = cv::Scalar(seg_params_.b_thresh_ - seg_params_.rgb_range_,
-                             seg_params_.g_thresh_ - seg_params_.rgb_range_,
-                             seg_params_.r_thresh_ - seg_params_.rgb_range_);
-  upper_bounds_ = cv::Scalar(seg_params_.b_thresh_ + seg_params_.rgb_range_,
-                             seg_params_.g_thresh_ + seg_params_.rgb_range_,
-                             seg_params_.r_thresh_ + seg_params_.rgb_range_);
 }
 }

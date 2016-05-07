@@ -19,10 +19,6 @@ static const double kDefaultD3 = 0.000980;
 
 // Default segmentation parameter values
 static const int kDefaultHorizonPixels = 200;
-static const int kDefaultRThresh = 255;
-static const int kDefaultGThresh = 230;
-static const int kDefaultBThresh = 160;
-static const int kDefaultRGBRange = 10;
 
 // Constants
 static const cv::Scalar kBlack(0.0, 0.0, 0.0);
@@ -60,19 +56,11 @@ struct CameraIntrinsicParameters {
 
 struct SegmentationParameters {
   SegmentationParameters():
-      horizon_pixels_(kDefaultHorizonPixels),
-      r_thresh_(kDefaultRThresh),
-      g_thresh_(kDefaultGThresh),
-      b_thresh_(kDefaultBThresh),
-      rgb_range_(kDefaultRGBRange) {
+      horizon_pixels_(kDefaultHorizonPixels) {
   }
 
   // Parameters for segmenting out the track lines
   int horizon_pixels_;
-  int r_thresh_;
-  int g_thresh_;
-  int b_thresh_;
-  int rgb_range_;
 };
 
 class ImageProcessing {
@@ -88,7 +76,7 @@ class ImageProcessing {
       pt_3d = transform_matrix_.transpose() * camera_matrix_.inverse() * scale * pixels;
     }
 
-    void SegmentByColoredTracks(const cv::Mat& img_in, cv::Mat& img_out);
+    void SegmentTracks(const cv::Mat& img_in, cv::Mat& img_out);
 
     void UpdateParameters();
 
@@ -100,9 +88,6 @@ class ImageProcessing {
     Eigen::Matrix3d camera_matrix_;
 
     Eigen::MatrixXd transform_matrix_;
-
-    cv::Scalar lower_bounds_;
-    cv::Scalar upper_bounds_;
 };
 }
 

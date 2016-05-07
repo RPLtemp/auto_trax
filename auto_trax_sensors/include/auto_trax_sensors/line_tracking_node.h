@@ -5,7 +5,6 @@
 #include <image_transport/image_transport.h>
 #include <ros/ros.h>
 #include <sensor_msgs/Image.h>
-#include <visualization_msgs/Marker.h>
 
 #include "auto_trax_sensors/image_processing.h"
 #include "auto_trax_sensors/occ_grid_manager.h"
@@ -31,7 +30,6 @@ class LineTrackingNode {
   private:
     ros::NodeHandle nh_;
     ros::Publisher goal_point_pub_;
-    ros::Publisher marker_pub_;
     ros::Publisher occ_grid_pub_;
 
     image_transport::ImageTransport it_;

@@ -7,8 +7,8 @@
 
 namespace auto_trax {
 // Default values
-static const double kDefaultAngle = 0.5 * M_PI;
-static const double kDefaultHeight = 0.1;
+static const double kDefaultAngle = 1.45;
+static const double kDefaultHeight = 0.08;
 static const double kDefaultResolution = 0.005;
 
 // Constants
@@ -18,13 +18,13 @@ static const int kValueUnoccupied = 0;
 
 struct OccGridManagerParameters {
   OccGridManagerParameters():
-      cam_angle(kDefaultAngle),
+      cam_angle_(kDefaultAngle),
       cam_height_(kDefaultHeight),
       resolution_(kDefaultResolution) {
   }
 
   // Camera position parameters
-  double cam_angle;
+  double cam_angle_;
   double cam_height_;
 
   // Occupancy grid parameters
@@ -40,7 +40,7 @@ class OccGridManager {
 
     void GetGoalPoint(nav_msgs::OccupancyGrid occ_grid, std::pair<double, double>& goal_pt);
 
-    std::pair<double, double> GetRequiredOccGridDimensions(cv::Mat& img);
+    bool GetRequiredOccGridDimensions(cv::Mat& img, std::pair<double, double> &dims);
 
     std::vector<int> GetRow(nav_msgs::OccupancyGrid occ_grid, int row_ind);
 

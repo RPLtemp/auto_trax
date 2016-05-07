@@ -10,10 +10,6 @@
     <param name="occ_grid_pub_topic" value="occupancy_grid" />
 
     <param name="horizon_pixels" value="140" />
-    <param name="r_thresh" value="154" />
-    <param name="g_thresh" value="152" />
-    <param name="b_thresh" value="112" />
-    <param name="rgb_thresh" value="15" />
 
     <param name="cam_angle" value="1.45" />
     <param name="cam_height" value="0.08" />
