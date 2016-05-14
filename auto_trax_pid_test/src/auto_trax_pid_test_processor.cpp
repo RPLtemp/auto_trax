@@ -20,7 +20,7 @@ AutoTraxPidTest::AutoTraxPidTest(ros::NodeHandle nodehandle, ParameterBag params
                           this);
 
   // Create Publisher for scan
-  pub_dist_ = nh_.advertise<std_msgs::Float32>(parameter_.pub_rostopic_dist,
+  pub_dist_ = nh_.advertise<std_msgs::Float64>(parameter_.pub_rostopic_dist,
                                               parameter_.queue_size_pub_dist);
 }
 
@@ -53,8 +53,9 @@ void AutoTraxPidTest::CallbackScan(const sensor_msgs::LaserScan::ConstPtr &scan_
     }
   }
   double average = sum/effective_scan_size;
-  std_msgs::Float32 result;
+  std_msgs::Float64 result;
   result.data = average;
 
+  std::cout << "distance: " << average << std::endl;
   pub_dist_.publish(result);
 }
