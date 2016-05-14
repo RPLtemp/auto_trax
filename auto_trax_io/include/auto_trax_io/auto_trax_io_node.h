@@ -24,7 +24,7 @@ struct AutoTraxIoParameters{
 
 class AutoTraxIoNode{
 private:
-    PCA9685 pwm_driver_;
+    PCA9685 *pwm_driver_;
     int servo_max_;
     int servo_min_;
     int motor_max_;

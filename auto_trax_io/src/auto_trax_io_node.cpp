@@ -1,8 +1,8 @@
 #include <auto_trax_io/auto_trax_io_node.h>
 
-AutoTraxIoNode::AutoTraxIoNode(AutoTraxIoParameters p) :
-    pwm_driver_(0x40)
+AutoTraxIoNode::AutoTraxIoNode(AutoTraxIoParameters p)
 {
+    pwm_driver_ = new PCA9685(0x40);
     servo_max_ = p.servo_max;
     servo_min_ = p.servo_min;
     motor_min_ = p.motor_min;
@@ -13,29 +13,40 @@ AutoTraxIoNode::AutoTraxIoNode(AutoTraxIoParameters p) :
     minimum_linear_velocity_m_s_ = p.minimum_linear_velocity_m_s;
     maximum_linear_velocity_m_s_ = p.maximum_linear_velocity_m_s;
     zero_speed_pwm_ = p.zero_speed_pwm;
+    motor_upper_pwm_threshold_ = p.motor_upper_pwm_threshold;
+    motor_lower_pwm_threshold_ = p.motor_lower_pwm_threshold;
     m_upper_ = (maximum_linear_velocity_m_s_-minimum_linear_velocity_m_s_)/(motor_max_ - motor_upper_pwm_threshold_);
     q_upper_ = minimum_linear_velocity_m_s_ - m_upper_*motor_upper_pwm_threshold_;
 
     m_lower_ = (-minimum_linear_velocity_m_s_+maximum_linear_velocity_m_s_)/(motor_lower_pwm_threshold_ - motor_min_ );
     q_lower_ = -minimum_linear_velocity_m_s_ - m_lower_*motor_lower_pwm_threshold_;
+    std::cout << "m_lower: " << m_lower_ <<
+                 " | q_lower: " << q_lower_ <<
+                 std::endl;
 
+    std::cout << "m_upper: " << m_upper_<<
+                 " | q_upper: " << q_upper_<<
+                 std::endl;
 
     parameter_initialized_ = true;
 
-    if (pwm_driver_.openPCA9685() < 0) {
+    if (pwm_driver_->openPCA9685() < 0) {
         ROS_ERROR("COULD NOT OPEN PCA9685");
     } else {
-        ROS_INFO("PCA9685 Device Address: 0x%02X\n",pwm_driver_.kI2CAddress) ;
+        ROS_INFO("PCA9685 Device Address: 0x%02X\n",pwm_driver_->kI2CAddress) ;
         servo_range_ = servo_max_ - servo_min_;
-        pwm_driver_.setAllPWM(0,0) ;
-        pwm_driver_.reset() ;
-        pwm_driver_.setPWMFrequency(pwm_frequency_);
+        pwm_driver_->setAllPWM(0,0) ;
+        pwm_driver_->reset() ;
+        pwm_driver_->setPWMFrequency(pwm_frequency_);
+	sleep(1);
+	pwm_driver_->setPWM(speed_i2c_channel_,0,zero_speed_pwm_);	
     }
     std::cout << "parameters initialized: " << parameter_initialized_ << std::endl;
 }
 
 AutoTraxIoNode::~AutoTraxIoNode(){
-    pwm_driver_.closePCA9685();
+    pwm_driver_->setPWM(speed_i2c_channel_,0,zero_speed_pwm_);
+    pwm_driver_->closePCA9685();
 }
 
 inline double AutoTraxIoNode::AngleConversion(double angle_in_rads){
@@ -78,11 +89,11 @@ bool AutoTraxIoNode::serviceCallback(auto_trax_io::ApplySteeringAngle::Request  
     double pwm_speed = SpeedConversion(speed_in_m_s);
 
     std::cout <<"Pwm angle: " << pwm_angle <<
-               "Pwm speed: " << pwm_speed <<
+               " | Pwm speed: " << pwm_speed <<
                 std::endl;
-    if (pwm_driver_.error >= 0 && parameter_initialized_){
-        pwm_driver_.setPWM(angle_i2c_channel_,0,pwm_angle);
-        pwm_driver_.setPWM(speed_i2c_channel_,0,pwm_speed);
+    if (pwm_driver_->error >= 0 && parameter_initialized_){
+        pwm_driver_->setPWM(angle_i2c_channel_,0,pwm_angle);
+        pwm_driver_->setPWM(speed_i2c_channel_,0,pwm_speed);
         res.success = true;
         return true;
     }
@@ -109,7 +120,10 @@ int main(int argc, char **argv){
                                nh.getParam("motor_max", params.motor_max) &&
                                nh.getParam("minimum_linear_velocity_m_s", params.minimum_linear_velocity_m_s) &&
                                nh.getParam("maximum_linear_velocity_m_s", params.maximum_linear_velocity_m_s) &&
+                               nh.getParam("motor_lower_pwm_threshold", params.motor_lower_pwm_threshold) &&
+                               nh.getParam("motor_upper_pwm_threshold", params.motor_upper_pwm_threshold) &&
                                nh.getParam("zero_speed_pwm", params.zero_speed_pwm);
+
 
     // Check if parameters where imported
     if (! read_all_parameters){
