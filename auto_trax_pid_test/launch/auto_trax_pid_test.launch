@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+
+<launch>
+
+  <!-- Launch Openni2 for the Carmine 1.09 sensor -->
+  <include file="$(find openni2_launch)/launch/openni2.launch" />
+
+  <!-- Start "laserscan" to provide IO interface for auto_trax  -->
+  <!--<node name="laserscan" pkg="depthimage_to_laserscan" type="depthimage_to_laserscan" args="image:=/camera/depth/image" output="screen"/>-->
+
+  	<!-- Depthimage to laserscan -->
+      <node name="laserscan" pkg="depthimage_to_laserscan" type="depthimage_to_laserscan" args="image:=/camera/depth/image" output="screen">
+        <param name="~range_min" value="0.3" />
+        <param name="~range_max" value="2" />
+      </node>
+  
+  <!-- Start "auto_trax_pid_test" to provide IO interface for auto_trax  -->
+  <node name="auto_trax_pid_test_node" pkg="auto_trax_pid_test" type="auto_trax_pid_test_node" output="screen"/>
+
+  <!-- Start param -->
+  <rosparam command="load" file="$(find auto_trax_pid_test)/parameter/parameter_bag.yaml" />
+
+</launch>
