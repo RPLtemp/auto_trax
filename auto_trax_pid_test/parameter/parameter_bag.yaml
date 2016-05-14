@@ -1,0 +1,14 @@
+node_name: auto_trax_pid_test                            # name of the node
+
+subscribed_rostopic_img: /camera/depth/image                       # subscribed rostopic
+queue_size_subscriber_img: 1                                   # queue size of the subscriber
+
+pub_rostopic_dist: distance_result                         # published rostopic
+queue_size_pub_dist: 1                                    # queue size of the publisher
+
+subscribed_rostopic_scan: /scan                   # subscribed rostopic
+queue_size_subscriber_scan: 1                                 # queue size of the subscriber
+
+#subscribed_rostopic_cam: camera_info                           # subscribed rostopic
+#queue_size_subscriber_cam: 1                                   # queue size of the subscriber
+
