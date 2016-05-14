@@ -9,7 +9,7 @@
 #include <ros/package.h>
 #include <sensor_msgs/Image.h>
 #include <sensor_msgs/LaserScan.h>
-#include <std_msgs/Float32.h>
+#include <std_msgs/Float64.h>
 
 #include <iostream>
 #include <vector>

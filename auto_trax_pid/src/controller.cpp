@@ -289,7 +289,7 @@ int main(int argc, char **argv)
   node_priv.param<double>("windup_limit", windup_limit, 1000.0);
   node_priv.param<double>("cutoff_frequency", cutoff_frequency, -1.0);
   node_priv.param<std::string>("topic_from_controller", topic_from_controller, "control_effort");
-  node_priv.param<std::string>("topic_from_plant", topic_from_plant, "state");
+  node_priv.param<std::string>("topic_from_plant", topic_from_plant, "/distance_result");
   node_priv.param<std::string>("setpoint_topic", setpoint_topic, "setpoint");
   node_priv.param<double>("max_loop_frequency", max_loop_frequency, 1.0);
   node_priv.param<double>("min_loop_frequency", min_loop_frequency, 1000.0);
@@ -303,6 +303,7 @@ int main(int argc, char **argv)
 
   // instantiate publishers & subscribers
   control_effort_pub = node.advertise<std_msgs::Float64>(topic_from_controller, 1);
+  ros::service::waitForService("auto_trax_io/apply_steering_angle");
   client = node.serviceClient<auto_trax_io::ApplySteeringAngle>("auto_trax_io/apply_steering_angle");
 
   ros::Subscriber sub = node.subscribe(topic_from_plant, 1, plant_state_callback );
