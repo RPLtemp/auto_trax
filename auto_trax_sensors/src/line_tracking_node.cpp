@@ -160,7 +160,7 @@ int main(int argc, char **argv) {
   //
   // Testing
   //
-  line_tracking_node.Test();
+  //line_tracking_node.Test();
 
   ros::spin();
 
