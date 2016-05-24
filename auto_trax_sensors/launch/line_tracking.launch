@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+
+<launch>
+  <node name="line_tracking_node" pkg="auto_trax_sensors" type="line_tracking_node" output="screen">
+    <rosparam command="load" file="$(find auto_trax_sensors)/config/primesense_calib.yaml"/>
+
+    <param name="goal_point_pub_topic" value="goal_point" />
+    <param name="image_sub_topic" value="/camera/rgb/image_raw" />
+    <param name="occ_grid_frame_id" value="map" />
+    <param name="occ_grid_pub_topic" value="occupancy_grid" />
+
+    <param name="horizon_pixels" value="140" />
+    <param name="canny_lower_thresh" value="50" />
+    <param name="hough_thresh" value="50" />
+    <param name="rho_res" value="1" />
+    <param name="theta_res" value="0.0174533" />
+    <param name="min_line_length" value="50" />
+    <param name="max_line_gap" value="10" />
+
+    <param name="cam_angle" value="1.45" />
+    <param name="cam_height" value="0.08" />
+    <param name="grid_resolution" value="0.001" />
+  </node>
+</launch>
