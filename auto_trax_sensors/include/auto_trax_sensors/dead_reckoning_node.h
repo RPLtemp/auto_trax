@@ -1,10 +1,11 @@
-#ifndef AUTO_TRAX_DEAD_RECKONING_H
-#define AUTO_TRAX_DEAD_RECKONING_H
+#ifndef AUTO_TRAX_DEAD_RECKONING_NODE_H
+#define AUTO_TRAX_DEAD_RECKONING_NODE_H
 
 #include <ros/ros.h>
 #include <nav_msgs/Odometry.h>
 #include <sensor_msgs/Imu.h>
 
+namespace auto_trax {
 // Constants
 static const double kG = 9.80665;
 
@@ -12,10 +13,10 @@ static const double kG = 9.80665;
 static const std::string kDefaultImuSubTopic = "imu/data";
 static const std::string kDefaultOdometryPubTopic = "odometry";
 
-class DeadReckoning {
+class DeadReckoningNode {
   public:
-    DeadReckoning();
-    virtual ~DeadReckoning();
+    DeadReckoningNode();
+    virtual ~DeadReckoningNode();
 
     void ImuCallback(const sensor_msgs::ImuConstPtr& imu_msg);
 
@@ -32,6 +33,6 @@ class DeadReckoning {
 
     bool received_first_imu_data_;
 };
+}
 
-
-#endif // AUTO_TRAX_DEAD_RECKONING_H
+#endif // AUTO_TRAX_DEAD_RECKONING_NODE_H
