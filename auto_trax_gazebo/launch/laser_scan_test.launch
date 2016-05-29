@@ -1,0 +1,8 @@
+<launch>
+  <env name="GAZEBO_MODEL_PATH" value="${GAZEBO_MODEL_PATH}:$(find auto_trax_gazebo)/models"/>
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="world_name" value="$(find auto_trax_gazebo)/worlds/laser_scan_walls.world"/>
+    <arg name="paused" value="false" />
+    <arg name="gui" value="true" />
+  </include>
+</launch>
