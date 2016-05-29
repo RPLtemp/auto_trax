@@ -5,8 +5,8 @@
     <link name="chassis">
       <pose>0 0 0.15  0 0 0</pose>
       <inertial>
-        <pose>0.1 0 0  0 0 0</pose>
-        <mass>10</mass>
+        <pose>0 0 0  0 0 0</pose>
+        <mass>5</mass>
         <inertia>
           <ixx>0.21666666666666667</ixx>
           <iyy>0.8416666666666667</iyy>
@@ -75,19 +75,12 @@
       </visual>
     </link>
     
-    <joint name="wheel_front_left_steer_spin" type="universal">
+    <joint name="wheel_front_left_steer_spin" type="fixed">
       <parent>chassis</parent>
       <child>wheel_front_left</child>
       <axis>
-        <xyz>0 -1 0</xyz>
-        <limit>
-          <lower>-0.6108652381980153</lower>
-          <upper>0.6108652381980153</upper>
-        </limit>
+        <xyz>0 0 -1</xyz>
       </axis>
-      <axis2>
-        <xyz>0 0 1</xyz>
-      </axis2>
     </joint>
     
     <link name="wheel_front_right">
@@ -127,19 +120,12 @@
       </visual>
     </link>
     
-    <joint name="wheel_front_right_steer_spin" type="universal">
+    <joint name="wheel_front_right_steer_spin" type="fixed">
       <parent>chassis</parent>
       <child>wheel_front_right</child>
       <axis>
-        <xyz>0 -1 0</xyz>
-        <limit>
-          <lower>-0.6108652381980153</lower>
-          <upper>0.6108652381980153</upper>
-        </limit>
-      </axis>
-      <axis2>
         <xyz>0 0 1</xyz>
-      </axis2>
+      </axis>
     </joint>
     
     
@@ -180,11 +166,11 @@
       </visual>
     </link>
 
-    <joint name="wheel_rear_left_spin" type="revolute">
+    <joint name="wheel_rear_left_spin" type="fixed">
       <parent>chassis</parent>
       <child>wheel_rear_left</child>
       <axis>
-        <xyz>0 0 1</xyz>
+        <xyz>0 0 -1</xyz>
       </axis>
     </joint>
     
@@ -225,7 +211,7 @@
       </visual>
     </link>
 
-    <joint name="wheel_rear_right_spin" type="revolute">
+    <joint name="wheel_rear_right_spin" type="fixed">
       <parent>chassis</parent>
       <child>wheel_rear_right</child>
       <axis>
@@ -235,17 +221,6 @@
 
     <link name="laser_sensor_link">
       <pose>0.45 0 0.25 0 0 0</pose>
-      <inertial>
-        <mass>0.01</mass>
-        <inertia>
-          <ixx>0.001</ixx>
-          <iyy>0.001</iyy>
-          <izz>0.001</izz>
-          <ixy>0</ixy>
-          <ixz>0</ixz>
-          <iyz>0</iyz>
-        </inertia>
-      </inertial>
       <collision name="collision">
         <geometry>
           <box>
@@ -279,14 +254,14 @@
             </horizontal>
           </scan>
           <range>
-            <min>0.10</min>
+            <min>0.3</min>
             <max>2.0</max>
             <resolution>0.01</resolution>
           </range> 
         </ray>
         <plugin name="laser_scan_controller" filename="libgazebo_ros_laser.so">
           <frameName>chassis</frameName>
-          <topicName>laser_scan</topicName>
+          <topicName>scan</topicName>
         </plugin>
       </sensor>
     </link>
@@ -298,5 +273,7 @@
         <xyz>0 0 1</xyz>
       </axis>
     </joint>
+
+    <plugin name="move_cart" filename="libmove_cart.so"/>
   </model>
 </sdf>

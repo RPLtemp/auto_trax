@@ -2,24 +2,27 @@ cmake_minimum_required(VERSION 2.8.3)
 project(auto_trax_gazebo)
 
 find_package(catkin REQUIRED COMPONENTS
+  gazebo_ros
   roscpp
   std_msgs
 )
 
+find_package(gazebo REQUIRED)
+
 catkin_package(
   INCLUDE_DIRS include
-  LIBRARIES 
-  CATKIN_DEPENDS roscpp std_msgs
+  LIBRARIES move_cart
+  CATKIN_DEPENDS gazebo_ros roscpp std_msgs
   DEPENDS 
 )
 
 include_directories(
   include
   ${catkin_INCLUDE_DIRS}
+  ${roscpp_INCLUDE_DIRS}
+  ${GAZEBO_INCLUDE_DIRS}
 )
 
-# add_library(auto_trax_gazebo src/${PROJECT_NAME}/auto_trax_gazebo.cpp)
+add_library(move_cart src/move_cart_plugin.cpp)
 
-# add_executable(auto_trax_gazebo_node src/auto_trax_gazebo_node.cpp)
-
-# target_link_libraries(auto_trax_gazebo_node ${catkin_LIBRARIES})
+target_link_libraries(move_cart ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})

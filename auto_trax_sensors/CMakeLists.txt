@@ -45,7 +45,10 @@ add_dependencies(auto_trax_occ_grid_manager ${catkin_EXPORTED_TARGETS})
 
 add_executable(dead_reckoning_node src/dead_reckoning_node.cpp)
 add_executable(line_tracking_node src/line_tracking_node.cpp)
+add_executable(wall_detection_node src/wall_detection_node.cpp)
 
 target_link_libraries(dead_reckoning_node ${catkin_LIBRARIES} ${roslib_LIBRARIES})
 target_link_libraries(line_tracking_node ${catkin_LIBRARIES} ${roslib_LIBRARIES} ${OpenCV_LIBRARIES}
   auto_trax_image_processing auto_trax_occ_grid_manager)
+target_link_libraries(wall_detection_node ${catkin_LIBRARIES} ${roslib_LIBRARIES})
+
