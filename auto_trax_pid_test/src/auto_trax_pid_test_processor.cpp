@@ -56,6 +56,6 @@ void AutoTraxPidTest::CallbackScan(const sensor_msgs::LaserScan::ConstPtr &scan_
   std_msgs::Float64 result;
   result.data = average;
 
-  std::cout << "distance: " << average << std::endl;
+  //std::cout << "distance: " << average << std::endl;
   pub_dist_.publish(result);
 }
