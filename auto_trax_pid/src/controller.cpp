@@ -303,7 +303,7 @@ int main(int argc, char **argv)
 
   // instantiate publishers & subscribers
   control_effort_pub = node.advertise<std_msgs::Float64>(topic_from_controller, 1);
-  //ros::service::waitForService("auto_trax_io/apply_steering_angle");
+  ros::service::waitForService("auto_trax_io/apply_steering_angle");
   client = node.serviceClient<auto_trax_io::ApplySteeringAngle>("auto_trax_io/apply_steering_angle");
 
   ros::Subscriber sub = node.subscribe(topic_from_plant, 1, plant_state_callback );
