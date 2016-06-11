@@ -1,0 +1,10 @@
+cam_width: 640
+cam_height: 480
+cam_fx: 538.82572
+cam_fy: 538.46549
+cam_cx: 317.85920
+cam_cy: 239.92291
+cam_d0: 0.018918
+cam_d1: -0.085798
+cam_d2: 0.001551
+cam_d3: 0.000980
