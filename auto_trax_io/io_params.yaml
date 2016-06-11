@@ -2,14 +2,14 @@ steering_service_name: auto_trax_io/apply_steering_angle
 motor_service_name: auto_trax_io/apply_motor_speed
 pwm_frequency: 50
 angle_i2c_channel: 0
-speed_i2c_channel: 1
-servo_min: 120
-servo_max: 720
-motor_min: 204
-motor_max: 409
-motor_lower_pwm_threshold: 298
-motor_upper_pwm_threshold: 316
+speed_i2c_channel: 4
+servo_min: 250 # 120
+servo_max: 350 # 720
+motor_min: 304 # 204
+motor_max: 317 # 409
+motor_lower_pwm_threshold: 305  # 298
+motor_upper_pwm_threshold: 315
 minimum_linear_velocity_m_s: 1
-maximum_linear_velocity_m_s: 20
+maximum_linear_velocity_m_s: 5 # 20
 zero_speed_pwm: 307
 
