@@ -1,4 +1,5 @@
 steering_service_name: auto_trax_io/apply_steering_angle
+motor_service_name: auto_trax_io/apply_motor_speed
 pwm_frequency: 50
 angle_i2c_channel: 0
 speed_i2c_channel: 1
