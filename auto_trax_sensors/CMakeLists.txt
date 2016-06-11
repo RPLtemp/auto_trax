@@ -5,17 +5,24 @@ project(auto_trax_sensors)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
+  cmake_modules
   cv_bridge
+  geometry_msgs
+  image_transport
+  nav_msgs
   roscpp
   sensor_msgs
+  std_msgs
 )
 
+find_package(Eigen REQUIRED)
 find_package(OpenCV REQUIRED)
 include_directories(${OpenCV_INCLUDE_DIRS})
 
 catkin_package(
-  INCLUDE_DIRS include
-  CATKIN_DEPENDS cv_bridge roscpp sensor_msgs
+  INCLUDE_DIRS include ${Eigen_INCLUDE_DIRS}
+  LIBRARIES auto_trax_image_processing auto_trax_occ_grid_manager
+  CATKIN_DEPENDS cv_bridge geometry_msgs image_transport nav_msgs roscpp sensor_msgs
   DEPENDS opencv
 )
 
@@ -25,10 +32,23 @@ include_directories(
   ${roscpp_INCLUDE_DIRS}
 )
 
-## Declare a C++ executable
-add_executable(dead_reckoning src/dead_reckoning.cpp)
-add_executable(line_tracking src/line_tracking.cpp)
+include_directories(${Eigen_INCLUDE_DIRS})
 
-## Specify libraries to link a library or executable target against
-target_link_libraries(dead_reckoning ${catkin_LIBRARIES} ${roslib_LIBRARIES})
-target_link_libraries(line_tracking ${catkin_LIBRARIES} ${roslib_LIBRARIES} ${OpenCV_LIBRARIES})
+add_library(auto_trax_image_processing src/library/image_processing.cpp)
+add_library(auto_trax_occ_grid_manager src/library/occ_grid_manager.cpp)
+
+target_link_libraries(auto_trax_image_processing ${catkin_LIBRARIES})
+add_dependencies(auto_trax_image_processing ${catkin_EXPORTED_TARGETS})
+
+target_link_libraries(auto_trax_occ_grid_manager ${catkin_LIBRARIES})
+add_dependencies(auto_trax_occ_grid_manager ${catkin_EXPORTED_TARGETS})
+
+add_executable(dead_reckoning_node src/dead_reckoning_node.cpp)
+add_executable(line_tracking_node src/line_tracking_node.cpp)
+add_executable(wall_detection_node src/wall_detection_node.cpp)
+
+target_link_libraries(dead_reckoning_node ${catkin_LIBRARIES} ${roslib_LIBRARIES})
+target_link_libraries(line_tracking_node ${catkin_LIBRARIES} ${roslib_LIBRARIES} ${OpenCV_LIBRARIES}
+  auto_trax_image_processing auto_trax_occ_grid_manager)
+target_link_libraries(wall_detection_node ${catkin_LIBRARIES} ${roslib_LIBRARIES})
+

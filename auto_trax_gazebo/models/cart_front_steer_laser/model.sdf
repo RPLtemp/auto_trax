@@ -1,0 +1,279 @@
+<?xml version="1.0" ?>
+
+<sdf version="1.5">
+  <model name="cart_front_steer">
+    <link name="chassis">
+      <pose>0 0 0.15  0 0 0</pose>
+      <inertial>
+        <pose>0 0 0  0 0 0</pose>
+        <mass>5</mass>
+        <inertia>
+          <ixx>0.21666666666666667</ixx>
+          <iyy>0.8416666666666667</iyy>
+          <izz>1.0416666666666667</izz>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyz>0</iyz>
+        </inertia>
+      </inertial>
+      <collision name="collision">
+        <geometry>
+          <box>
+            <size>1.0 0.5 0.1</size>
+          </box>
+        </geometry>
+      </collision>
+      <visual name="visual">
+        <geometry>
+          <box>
+            <size>1.0 0.5 0.1</size>
+          </box>
+        </geometry>
+        <material>
+          <script>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+            <name>Gazebo/Grey</name>
+          </script>
+        </material>
+      </visual>
+    </link>
+    
+    <link name="wheel_front_left">
+      <pose>0.5 0.298 0.15  -1.5707963267948966 -0.08726646259971647 0</pose>
+      <inertial>
+        <mass>0.5</mass>
+        <inertia>
+          <ixx>0.0030791666666666667</ixx>
+          <iyy>0.0030791666666666667</iyy>
+          <izz>0.005625</izz>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyz>0</iyz>
+        </inertia>
+      </inertial>
+      <collision name="collision">
+        <geometry>
+          <cylinder>
+            <radius>0.15</radius>
+            <length>0.08</length>
+          </cylinder>
+        </geometry>
+      </collision>
+      <visual name="visual">
+        <geometry>
+          <cylinder>
+            <radius>0.15</radius>
+            <length>0.08</length>
+          </cylinder>
+        </geometry>
+        <material>
+          <script>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+            <name>Gazebo/Black</name>
+          </script>
+        </material>
+      </visual>
+    </link>
+    
+    <joint name="wheel_front_left_steer_spin" type="fixed">
+      <parent>chassis</parent>
+      <child>wheel_front_left</child>
+      <axis>
+        <xyz>0 0 -1</xyz>
+      </axis>
+    </joint>
+    
+    <link name="wheel_front_right">
+      <pose>0.5 -0.298 0.15  -1.5707963267948966 -0.08726646259971647 0</pose>
+      <inertial>
+        <mass>0.5</mass>
+        <inertia>
+          <ixx>0.0030791666666666667</ixx>
+          <iyy>0.0030791666666666667</iyy>
+          <izz>0.005625</izz>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyz>0</iyz>
+        </inertia>
+      </inertial>
+      <collision name="collision">
+        <geometry>
+          <cylinder>
+            <radius>0.15</radius>
+            <length>0.08</length>
+          </cylinder>
+        </geometry>
+      </collision>
+      <visual name="visual">
+        <geometry>
+          <cylinder>
+            <radius>0.15</radius>
+            <length>0.08</length>
+          </cylinder>
+        </geometry>
+        <material>
+          <script>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+            <name>Gazebo/Black</name>
+          </script>
+        </material>
+      </visual>
+    </link>
+    
+    <joint name="wheel_front_right_steer_spin" type="fixed">
+      <parent>chassis</parent>
+      <child>wheel_front_right</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+      </axis>
+    </joint>
+    
+    
+    <link name="wheel_rear_left">
+      <pose>-0.5 0.298 0.15  -1.5707963267948966 0 0</pose>
+      <inertial>
+        <mass>0.5</mass>
+        <inertia>
+          <ixx>0.0030791666666666667</ixx>
+          <iyy>0.0030791666666666667</iyy>
+          <izz>0.005625</izz>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyz>0</iyz>
+        </inertia>
+      </inertial>
+      <collision name="collision">
+        <geometry>
+          <cylinder>
+            <radius>0.15</radius>
+            <length>0.08</length>
+          </cylinder>
+        </geometry>
+      </collision>
+      <visual name="visual">
+        <geometry>
+          <cylinder>
+            <radius>0.15</radius>
+            <length>0.08</length>
+          </cylinder>
+        </geometry>
+        <material>
+          <script>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+            <name>Gazebo/Black</name>
+          </script>
+        </material>
+      </visual>
+    </link>
+
+    <joint name="wheel_rear_left_spin" type="fixed">
+      <parent>chassis</parent>
+      <child>wheel_rear_left</child>
+      <axis>
+        <xyz>0 0 -1</xyz>
+      </axis>
+    </joint>
+    
+    <link name="wheel_rear_right">
+      <pose>-0.5 -0.298 0.15  -1.5707963267948966 0 0</pose>
+      <inertial>
+        <mass>0.5</mass>
+        <inertia>
+          <ixx>0.0030791666666666667</ixx>
+          <iyy>0.0030791666666666667</iyy>
+          <izz>0.005625</izz>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyz>0</iyz>
+        </inertia>
+      </inertial>
+      <collision name="collision">
+        <geometry>
+          <cylinder>
+            <radius>0.15</radius>
+            <length>0.08</length>
+          </cylinder>
+        </geometry>
+      </collision>
+      <visual name="visual">
+        <geometry>
+          <cylinder>
+            <radius>0.15</radius>
+            <length>0.08</length>
+          </cylinder>
+        </geometry>
+        <material>
+          <script>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+            <name>Gazebo/Black</name>
+          </script>
+        </material>
+      </visual>
+    </link>
+
+    <joint name="wheel_rear_right_spin" type="fixed">
+      <parent>chassis</parent>
+      <child>wheel_rear_right</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+      </axis>
+    </joint>
+
+    <link name="laser_sensor_link">
+      <pose>0.45 0 0.25 0 0 0</pose>
+      <collision name="collision">
+        <geometry>
+          <box>
+            <size>0.1 0.1 0.1</size>
+          </box>
+        </geometry>
+      </collision>
+      <visual name="visual">
+        <geometry>
+          <box>
+            <size>0.1 0.1 0.1</size>
+          </box>
+        </geometry>
+        <material name="orange">
+          <ambient>1 0 0 1</ambient>
+          <diffuse>1 0 0 1</diffuse>
+          <specular>0.1 0.1 0.1 1</specular>
+        </material>
+      </visual>
+      <sensor type="ray" name="ray1">
+	<pose>0 0 0 0 0 0</pose>
+        <update_rate>35.0</update_rate>
+	<visualize>true</visualize>
+        <ray name="laser_scan">
+          <scan>
+            <horizontal>
+              <samples>360</samples>
+              <resolution>1</resolution>
+              <min_angle>-0.785398</min_angle>
+              <max_angle>0.785398</max_angle>
+            </horizontal>
+          </scan>
+          <range>
+            <min>0.3</min>
+            <max>2.0</max>
+            <resolution>0.01</resolution>
+          </range> 
+        </ray>
+        <plugin name="laser_scan_controller" filename="libgazebo_ros_laser.so">
+          <frameName>chassis</frameName>
+          <topicName>scan</topicName>
+        </plugin>
+      </sensor>
+    </link>
+
+    <joint name="laser_sensor_joint" type="fixed">
+      <parent>chassis</parent>
+      <child>laser_sensor_link</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+      </axis>
+    </joint>
+
+    <plugin name="move_cart" filename="libmove_cart.so"/>
+  </model>
+</sdf>
