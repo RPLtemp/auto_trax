@@ -7,7 +7,7 @@
 
 int main(int argc, char **argv)
 {
-  ros::init(argc, argv, "setpoint_node");
+  ros::init(argc, argv, "setpoint_plantstate_node");
   ros::NodeHandle nh;
 
   while (ros::Time(0) == ros::Time::now())
@@ -25,7 +25,7 @@ int main(int argc, char **argv)
   ros::Publisher state_pub = nh.advertise<std_msgs::Float64>("/plant_state", 1);
 
 
-  ros::Rate loop_rate(1);   // change setpoint every 2 seconds
+  ros::Rate loop_rate(1);
 
   while (ros::ok())
   {
