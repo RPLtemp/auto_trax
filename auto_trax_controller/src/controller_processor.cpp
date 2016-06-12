@@ -9,7 +9,8 @@ namespace auto_trax {
 ControllerProcessor::ControllerProcessor(ros::NodeHandle nodehandle, ParameterBag params_bag):
     nh_(nodehandle),
     parameter_(params_bag),
-    pid_(parameter_.pid_bag) {
+    pid_(parameter_.pid_bag),
+    setpoint_(parameter_.setpoint) {
   ROS_DEBUG("Auto_trax PID Processor started!");
 
   // Create Subscriber for the set point and plant state
@@ -36,12 +37,14 @@ ControllerProcessor::~ControllerProcessor(){
 
 void ControllerProcessor::CallbackSetPoint(const std_msgs::Float64& setpoint_msg) {
   ROS_DEBUG("Set Point received!");
+  setpoint_ = setpoint_msg.data;
 }
 
 void ControllerProcessor::CallbackPlantState(const std_msgs::Float64& state_msg) {
   ROS_DEBUG("Plant State received!");
 
-  double control_effort = pid_.GetControlEffort();
+  float plant_state = state_msg.data;
+  double control_effort = pid_.GetControlEffort(setpoint_, plant_state);
 
   // Publish the stabilizing control effort
   std_msgs::Float64 control_msg;

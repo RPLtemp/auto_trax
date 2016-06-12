@@ -13,7 +13,7 @@ PID::PID(PidBag pid_param):
 PID::~PID() {
 }
 
-double PID::GetControlEffort() {
+double PID::GetControlEffort(const float& setpoint, const float& plant_state) {
 /*  if (!((Kp <= 0. && Ki <= 0. && Kd <= 0.)
       || (Kp >= 0. && Ki >= 0. && Kd >= 0.))) // All 3 gains should have the same sign
   {

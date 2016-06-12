@@ -29,6 +29,8 @@ static const int kDefaultSetPointSubQueueSize       = 1;
 static const int kDefaultPlantStateSubQueueSize     = 1;
 static const int kDefaultControlEffortPubQueueSize  = 1;
 
+static const float kDefaultSetPoint = 0.5;
+
 class ControllerProcessor
 {
 public:
@@ -44,10 +46,13 @@ public:
   ros::NodeHandle nh_;
   ParameterBag parameter_;
   PID pid_;
+
   ros::Subscriber sub_set_point_;
   ros::Subscriber sub_plant_state_;
   ros::Publisher pub_control_effort_;
   ros::ServiceClient client_;
+
+  float setpoint_;
 };
 
 } // namespace auto_trax

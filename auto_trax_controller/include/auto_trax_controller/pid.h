@@ -14,7 +14,7 @@ class PID {
   PID(PidBag pid_param);
   virtual ~PID();
 
-  double GetControlEffort();
+  double GetControlEffort(const float& setpoint, const float& plant_state);
 
  private:
   PidBag pid_param_;

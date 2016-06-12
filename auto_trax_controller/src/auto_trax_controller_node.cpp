@@ -16,6 +16,7 @@ void InitializeParameters(const ros::NodeHandle& nh, ParameterBag* parameter) {
   nh.param("pub_rostopic_control_effort", parameter->pub_rostopic_control_effort, kDefaultControlEffortPubTopic);
   nh.param("queue_size_pub_control_effort", parameter->queue_size_pub_control_effort, kDefaultControlEffortPubQueueSize);
   nh.param("service_rostopic_steering_angle", parameter->service_rostopic_steering_angle, kDefaultSteeringAngleServiceTopic);
+  nh.param("setpoint", parameter->setpoint, kDefaultSetPoint);
 }
 
 } // namespace auto_trax
@@ -32,9 +33,6 @@ int main (int argc, char** argv)
 
   // Construct class detection_processor with ros::NodeHandle and parameter structure
   auto_trax::ControllerProcessor processor(nh, parameter);
-
-  // Relative path to package
-  std::string string = ros::package::getPath("auto_trax_controller");
 
   // Spin
   ros::spin ();
