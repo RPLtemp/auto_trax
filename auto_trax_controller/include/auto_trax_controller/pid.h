@@ -5,9 +5,21 @@
 #ifndef AUTO_TRAX_CONTROLLER_PID_H
 #define AUTO_TRAX_CONTROLLER_PID_H
 
+#include <ros/ros.h>
+#include <iostream>
 #include "auto_trax_controller/parameter/pid_bag.h"
 
 namespace auto_trax {
+
+static float kDefaultKp = 3.0;
+static float kDefaultKi = 0.05;
+static float kDefaultKd = 0.5;
+
+static float kDefaultUpperLimit  = 1.0;
+static float kDefaultLowerLimit  = -1.0;
+static float kDefaultWindupLimit = 10.0;
+
+static float kDefaultCutOffFrequency = -1;
 
 class PID {
  public:
@@ -18,6 +30,14 @@ class PID {
 
  private:
   PidBag pid_param_;
+  ros::Time prev_time_;
+
+  std::vector<double> error_;
+  std::vector<double> filtered_error_;
+  std::vector<double> error_deriv_;
+  std::vector<double> filtered_error_deriv_;
+
+  int loop_counter_;
 };
 
 } // namespace auto_trax

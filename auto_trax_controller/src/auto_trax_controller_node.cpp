@@ -17,6 +17,15 @@ void InitializeParameters(const ros::NodeHandle& nh, ParameterBag* parameter) {
   nh.param("queue_size_pub_control_effort", parameter->queue_size_pub_control_effort, kDefaultControlEffortPubQueueSize);
   nh.param("service_rostopic_steering_angle", parameter->service_rostopic_steering_angle, kDefaultSteeringAngleServiceTopic);
   nh.param("setpoint", parameter->setpoint, kDefaultSetPoint);
+
+  // Retrieve PID Parameters
+  nh.param("Kp", parameter->pid_bag.Kp, kDefaultKp);
+  nh.param("Ki", parameter->pid_bag.Ki, kDefaultKi);
+  nh.param("Kd", parameter->pid_bag.Kd, kDefaultKd);
+  nh.param("upper_limit", parameter->pid_bag.upper_limit, kDefaultUpperLimit);
+  nh.param("lower_limit", parameter->pid_bag.lower_limit, kDefaultLowerLimit);
+  nh.param("windup_limit", parameter->pid_bag.windup_limit, kDefaultWindupLimit);
+  nh.param("cutoff_frequency", parameter->pid_bag.cutoff_frequency, kDefaultCutOffFrequency);
 }
 
 } // namespace auto_trax
