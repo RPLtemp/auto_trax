@@ -11,3 +11,5 @@ queue_size_pub_control_effort: 1                               # queue size of t
 
 service_rostopic_steering_angle: auto_trax_io/apply_steering_angle
 
+setpoint: 0.5
+

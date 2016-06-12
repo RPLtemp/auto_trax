@@ -26,6 +26,8 @@ struct ParameterBag
   int queue_size_pub_control_effort;
 
   std::string service_rostopic_steering_angle;
+
+  float setpoint;
 };
 
 #endif //AUTO_TRAX_PID_PARAMETER_BAG_H
