@@ -66,10 +66,14 @@ add_executable(auto_trax_controller_node
         src/auto_trax_controller_node.cpp
         src/controller_processor.cpp
         src/pid.cpp)
+add_executable(setpoint_plantstate_node
+        src/setpoint_plantstate_node.cpp)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(auto_trax_controller_node
   ${catkin_LIBRARIES}
   ${roslib_LIBRARIES}
-  ${OpenCV_LIBS}
-)
+  ${OpenCV_LIBS})
+target_link_libraries(setpoint_plantstate_node
+        ${catkin_LIBRARIES}
+        ${roslib_LIBRARIES})
