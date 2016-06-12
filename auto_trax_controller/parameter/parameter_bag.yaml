@@ -1,0 +1,13 @@
+node_name: auto_trax_controller_node                            # name of the node
+
+subscribed_rostopic_setpoint: setpoint                       # subscribed rostopic
+queue_size_subscriber_setpoint: 1                                   # queue size of the subscriber
+
+subscribed_rostopic_plantstate: /distance_result                   # subscribed rostopic
+queue_size_subscriber_plantstate: 1                                 # queue size of the subscriber
+
+pub_rostopic_control_effort: control_effort
+queue_size_pub_control_effort: 1                               # queue size of the subscriber
+
+service_rostopic_steering_angle: auto_trax_io/apply_steering_angle
+
