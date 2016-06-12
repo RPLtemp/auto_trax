@@ -34,7 +34,7 @@ int main (int argc, char** argv)
   auto_trax::ControllerProcessor processor(nh, parameter);
 
   // Relative path to package
-  std::string strimg = ros::package::getPath("auto_trax_controller");
+  std::string string = ros::package::getPath("auto_trax_controller");
 
   // Spin
   ros::spin ();
