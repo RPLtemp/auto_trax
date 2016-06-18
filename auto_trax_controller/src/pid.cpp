@@ -8,6 +8,11 @@ namespace auto_trax {
 
 PID::PID(PidBag pid_param):
     pid_param_(pid_param) {
+
+error_.resize(3);
+filtered_error_.resize(3);
+error_deriv_.resize(3);
+filtered_error_deriv_.resize(3);
 }
 
 PID::~PID() {
@@ -49,6 +54,7 @@ double PID::GetControlEffort(const float& setpoint, const float& plant_state) {
   double error_integral;
   error_integral += error_.at(0) * delta_t.toSec();
 
+/*
   // Apply windup limit to limit the size of the integral term
   if (error_integral > fabsf(pid_param_.windup_limit))
     error_integral = fabsf(pid_param_.windup_limit);
@@ -76,13 +82,13 @@ double PID::GetControlEffort(const float& setpoint, const float& plant_state) {
   filtered_error_.at(0) = (1 / (1 + c * c + 1.414 * c))
       * (error_.at(2) + 2 * error_.at(1) + error_.at(0) - (c * c - 1.414 * c + 1) * filtered_error_.at(2)
           - (-2 * c * c + 2) * filtered_error_.at(1));
-
+*/ 
   // Take derivative of error
   // First the raw, unfiltered data:
   error_deriv_.at(2) = error_deriv_.at(1);
   error_deriv_.at(1) = error_deriv_.at(0);
   error_deriv_.at(0) = (error_.at(0) - error_.at(1)) / delta_t.toSec();
-
+/*
   filtered_error_deriv_.at(2) = filtered_error_deriv_.at(1);
   filtered_error_deriv_.at(1) = filtered_error_deriv_.at(0);
 
@@ -94,10 +100,12 @@ double PID::GetControlEffort(const float& setpoint, const float& plant_state) {
   else
     loop_counter_++;
 
+*/
   // calculate the control effort
-  double proportional = pid_param_.Kp * filtered_error_.at(0);
+//  double proportional = pid_param_.Kp * filtered_error_.at(0);
+  double proportional = pid_param_.Kp * error_.at(0);
   double integral = pid_param_.Ki * error_integral;
-  double derivative = pid_param_.Kd * filtered_error_deriv_.at(0);
+  double derivative = pid_param_.Kd * error_deriv_.at(0);
   double control_effort = proportional + integral + derivative;
 
   std::cout << "P: " << proportional << " | I: " << integral << " | D: " << derivative << std::endl;
