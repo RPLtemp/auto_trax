@@ -9,3 +9,5 @@
   <rosparam command="load" file="$(find auto_trax_controller)/parameter/pid_bag.yaml" />
 
 </launch>
+
+
