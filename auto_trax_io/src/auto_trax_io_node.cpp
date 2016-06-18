@@ -81,25 +81,38 @@ inline double AutoTraxIoNode::SpeedConversion(double speed_in_m_s){
 }
 
 
-bool AutoTraxIoNode::serviceCallback(auto_trax_io::ApplySteeringAngle::Request  &req,
-                                     auto_trax_io::ApplySteeringAngle::Response &res){
+bool AutoTraxIoNode::steeringServiceCallback(auto_trax_io::ApplySteeringAngle::Request  &req,
+                                             auto_trax_io::ApplySteeringAngle::Response &res) {
     double angle_in_radians = req.Message.steering_angle;
-    double speed_in_m_s = req.Message.speed;
     double pwm_angle = AngleConversion(angle_in_radians);
-    double pwm_speed = SpeedConversion(speed_in_m_s);
 
-    std::cout <<"Pwm angle: " << pwm_angle <<
-               " | Pwm speed: " << pwm_speed <<
-                std::endl;
+    std::cout << "Pwm angle: " << pwm_angle << std::endl;
+
     if (pwm_driver_->error >= 0 && parameter_initialized_){
         pwm_driver_->setPWM(angle_i2c_channel_,0,pwm_angle);
+        res.success = true;
+        return true;
+    }
+
+    res.success = false;
+    return false;
+}
+
+bool AutoTraxIoNode::motorServiceCallback(auto_trax_io::ApplyMotorSpeed::Request  &req,
+                                          auto_trax_io::ApplyMotorSpeed::Response &res) {
+    double speed_in_m_s = req.Message.speed;
+    double pwm_speed = SpeedConversion(speed_in_m_s);
+
+    std::cout << "Pwm speed: " << pwm_speed << std::endl;
+
+    if (pwm_driver_->error >= 0 && parameter_initialized_){
         pwm_driver_->setPWM(speed_i2c_channel_,0,pwm_speed);
         res.success = true;
         return true;
     }
+
     res.success = false;
     return false;
-
 }
 
 int main(int argc, char **argv){
@@ -108,9 +121,11 @@ int main(int argc, char **argv){
 
     ros::NodeHandle nh;
     std::string steering_service_name;
+    std::string motor_service_name;
 
     AutoTraxIoParameters params;
     bool read_all_parameters = nh.getParam("steering_service_name", steering_service_name) &&
+                               nh.getParam("motor_service_name", motor_service_name) &&
                                nh.getParam("pwm_frequency", params.pwm_frequency) &&
                                nh.getParam("angle_i2c_channel", params.angle_i2c_channel) &&
                                nh.getParam("speed_i2c_channel", params.speed_i2c_channel) &&
@@ -132,8 +147,16 @@ int main(int argc, char **argv){
     }
 
     AutoTraxIoNode node(params);
-    ros::ServiceServer service = nh.advertiseService(steering_service_name, &AutoTraxIoNode::serviceCallback, &node);
 
+    ros::ServiceServer steering_service =
+            nh.advertiseService(steering_service_name,
+                                &AutoTraxIoNode::steeringServiceCallback,
+                                &node);
+
+    ros::ServiceServer motor_service =
+            nh.advertiseService(motor_service_name,
+                                &AutoTraxIoNode::motorServiceCallback,
+                                &node);
 
     ros::spin();
     return 0;
