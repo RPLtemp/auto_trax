@@ -1,14 +1,21 @@
-node_name: auto_trax_pid_test                            # name of the node
+node_name: auto_trax_pid_test                  # name of the node
 
-subscribed_rostopic_img: /camera/depth/image                       # subscribed rostopic
-queue_size_subscriber_img: 1                                   # queue size of the subscriber
+pub_rostopic_dist: distance_result             # published rostopic
+queue_size_pub_dist: 1                         # queue size of the publisher
 
-pub_rostopic_dist: distance_result                         # published rostopic
-queue_size_pub_dist: 1                                    # queue size of the publisher
+pub_rostopic_merged_scan: merged_scan          # published rostopic
+queue_size_pub_merged_scan: 1                  # queue size of the publisher
 
-subscribed_rostopic_scan: /scan                   # subscribed rostopic
-queue_size_subscriber_scan: 1                                 # queue size of the subscriber
+subscribed_rostopic_scan: /scan                # subscribed rostopic
+queue_size_subscriber_scan: 1                  # queue size of the subscriber
 
-#subscribed_rostopic_cam: camera_info                           # subscribed rostopic
-#queue_size_subscriber_cam: 1                                   # queue size of the subscriber
+frame_id_left: camera_left
+frame_id_right: camera_right
+
+merged_scan_angle_increment: 0.01
+
+left_camera_offset: 0.15                       # [m]
+left_camera_orientation: 45                    # [deg]
+right_camera_offset: -0.15                     # [m]
+right_camera_orientation: -45                  # [deg]
 
