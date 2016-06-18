@@ -2,6 +2,7 @@
 #define AUTO_TRAX_IO_NODE_H
 
 #include <ros/ros.h>
+#include <auto_trax_io/ApplyMotorSpeed.h>
 #include <auto_trax_io/ApplySteeringAngle.h>
 #include <auto_trax_io/JHPWMPCA9685.h>
 #include <iostream>
@@ -48,8 +49,11 @@ public:
     AutoTraxIoNode(AutoTraxIoParameters parameters);
     ~AutoTraxIoNode();
 
-    bool serviceCallback(auto_trax_io::ApplySteeringAngle::Request  &req,
-                         auto_trax_io::ApplySteeringAngle::Response &res);
+    bool steeringServiceCallback(auto_trax_io::ApplySteeringAngle::Request  &req,
+                                 auto_trax_io::ApplySteeringAngle::Response &res);
+
+    bool motorServiceCallback(auto_trax_io::ApplyMotorSpeed::Request  &req,
+                              auto_trax_io::ApplyMotorSpeed::Response &res);
 };
 
 #endif // AUTO_TRAX_IO_NODE_H

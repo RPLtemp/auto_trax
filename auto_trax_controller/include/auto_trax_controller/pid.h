@@ -32,10 +32,10 @@ class PID {
   PidBag pid_param_;
   ros::Time prev_time_;
 
-  std::vector<double> error_;
-  std::vector<double> filtered_error_;
-  std::vector<double> error_deriv_;
-  std::vector<double> filtered_error_deriv_;
+  std::vector<double> error_(3,0);
+  std::vector<double> filtered_error_(3,0);
+  std::vector<double> error_deriv_(3,0);
+  std::vector<double> filtered_error_deriv_(3,0);
 
   int loop_counter_;
 };

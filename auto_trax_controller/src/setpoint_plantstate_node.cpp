@@ -36,7 +36,8 @@ int main(int argc, char **argv)
 
     // Publish plant state
     state.data += 1.0;
-	//    state_pub.publish(state);
+//    state_pub.publish(state);
+
 
     loop_rate.sleep();
   }
