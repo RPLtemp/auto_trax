@@ -35,15 +35,15 @@ include_directories(
 )
 
 ## Declare a C++ executable
-add_executable(steering_interface
+add_executable(servo_driver_interface
                     src/auto_trax_io_node.cpp
                     src/JHPWMPCA9685.cpp)
                     
 
-add_dependencies(steering_interface auto_trax_io_generate_messages_cpp)
+add_dependencies(servo_driver_interface auto_trax_io_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
-target_link_libraries(steering_interface
+target_link_libraries(servo_driver_interface
                           ${catkin_LIBRARIES}
                           ${roslib_LIBRARIES}
  )
