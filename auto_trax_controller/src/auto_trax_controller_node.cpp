@@ -2,7 +2,6 @@
 // Created by marius on 16.04.16.
 //
 
-#include "auto_trax_controller/parameter/parameter_bag.h"
 #include "auto_trax_controller/controller_processor.h"
 
 namespace auto_trax {
