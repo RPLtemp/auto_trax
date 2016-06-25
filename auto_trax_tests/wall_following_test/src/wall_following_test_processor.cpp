@@ -2,16 +2,16 @@
 // Created by marius on 16.04.16.
 //
 
-#include "auto_trax_pid_test/auto_trax_pid_test_processor.h"
+#include "wall_following_test/wall_following_test_processor.h"
 
-AutoTraxPidTest::AutoTraxPidTest(ros::NodeHandle nodehandle, ParameterBag params_bag):
+WallFollowingTest::WallFollowingTest(ros::NodeHandle nodehandle, ParameterBag params_bag):
     nh_(nodehandle),
     parameter_(params_bag) {
-  ROS_DEBUG("Framework Processor started!");
+  ROS_DEBUG("Wall Following Test Processor started!");
 
   sub_scan_= nh_.subscribe(parameter_.subscribed_rostopic_scan,
                           parameter_.queue_size_subscriber_scan,
-                          &AutoTraxPidTest::CallbackScan,
+                          &WallFollowingTest::CallbackScan,
                           this);
 
   // Create publisher for scan distance
@@ -19,10 +19,10 @@ AutoTraxPidTest::AutoTraxPidTest(ros::NodeHandle nodehandle, ParameterBag params
                                               parameter_.queue_size_pub_dist);
 }
 
-AutoTraxPidTest::~AutoTraxPidTest(){
+WallFollowingTest::~WallFollowingTest(){
 }
 
-void AutoTraxPidTest::CallbackScan(const sensor_msgs::LaserScan::ConstPtr &scan_msg) {
+void WallFollowingTest::CallbackScan(const sensor_msgs::LaserScan::ConstPtr &scan_msg) {
   ROS_DEBUG("Scan received!");
 
   size_t effective_scan_size = 0;
