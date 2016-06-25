@@ -13,7 +13,7 @@
 #include <iostream>
 #include <vector>
 
-#include "wall_following_test/parameter/parameter_bag.h"
+#include "auto_trax_tests/parameter/wall_following_bag.h"
 
 // Default values
 static const std::string kDefaultDistPubTopic = "distance_result";
@@ -25,7 +25,7 @@ class WallFollowingTest
 {
 public:
   // Constructor with nodehandle and parameters
-  WallFollowingTest (ros::NodeHandle nh, ParameterBag parameter);
+  WallFollowingTest (ros::NodeHandle nh, WallFollowingTestBag parameter);
   virtual ~WallFollowingTest();
 
   // Callback
@@ -33,7 +33,7 @@ public:
 
  private:
   ros::NodeHandle nh_;
-  ParameterBag parameter_;
+  WallFollowingTestBag parameter_;
   ros::Subscriber sub_scan_;
   ros::Publisher pub_dist_;
 };

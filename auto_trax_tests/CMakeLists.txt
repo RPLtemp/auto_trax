@@ -12,6 +12,7 @@ find_package(catkin REQUIRED COMPONENTS
 )
 
 catkin_package(
+  INCLUDE_DIRS include
   CATKIN_DEPENDS roscpp std_msgs
   DEPENDS system_lib
 )
@@ -22,7 +23,7 @@ catkin_package(
 
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
-#include_directories(wall_following_test/include)
+include_directories(include)
 include_directories(
   ${catkin_INCLUDE_DIRS}
   ${roscpp_INCLUDE_DIRS}
@@ -32,16 +33,10 @@ include_directories(
 ################### EXECUTABLE SPECIFIC #########################
 #################################################################
 
-catkin_package(
-        INCLUDE_DIRS wall_following_test/include
-)
-
-include_directories(wall_following_test/include)
-
 ## Declare a C++ executable
 add_executable(wall_following_test_node
-        wall_following_test/src/wall_following_test_node.cpp
-        wall_following_test/src/wall_following_test_processor.cpp
+        src/wall_following_test_node.cpp
+        src/wall_following_test_processor.cpp
 )
 
 ## Specify libraries to link a library or executable target against
