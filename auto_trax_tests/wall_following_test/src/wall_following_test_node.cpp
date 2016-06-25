@@ -2,8 +2,7 @@
 // Created by marius on 16.04.16.
 //
 
-#include "auto_trax_pid_test/parameter/parameter_bag.h"
-#include "auto_trax_pid_test/auto_trax_pid_test_processor.h"
+#include "wall_following_test/wall_following_test_processor.h"
 
 void InitializeParameters(const ros::NodeHandle& nh, ParameterBag* parameter) {
   // Retrieve all parameters or set to default
@@ -16,7 +15,7 @@ void InitializeParameters(const ros::NodeHandle& nh, ParameterBag* parameter) {
 int main (int argc, char** argv)
 {
   // Initialize ROS
-  ros::init (argc, argv, "auto_trax_pid_test_node");
+  ros::init (argc, argv, "wall_following_test node");
   ros::NodeHandle nh;
 
   // Initialize parameter structure
@@ -24,10 +23,10 @@ int main (int argc, char** argv)
   InitializeParameters(nh, &parameter);
 
   // Construct class detection_processor with ros::NodeHandle and parameter structure
-  AutoTraxPidTest pid_test(nh, parameter);
+  WallFollowingTest wall_following_test(nh, parameter);
 
   // Relative path to package
-  std::string string = ros::package::getPath("auto_trax_pid_test");
+  std::string string = ros::package::getPath("wall_following_test");
 
   // Spin
   ros::spin ();

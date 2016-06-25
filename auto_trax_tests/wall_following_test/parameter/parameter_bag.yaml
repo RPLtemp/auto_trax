@@ -1,4 +1,4 @@
-node_name: auto_trax_pid_test                  # name of the node
+node_name: wall_following_test                 # name of the node
 
 pub_rostopic_dist: distance_result             # published rostopic
 queue_size_pub_dist: 1                         # queue size of the publisher

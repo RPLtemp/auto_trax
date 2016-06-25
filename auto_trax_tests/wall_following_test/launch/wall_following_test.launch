@@ -17,10 +17,10 @@
     <param name="~range_max" value="2" />
   </node>
   
-  <!-- Start "auto_trax_pid_test" to provide IO interface for auto_trax  -->
-  <node name="auto_trax_pid_test_node" pkg="auto_trax_pid_test" type="auto_trax_pid_test_node" output="screen" />
+  <!-- Start "auto_trax_tests" to provide IO interface for auto_trax  -->
+  <node name="wall_following_test_node" pkg="auto_trax_tests" type="wall_following_test_node" output="screen" />
 
   <!-- Start param -->
-  <rosparam command="load" file="$(find auto_trax_pid_test)/parameter/parameter_bag.yaml" />
+  <rosparam command="load" file="$(find auto_trax_tests)/wall_following_test/parameter/parameter_bag.yaml" />
 
 </launch>

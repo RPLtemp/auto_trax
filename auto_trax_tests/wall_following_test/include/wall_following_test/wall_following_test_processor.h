@@ -2,8 +2,8 @@
 // Created by marius on 16.04.16.
 //
 
-#ifndef CATKINPKG_FRAMEWORK_FRAMEWORKPROCESSOR_H
-#define CATKINPKG_FRAMEWORK_FRAMEWORK_PROCESSOR_H
+#ifndef WALL_FOLLOWING_TEST_PROCESSOR_H
+#define WALL_FOLLOWING_TEST_PROCESSOR_H
 
 #include <ros/ros.h>
 #include <ros/package.h>
@@ -13,7 +13,7 @@
 #include <iostream>
 #include <vector>
 
-#include "auto_trax_pid_test/parameter/parameter_bag.h"
+#include "wall_following_test/parameter/parameter_bag.h"
 
 // Default values
 static const std::string kDefaultDistPubTopic = "distance_result";
@@ -21,12 +21,12 @@ static const int kDefaultDistPubQueueSize = 1;
 static const std::string kDefaultScanSubTopic = "/scan";
 static const int kDefaultScanSubQueueSize = 1;
 
-class AutoTraxPidTest
+class WallFollowingTest
 {
 public:
   // Constructor with nodehandle and parameters
-  AutoTraxPidTest (ros::NodeHandle nh, ParameterBag parameter);
-  virtual ~AutoTraxPidTest();
+  WallFollowingTest (ros::NodeHandle nh, ParameterBag parameter);
+  virtual ~WallFollowingTest();
 
   // Callback
   void CallbackScan (const sensor_msgs::LaserScan::ConstPtr &scan_msg);
@@ -38,5 +38,4 @@ public:
   ros::Publisher pub_dist_;
 };
 
-
-#endif //CATKINPKG_FRAMEWORK_FRAMEWORKPROCESSOR_H
+#endif //WALL_FOLLOWING_TEST_PROCESSOR_H
