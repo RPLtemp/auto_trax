@@ -2,9 +2,9 @@
 // Created by marius on 16.04.16.
 //
 
-#include "wall_following_test/wall_following_test_processor.h"
+#include "auto_trax_tests/wall_following_test_processor.h"
 
-void InitializeParameters(const ros::NodeHandle& nh, ParameterBag* parameter) {
+void InitializeParameters(const ros::NodeHandle& nh, WallFollowingTestBag* parameter) {
   // Retrieve all parameters or set to default
   nh.param("subscribed_rostopic_scan", parameter->subscribed_rostopic_scan, kDefaultScanSubTopic);
   nh.param("queue_subscribed_rostopic_scan", parameter->queue_size_subscriber_scan, kDefaultScanSubQueueSize);
@@ -15,18 +15,18 @@ void InitializeParameters(const ros::NodeHandle& nh, ParameterBag* parameter) {
 int main (int argc, char** argv)
 {
   // Initialize ROS
-  ros::init (argc, argv, "wall_following_test node");
+  ros::init (argc, argv, "auto_trax_tests node");
   ros::NodeHandle nh;
 
   // Initialize parameter structure
-  ParameterBag parameter;
+  WallFollowingTestBag parameter;
   InitializeParameters(nh, &parameter);
 
   // Construct class detection_processor with ros::NodeHandle and parameter structure
   WallFollowingTest wall_following_test(nh, parameter);
 
   // Relative path to package
-  std::string string = ros::package::getPath("wall_following_test");
+  std::string string = ros::package::getPath("auto_trax_tests");
 
   // Spin
   ros::spin ();

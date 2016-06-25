@@ -2,12 +2,12 @@
 // Created by marius on 16.04.16.
 //
 
-#ifndef CATKINPKG_FRAMEWORK_PARAMETER_BAG_H
-#define CATKINPKG_FRAMEWORK_PARAMETER_BAG_H
+#ifndef AUTO_TRAX_TESTS_WALL_FOLLOWING_BAG_H
+#define AUTO_TRAX_TESTS_WALL_FOLLOWING_BAG_H
 
 #include <string>
 
-struct ParameterBag
+struct WallFollowingTestBag
 {
   // Parameter specific to parameter bag
   std::string node_name;
@@ -19,4 +19,4 @@ struct ParameterBag
   int queue_size_pub_dist;
 };
 
-#endif //CATKINPKG_FRAMEWORK_PARAMETER_BAG_H
+#endif //AUTO_TRAX_TESTS_WALL_FOLLOWING_BAG_H

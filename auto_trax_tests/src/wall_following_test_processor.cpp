@@ -2,9 +2,9 @@
 // Created by marius on 16.04.16.
 //
 
-#include "wall_following_test/wall_following_test_processor.h"
+#include "auto_trax_tests/wall_following_test_processor.h"
 
-WallFollowingTest::WallFollowingTest(ros::NodeHandle nodehandle, ParameterBag params_bag):
+WallFollowingTest::WallFollowingTest(ros::NodeHandle nodehandle, WallFollowingTestBag params_bag):
     nh_(nodehandle),
     parameter_(params_bag) {
   ROS_DEBUG("Wall Following Test Processor started!");
