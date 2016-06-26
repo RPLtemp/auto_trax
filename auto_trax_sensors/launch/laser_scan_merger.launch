@@ -1,6 +1,20 @@
 <?xml version="1.0"?>
 
 <launch>
+  <!-- Depthimage to laserscan -->
+  <node name="laserscan_1" pkg="depthimage_to_laserscan" type="depthimage_to_laserscan" args="image:=/camera_1/depth/image" output="screen">
+    <param name="~range_min" value="0.3" />
+    <param name="~range_max" value="2" />
+    <param name="~output_frame_id" value="camera_right" />
+  </node>
+  
+  <!-- Depthimage to laserscan -->
+  <node name="laserscan_2" pkg="depthimage_to_laserscan" type="depthimage_to_laserscan" args="image:=/camera_2/depth/image" output="screen">
+    <param name="~range_min" value="0.3" />
+    <param name="~range_max" value="2" />
+    <param name="~output_frame_id" value="camera_left" />
+  </node>
+
   <!-- Start the laser_scan_merger node -->
   <node name="auto_trax_laser_scan_merger_node" pkg="auto_trax_sensors" type="laser_scan_merger_node" output="screen">
     <param name="merged_scan_pub_topic" value="merged_scan" />
