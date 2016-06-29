@@ -1,0 +1,16 @@
+<library path="src">
+  <class name="AutoTrax" type="rqt_auto_trax.auto_trax.AutoTrax" base_class_type="rqt_gui_py::Plugin">
+    <description>
+      Plugin for auto_trax.
+    </description>
+    <qtgui>
+      <group>
+        <label>Auto_Trax</label>        
+        <icon type="theme">folder</icon>
+      </group>
+      <label>Auto_Trax</label>
+      <icon type="theme">applications-other</icon>
+      <statustip>Plugin for auto_trax.</statustip>
+    </qtgui>
+  </class>
+</library>
