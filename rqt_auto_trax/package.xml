@@ -1,0 +1,30 @@
+<package>
+  <name>rqt_auto_trax</name>
+  <version>0.0.1</version>
+  <description>The rqt_auto_trax package</description>
+
+  <maintainer email="pvechersky@gmail.com">Pavel Vechersky</maintainer>
+
+  <author>Pavel Vechersky</author>
+
+  <license>TODO</license>
+
+  <url type="website">https://github.com/pvechersky/auto_trax</url>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <!-- Dependencies needed to compile this package. -->
+  <build_depend>rospy</build_depend>
+  <build_depend>rqt_gui</build_depend>
+  <build_depend>rqt_gui_py</build_depend>
+
+  <!-- Dependencies needed after this package is compiled. -->
+  <run_depend>rospy</run_depend>
+  <run_depend>rqt_gui</run_depend>
+  <run_depend>rqt_gui_py</run_depend>
+
+  <export>
+    <rqt_gui plugin="${prefix}/plugin.xml"/>
+  </export>
+
+</package>
