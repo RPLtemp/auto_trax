@@ -11,7 +11,7 @@ from auto_trax_io.srv import ApplyMotorSpeed
 
 class MotorsControlWidget(QtGui.QWidget):
 	# Motor constants
-	ZERO_SPEED_PWM = 305
+	ZERO_SPEED_PWM = 0
 
 	# String constants
 	STR_APPLY_MOTOR_SPEED_SERVICE_NAME = 'auto_trax_io/apply_motor_speed'
