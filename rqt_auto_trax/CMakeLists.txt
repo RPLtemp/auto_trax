@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 2.8.3)
 project(rqt_auto_trax)
 
 find_package(catkin REQUIRED COMPONENTS
+  ackermann_msgs
   rospy
   rqt_gui
   rqt_gui_py
