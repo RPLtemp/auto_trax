@@ -94,61 +94,61 @@ void LineTrackingNode::InitializeParameters() {
 }
 
 void LineTrackingNode::Test() {
-  cv::Mat test_image;
-  test_image = cv::imread("/home/pavel/primesense_track_3.jpg", CV_LOAD_IMAGE_COLOR);
-
-  if (!test_image.data ) {
-    std::cout <<  "Could not open or find the image" << std::endl ;
-    return;
-  }
-
-  // Segment the occupied/unoccupied space by the colored tracks
-  cv::Mat segmented_image;
-  image_processing_.SegmentTracks(test_image, segmented_image);
-
-  //cv::imwrite("/home/pavel/test.jpg", segmented_image);
-  cv::imwrite("/home/pavel/test.jpg", segmented_image);
-
-  // Create an occupancy grid from the segmented image
-  nav_msgs::OccupancyGridPtr occ_grid(new nav_msgs::OccupancyGrid);
-  occ_grid_manager_.OccGridFromBinaryImage(segmented_image, occ_grid);
-
-  std::pair<double, double> goal;
-  occ_grid_manager_.GetGoalPoint(*occ_grid, goal);
-
-  // Publish the occupancy grid
-  occ_grid->header.frame_id = occ_grid_frame_id_;
-  occ_grid_pub_.publish(*occ_grid);
-
-  // Publish the goal point
-  /*geometry_msgs::Point goal_point;
-  goal_point.x = goal.first;
-  goal_point.y = goal.second;
-  goal_point.z = 0.0;
-  goal_point_pub_.publish(goal_point);*/
-
-  // Publish the goal point marker
-  /*visualization_msgs::Marker goal_marker;
-  goal_marker.header.frame_id = "map";
-  goal_marker.ns = "line_tracking";
-  goal_marker.id = 0;
-  goal_marker.type = visualization_msgs::Marker::SPHERE;
-  goal_marker.action = visualization_msgs::Marker::ADD;
-  goal_marker.pose.position.x = goal.first;
-  goal_marker.pose.position.y = goal.second;
-  goal_marker.pose.position.z = 0.0;
-  goal_marker.pose.orientation.x = 0.0;
-  goal_marker.pose.orientation.y = 0.0;
-  goal_marker.pose.orientation.z = 0.0;
-  goal_marker.pose.orientation.w = 1.0;
-  goal_marker.scale.x = 0.02;
-  goal_marker.scale.y = 0.02;
-  goal_marker.scale.z = 0.02;
-  goal_marker.color.a = 1.0;
-  goal_marker.color.r = 0.0;
-  goal_marker.color.g = 1.0;
-  goal_marker.color.b = 0.0;
-  marker_pub_.publish(goal_marker);*/
+//  cv::Mat test_image;
+//  test_image = cv::imread("/home/pavel/primesense_track_3.jpg", CV_LOAD_IMAGE_COLOR);
+//
+//  if (!test_image.data ) {
+//    std::cout <<  "Could not open or find the image" << std::endl ;
+//    return;
+//  }
+//
+//  // Segment the occupied/unoccupied space by the colored tracks
+//  cv::Mat segmented_image;
+//  image_processing_.SegmentTracks(test_image, segmented_image);
+//
+//  //cv::imwrite("/home/pavel/test.jpg", segmented_image);
+//  cv::imwrite("/home/pavel/test.jpg", segmented_image);
+//
+//  // Create an occupancy grid from the segmented image
+//  nav_msgs::OccupancyGridPtr occ_grid(new nav_msgs::OccupancyGrid);
+//  occ_grid_manager_.OccGridFromBinaryImage(segmented_image, occ_grid);
+//
+//  std::pair<double, double> goal;
+//  occ_grid_manager_.GetGoalPoint(*occ_grid, goal);
+//
+//  // Publish the occupancy grid
+//  occ_grid->header.frame_id = occ_grid_frame_id_;
+//  occ_grid_pub_.publish(*occ_grid);
+//
+//  // Publish the goal point
+//  /*geometry_msgs::Point goal_point;
+//  goal_point.x = goal.first;
+//  goal_point.y = goal.second;
+//  goal_point.z = 0.0;
+//  goal_point_pub_.publish(goal_point);*/
+//
+//  // Publish the goal point marker
+//  /*visualization_msgs::Marker goal_marker;
+//  goal_marker.header.frame_id = "map";
+//  goal_marker.ns = "line_tracking";
+//  goal_marker.id = 0;
+//  goal_marker.type = visualization_msgs::Marker::SPHERE;
+//  goal_marker.action = visualization_msgs::Marker::ADD;
+//  goal_marker.pose.position.x = goal.first;
+//  goal_marker.pose.position.y = goal.second;
+//  goal_marker.pose.position.z = 0.0;
+//  goal_marker.pose.orientation.x = 0.0;
+//  goal_marker.pose.orientation.y = 0.0;
+//  goal_marker.pose.orientation.z = 0.0;
+//  goal_marker.pose.orientation.w = 1.0;
+//  goal_marker.scale.x = 0.02;
+//  goal_marker.scale.y = 0.02;
+//  goal_marker.scale.z = 0.02;
+//  goal_marker.color.a = 1.0;
+//  goal_marker.color.r = 0.0;
+//  goal_marker.color.g = 1.0;
+//  goal_marker.color.b = 0.0;
+//  marker_pub_.publish(goal_marker);*/
 }
 }
 
