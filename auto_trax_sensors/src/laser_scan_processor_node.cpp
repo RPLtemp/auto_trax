@@ -19,7 +19,7 @@ LaserScanProcessorNode::LaserScanProcessorNode()
     laser_scan_info_pub_ = nh_.advertise<std_msgs::Float32>(laser_scan_info_pub_topic, 1);
 
 }
-
+ 
     LaserScanProcessorNode::~LaserScanProcessorNode() {
 
 }
