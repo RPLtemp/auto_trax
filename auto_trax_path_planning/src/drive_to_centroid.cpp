@@ -21,7 +21,7 @@ DriveToCentroid::~DriveToCentroid(){
 
 void DriveToCentroid::CallbackScan (const geometry_msgs::PointStamped::ConstPtr &scan_center_msg){
 
-    double angle_to_centroid = atan2(scan_center_msg->point.y,scan_center_msg->point.x);
+    double angle_to_centroid = -atan2(scan_center_msg->point.y,scan_center_msg->point.x);
 
     std_msgs::Float64 result;
     result.data = angle_to_centroid;
