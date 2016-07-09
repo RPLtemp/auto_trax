@@ -8,7 +8,7 @@ DriveToCentroid::DriveToCentroid(ros::NodeHandle nh): nh_(nh){
 
     ROS_DEBUG("Drive to centroid Processor started!");
 
-    sub_centroid_point = nh_.subscribe("/merged_scan",
+    sub_centroid_point = nh_.subscribe("/scan_center",
                              1,
                              &DriveToCentroid::CallbackScan,
                              this);
@@ -30,10 +30,12 @@ void DriveToCentroid::CallbackScan (const geometry_msgs::PointStamped::ConstPtr 
 
 int main (int argc, char** argv)
 {
-    // Initialize ROS
-    ros::init (argc, argv, "auto_trax_drive_to_centroid");
-    ros::NodeHandle nh;
+  // Initialize ROS
+  ros::init (argc, argv, "auto_trax_drive_to_centroid");
+  ros::NodeHandle nh;
 
-    // Spin
-    ros::spin();
+  DriveToCentroid driveToCentroid(nh);
+
+  // Spin
+  ros::spin();
 }
