@@ -123,6 +123,11 @@ void LaserScanMerger::ScanCallback(const sensor_msgs::LaserScanConstPtr& scan_ms
 
       int angle_ind = angle_robot / angle_increment_ - 1;
 
+      if (angle_ind < 0 ||
+              angle_ind > (merged_scan_msg->ranges.size() - 1)) {
+        continue;
+      }
+
       if (range_robot < merged_scan_msg->ranges.at(angle_ind) ||
               isnan(merged_scan_msg->ranges.at(angle_ind))) {
         merged_scan_msg->ranges.at(angle_ind) = range_robot;
@@ -151,8 +156,7 @@ void LaserScanMerger::ScanCallback(const sensor_msgs::LaserScanConstPtr& scan_ms
       int angle_ind = angle_robot / angle_increment_ + 1;
 
       if (angle_ind < 0 ||
-              angle_ind > ((merged_scan_msg->ranges.size()) -1)) {
-        std::cout << "Marius" << std::endl;
+              angle_ind > (merged_scan_msg->ranges.size() - 1)) {
         continue;
       }
 
