@@ -13,6 +13,11 @@ cs_add_executable(emergency_stop_node
         src/emergency_stop_node.cpp
         )
 
+cs_add_executable(drive_to_centroid_node
+        src/drive_to_centroid.cpp
+        )
+
+
 ##########
 # EXPORT #
 ##########
