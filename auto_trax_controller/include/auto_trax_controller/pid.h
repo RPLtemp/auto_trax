@@ -5,25 +5,26 @@
 #ifndef AUTO_TRAX_CONTROLLER_PID_H
 #define AUTO_TRAX_CONTROLLER_PID_H
 
-#include <ros/ros.h>
 #include <iostream>
+#include <ros/ros.h>
+
 #include "auto_trax_controller/parameter/pid_bag.h"
 
 namespace auto_trax {
 
-static float kDefaultKp = 3.0;
-static float kDefaultKi = 0.05;
-static float kDefaultKd = 0.5;
+static constexpr float kDefaultKp = 3.0;
+static constexpr float kDefaultKi = 0.05;
+static constexpr float kDefaultKd = 0.5;
 
-static float kDefaultUpperLimit  = 1.0;
-static float kDefaultLowerLimit  = -1.0;
-static float kDefaultWindupLimit = 10.0;
+static constexpr float kDefaultUpperLimit  = 1.0;
+static constexpr float kDefaultLowerLimit  = -1.0;
+static constexpr float kDefaultWindupLimit = 10.0;
 
-static float kDefaultCutOffFrequency = -1;
+static constexpr float kDefaultCutOffFrequency = -1;
 
 class PID {
  public:
-  PID(PidBag pid_param);
+  PID(const PidBag& pid_param);
   virtual ~PID();
 
   double GetControlEffort(const float& setpoint, const float& plant_state);
