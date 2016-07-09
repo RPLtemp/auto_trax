@@ -35,16 +35,14 @@ include_directories(
 include_directories(${Eigen_INCLUDE_DIRS})
 
 add_library(auto_trax_image_processing src/library/image_processing.cpp)
-add_library(auto_trax_occ_grid_manager src/library/occ_grid_manager.cpp)
-add_library(auto_trax_laser_scan_processor src/library/laser_scan_processor.cpp)
-
-
 target_link_libraries(auto_trax_image_processing ${catkin_LIBRARIES})
 add_dependencies(auto_trax_image_processing ${catkin_EXPORTED_TARGETS})
 
+add_library(auto_trax_occ_grid_manager src/library/occ_grid_manager.cpp)
 target_link_libraries(auto_trax_occ_grid_manager ${catkin_LIBRARIES})
 add_dependencies(auto_trax_occ_grid_manager ${catkin_EXPORTED_TARGETS})
 
+add_library(auto_trax_laser_scan_processor src/library/laser_scan_processor.cpp)
 target_link_libraries(auto_trax_laser_scan_processor ${catkin_LIBRARIES})
 add_dependencies(auto_trax_laser_scan_processor ${catkin_EXPORTED_TARGETS})
 
@@ -58,6 +56,7 @@ target_link_libraries(dead_reckoning_node ${catkin_LIBRARIES} ${roslib_LIBRARIES
 target_link_libraries(line_tracking_node ${catkin_LIBRARIES} ${roslib_LIBRARIES} ${OpenCV_LIBRARIES}
   auto_trax_image_processing auto_trax_occ_grid_manager)
 target_link_libraries(wall_detection_node ${catkin_LIBRARIES} ${roslib_LIBRARIES})
-target_link_libraries(laser_scan_merger_node ${catkin_LIBRARIES} ${roslib_LIBRARIES})
+target_link_libraries(laser_scan_merger_node ${catkin_LIBRARIES} ${roslib_LIBRARIES}
+  auto_trax_laser_scan_processor)
 target_link_libraries(laser_scan_processor_node ${catkin_LIBRARIES} ${roslib_LIBRARIES} auto_trax_laser_scan_processor)
 
