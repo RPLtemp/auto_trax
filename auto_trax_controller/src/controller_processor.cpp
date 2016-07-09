@@ -6,7 +6,8 @@
 
 namespace auto_trax {
 
-ControllerProcessor::ControllerProcessor(ros::NodeHandle nodehandle, ParameterBag params_bag):
+ControllerProcessor::ControllerProcessor(const ros::NodeHandle& nodehandle,
+                                         const ParameterBag& params_bag):
     nh_(nodehandle),
     parameter_(params_bag),
     pid_(parameter_.pid_bag),
@@ -15,21 +16,22 @@ ControllerProcessor::ControllerProcessor(ros::NodeHandle nodehandle, ParameterBa
 
   // Create Subscriber for the set point and plant state
   sub_set_point_= nh_.subscribe(parameter_.subscribed_rostopic_setpoint,
-                                             parameter_.queue_size_subscriber_setpoint,
-                                             &ControllerProcessor::CallbackSetPoint,
-                                             this);
+                                parameter_.queue_size_subscriber_setpoint,
+                                &ControllerProcessor::CallbackSetPoint, this);
   sub_plant_state_= nh_.subscribe(parameter_.subscribed_rostopic_plantstate,
-                                parameter_.queue_size_subscriber_plantstate,
-                                &ControllerProcessor::CallbackPlantState,
-                                this);
+                                  parameter_.queue_size_subscriber_plantstate,
+                                  &ControllerProcessor::CallbackPlantState,
+                                  this);
 
   // Create Publisher for control effort
-  pub_control_effort_ = nh_.advertise<std_msgs::Float64>(parameter_.pub_rostopic_control_effort,
-                                                         parameter_.queue_size_pub_control_effort);
+  pub_control_effort_ = nh_.advertise<std_msgs::Float64>(
+      parameter_.pub_rostopic_control_effort,
+      parameter_.queue_size_pub_control_effort);
 
   // Service for steering angle
   ros::service::waitForService(parameter_.service_rostopic_steering_angle);
-  client_ = nh_.serviceClient<auto_trax_io::ApplySteeringAngle>(parameter_.service_rostopic_steering_angle);
+  client_ = nh_.serviceClient<auto_trax_io::ApplySteeringAngle>(
+      parameter_.service_rostopic_steering_angle);
 }
 
 ControllerProcessor::~ControllerProcessor(){
@@ -58,13 +60,12 @@ void ControllerProcessor::CallbackPlantState(const std_msgs::Float64& state_msg)
   srv.request.Message.steering_angle = steering_angle;
 
   if (client_.call(srv)) {
-    ROS_INFO("Steering Angle: %d | %f \n", srv.response.success, srv.request.Message.steering_angle);
+    ROS_INFO("Steering Angle: %d | %f \n", srv.response.success,
+             srv.request.Message.steering_angle);
     std::cout << "--Steering" << std::endl;
-  }
-  else {
+  } else {
     ROS_INFO("Failed to call service!!");
   }
-
 }
 
 } // namespace auto_trax

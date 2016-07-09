@@ -14,7 +14,7 @@ The sensors package collects data from the sensors and convert it to more meanin
 The test package stores different tests on our way to fully automate auto_trax (e.g. wall following).
 
 ## Gazebo package
-The gazebo package takes care of simulating auto_trax in a gazebo ros environment. 
+The gazebo package takes care of simulating auto_trax in a gazebo ros environment.
 
 ## Dependencies
  1. Install catkin_simple

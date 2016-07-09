@@ -6,10 +6,12 @@
 #define AUTO_TRAX_PID_PARAMETER_BAG_H
 
 #include <string>
+
 #include "auto_trax_controller/parameter/pid_bag.h"
 
-struct ParameterBag
-{
+namespace auto_trax {
+
+struct ParameterBag {
   // Include other bags
   PidBag pid_bag;
 
@@ -29,5 +31,7 @@ struct ParameterBag
 
   float setpoint;
 };
+
+} // namespace auto_trax
 
 #endif //AUTO_TRAX_PID_PARAMETER_BAG_H
