@@ -41,7 +41,7 @@ void LaserScanMerger::ScanCallback(const sensor_msgs::LaserScanConstPtr& scan_ms
   geometry_msgs::PointStampedPtr scan_center_msg(new geometry_msgs::PointStamped());
   sensor_msgs::LaserScanPtr merged_scan_msg(new sensor_msgs::LaserScan());
 
-  float angle_increment_ = laser_scan_left_->angle_increment;
+  angle_increment_ = laser_scan_left_->angle_increment;
   float left_angle_min = laser_scan_left_->angle_min;
   float left_angle_inc = laser_scan_left_->angle_increment;
   float right_angle_min = laser_scan_right_->angle_min;
@@ -170,13 +170,15 @@ void LaserScanMerger::ScanCallback(const sensor_msgs::LaserScanConstPtr& scan_ms
   scan_center_msg->point.z = 0.0;
 
   // Fill the new merged laser scan message
+  merged_scan_msg->header.frame_id = "robot";
+  merged_scan_msg->header.stamp.sec = current_time.sec;
+  merged_scan_msg->header.stamp.nsec = current_time.nsec;
   merged_scan_msg->angle_min = angle_min;
   merged_scan_msg->angle_max = angle_max;
   merged_scan_msg->angle_increment = angle_increment_;
   merged_scan_msg->scan_time = laser_scan_right_->scan_time;
   merged_scan_msg->range_min = 0.2;
   merged_scan_msg->range_max = 2.0;
-  merged_scan_msg->header.frame_id = "robot";
 
   // Publish the new merged laser scan message
   merged_scan_pub_.publish(merged_scan_msg);
