@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+
+<launch>
+
+    <!-- Launch Controller -->
+    <include file="$(find auto_trax_controller)/launch/auto_trax_controller.launch" />
+
+    <!-- Launch IO Interface -->
+    <include file="$(find auto_trax_io)/launch/servo_driver_interface.launch" />
+
+    <!-- Start "auto_trax_tests" to provide IO interface for auto_trax  -->
+    <node name="drive_to_center_test_node" pkg="auto_trax_path_planning" type="drive_to_centroid_node" output="screen" />
+
+
+</launch>
