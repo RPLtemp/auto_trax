@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>auto_trax_msgs</name>
+  <version>0.0.1</version>
+  <description>
+    Messages for auto trax.
+  </description>
+
+  <maintainer email="marius.grimm93@web.de">Marius Grimm</maintainer>
+
+  <license>TODO</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <buildtool_depend>catkin_simple</buildtool_depend>
+
+  <depend>cmake_modules</depend>
+  <depend>message_generation</depend>
+  <depend>message_runtime</depend>
+  <depend>std_msgs</depend>
+  <depend>geometry_msgs</depend>
+  <depend>sensor_msgs</depend>
+</package>

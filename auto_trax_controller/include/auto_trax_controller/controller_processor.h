@@ -5,17 +5,17 @@
 #ifndef AUTO_TRAX_PID_PROCESSOR_H
 #define AUTO_TRAX_PID_PROCESSOR_H
 
+#include <ackermann_msgs/AckermannDrive.h>
+#include <auto_trax_io/ApplySteeringAngle.h>
 #include <ros/ros.h>
 #include <ros/package.h>
 #include <std_msgs/Float64.h>
-#include <auto_trax_io/ApplySteeringAngle.h>
-#include <ackermann_msgs/AckermannDrive.h>
 
 #include <iostream>
 #include <vector>
 
-#include "auto_trax_controller/pid.h"
 #include "auto_trax_controller/parameter/parameter_bag.h"
+#include "auto_trax_controller/pid.h"
 
 namespace auto_trax {
 
@@ -25,17 +25,16 @@ static const std::string kDefaultPlantStateSubTopic        = "/distance_result";
 static const std::string kDefaultControlEffortPubTopic     = "control_effort";
 static const std::string kDefaultSteeringAngleServiceTopic = "/auto_trax_io/apply_steering_angle";
 
-static const int kDefaultSetPointSubQueueSize       = 1;
-static const int kDefaultPlantStateSubQueueSize     = 1;
-static const int kDefaultControlEffortPubQueueSize  = 1;
+static constexpr int kDefaultSetPointSubQueueSize       = 1;
+static constexpr int kDefaultPlantStateSubQueueSize     = 1;
+static constexpr int kDefaultControlEffortPubQueueSize  = 1;
 
-static const float kDefaultSetPoint = 0.5;
+static constexpr float kDefaultSetPoint = 0.5;
 
-class ControllerProcessor
-{
-public:
+class ControllerProcessor {
+ public:
   // Constructor with nodehandle and parameters
-  ControllerProcessor(ros::NodeHandle nh, ParameterBag parameter);
+  ControllerProcessor(const ros::NodeHandle& nh, const ParameterBag& parameter);
   virtual ~ControllerProcessor();
 
   // Callback
