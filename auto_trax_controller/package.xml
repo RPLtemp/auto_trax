@@ -13,6 +13,7 @@
   <buildtool_depend>catkin</buildtool_depend>
   <buildtool_depend>catkin_simple</buildtool_depend>
 
+  <depend>auto_trax_io</depend>
   <depend>roscpp</depend>
   <depend>std_msgs</depend>
 </package>
