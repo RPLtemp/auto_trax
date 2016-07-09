@@ -1,26 +1,21 @@
 <?xml version="1.0"?>
-<package>
+<package format="2">
   <name>auto_trax_io</name>
   <version>0.0.1</version>
-  <description>The auto_trax_io package</description>
+  <description>
+    The auto_trax_io package.
+  </description>
 
   <maintainer email="marcozorzi@icloud.com">Marco Zorzi</maintainer>
 
-  <author>Marco Zorzi</author>
-
   <license>TODO</license>
 
-  <url type="website">https://github.com/pvechersky/auto_trax</url>
-
   <buildtool_depend>catkin</buildtool_depend>
+  <buildtool_depend>catkin_simple</buildtool_depend>
 
-  <build_depend>message_generation</build_depend>
-  <build_depend>roscpp</build_depend>
-  <build_depend>std_msgs</build_depend>
-  <build_depend>ackermann_msgs</build_depend>
-
-  <run_depend>message_runtime</run_depend>
-  <run_depend>roscpp</run_depend>
-  <run_depend>std_msgs</run_depend>
-  <run_depend>ackermann_msgs</run_depend>
+  <depend>message_generation</depend>
+  <depend>message_runtime</depend>
+  <depend>ackermann_msgs</depend>
+  <depend>roscpp</depend>
+  <depend>std_msgs</depend>
 </package>

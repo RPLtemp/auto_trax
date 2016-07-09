@@ -1,49 +1,26 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(auto_trax_io)
 
-## Find catkin macros and libraries
-## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
-## is used, also find other catkin packages
-find_package(catkin REQUIRED COMPONENTS
-  roscpp
-  std_msgs
-  ackermann_msgs
-  message_generation
-)
+find_package(catkin_simple REQUIRED)
+catkin_simple(ALL_DEPS_REQUIRED)
 
-add_service_files(
-  FILES
-  ApplySteeringAngle.srv
-  ApplyMotorSpeed.srv
-)
+#############
+# LIBRARIES #
+#############
+cs_add_library(${PROJECT_NAME}
+        src/JHPWMPCA9685.cpp
+        )
 
-generate_messages(
-  DEPENDENCIES
-  std_msgs
-  ackermann_msgs
-)
+############
+# BINARIES #
+############
+cs_add_executable(servo_driver_interface
+        src/auto_trax_io_node.cpp
+        )
+target_link_libraries(servo_driver_interface ${PROJECT_NAME})
 
-catkin_package(
-  INCLUDE_DIRS include
-  CATKIN_DEPENDS roscpp std_msgs ackermann_msgs message_runtime
-)
-
-include_directories(
-  include
-  ${catkin_INCLUDE_DIRS}
-  ${roscpp_INCLUDE_DIRS}
-)
-
-## Declare a C++ executable
-add_executable(servo_driver_interface
-                    src/auto_trax_io_node.cpp
-                    src/JHPWMPCA9685.cpp)
-                    
-
-add_dependencies(servo_driver_interface auto_trax_io_generate_messages_cpp)
-
-## Specify libraries to link a library or executable target against
-target_link_libraries(servo_driver_interface
-                          ${catkin_LIBRARIES}
-                          ${roslib_LIBRARIES}
- )
+##########
+# EXPORT #
+##########
+cs_install()
+cs_export()
