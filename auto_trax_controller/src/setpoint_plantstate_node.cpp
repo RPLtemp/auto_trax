@@ -19,7 +19,7 @@ int main(int argc, char **argv)
   std_msgs::Float64 setpoint;
   std_msgs::Float64 state;
 
-  setpoint.data = 0.5;
+  setpoint.data = 0.0;
   state.data = 1.0;
   ros::Publisher setpoint_pub = nh.advertise<std_msgs::Float64>("/setpoint", 1);
   ros::Publisher state_pub = nh.advertise<std_msgs::Float64>("/plant_state", 1);
