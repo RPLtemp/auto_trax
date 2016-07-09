@@ -2,6 +2,15 @@
 
 <launch>
 
+    <!-- Launch Camera 1 -->
+    <include file="$(find auto_trax_sensors)/launch/openni2_1.launch" />
+
+    <!-- Launch Camera 2 -->
+    <include file="$(find auto_trax_sensors)/launch/openni2_2.launch" />
+
+    <!-- Launch Scan Merger and Scan Center -->
+    <include file="$(find auto_trax_sensors)/launch/laser_scan_merger.launch" />
+
     <!-- Launch Controller -->
     <include file="$(find auto_trax_controller)/launch/auto_trax_controller.launch" />
 
