@@ -10,17 +10,32 @@
 
 namespace auto_trax {
 
-    class LaserScanProcessor {
+class LaserScanProcessor {
+  public:
+    LaserScanProcessor(const sensor_msgs::LaserScanConstPtr& laser_scan);
+    virtual ~LaserScanProcessor();
 
-    public:
-        LaserScanProcessor();
+    float GetClosestRange(const std::vector<float> &ranges);
 
-        virtual ~LaserScanProcessor();
+    void GetMaxValidAngle(float& angle, int& ind);
 
-        float GetClosestRange(const std::vector<float> &ranges);
+    void GetMinValidAngle(float& angle, int& ind);
 
-    };
+    inline bool IsRangeValid(float range) {
+      return (range < range_max_ && range > range_min_);
+    }
 
-}// namespace auto_trax
+  private:
+    float angle_min_;
+    float angle_max_;
+    float angle_increment_;
+
+    float range_min_;
+    float range_max_;
+
+    std::vector<float> ranges_;
+};
+
+} // namespace auto_trax
 
 #endif //AUTO_TRAX_SENSORS_LASER_SCAN_PROCESSOR_H

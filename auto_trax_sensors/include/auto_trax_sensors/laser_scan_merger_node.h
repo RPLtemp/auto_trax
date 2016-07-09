@@ -5,6 +5,8 @@
 #include <ros/ros.h>
 #include <sensor_msgs/LaserScan.h>
 
+#include "auto_trax_sensors/laser_scan_processor.h"
+
 namespace auto_trax {
 // Default values
 static const std::string kDefaultMergedScanPubTopic = "merged_scan";

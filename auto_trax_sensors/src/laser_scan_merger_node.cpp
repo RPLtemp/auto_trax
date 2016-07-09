@@ -38,9 +38,22 @@ void LaserScanMerger::ScanCallback(const sensor_msgs::LaserScanConstPtr& scan_ms
 
   sensor_msgs::LaserScanPtr merged_scan_msg(new sensor_msgs::LaserScan());
 
-  // Get the left-most angle and range in robot frame
+  float angle_increment_ = laser_scan_left_->angle_increment;
+  float left_angle_min = laser_scan_left_->angle_min;
+  float left_angle_inc = laser_scan_left_->angle_increment;
+  float right_angle_min = laser_scan_right_->angle_min;
+  float right_angle_inc = laser_scan_right_->angle_increment;
+
+  // Create the objects for processing the two scans
+  LaserScanProcessor left_scan_processor(laser_scan_left_);
+  LaserScanProcessor right_scan_processor(laser_scan_right_);
+
+  // Get the left-most angle and range
   float angle_max;
   int angle_max_index;
+  left_scan_processor.GetMaxValidAngle(angle_max, angle_max_index);
+
+  // Transform the max angle from left scan into robot frame
   double rot_cos = cos(left_camera_orientation_ * M_PI / 180.0);
   double rot_sin = sin(left_camera_orientation_ * M_PI / 180.0);
 
@@ -49,30 +62,20 @@ void LaserScanMerger::ScanCallback(const sensor_msgs::LaserScanConstPtr& scan_ms
   rotation_left << rot_cos, -rot_sin,
                    rot_sin, rot_cos;
 
-  float left_angle_min = laser_scan_left_->angle_min;
-  float left_angle_inc = laser_scan_left_->angle_increment;
+  float range = laser_scan_left_->ranges.at(angle_max_index);
+  float scan_pt_x = range * cos(angle_max);
+  float scan_pt_y = range * sin(angle_max);
 
-  for (int i = laser_scan_left_->ranges.size() - 1; i >= 0; i--) {
-    float range = laser_scan_left_->ranges.at(i);
+  Eigen::Vector2d scan_pt(scan_pt_x, scan_pt_y);
+  Eigen::Vector2d robot_pt = rotation_left * scan_pt + translation_left;
+  angle_max = atan2(robot_pt[1], robot_pt[0]);
 
-    if (range < laser_scan_left_->range_max && range > laser_scan_left_->range_min) {
-      float angle = left_angle_min + i * left_angle_inc;
-
-      float scan_pt_x = range * cos(angle);
-      float scan_pt_y = range * sin(angle);
-
-      Eigen::Vector2d scan_pt(scan_pt_x, scan_pt_y);
-      Eigen::Vector2d robot_pt = rotation_left * scan_pt + translation_left;
-      angle_max = atan2(robot_pt[1], robot_pt[0]);
-      angle_max_index = i;
-
-      break;
-    }
-  }
-
-  // Get the right-most angle and range in robot frame
+  // Get the right-most angle and range
   float angle_min;
   int angle_min_index;
+  right_scan_processor.GetMinValidAngle(angle_min, angle_min_index);
+
+  // Transform the min angle from right scan into robot frame
   rot_cos = cos(right_camera_orientation_ * M_PI / 180.0);
   rot_sin = sin(right_camera_orientation_ * M_PI / 180.0);
 
@@ -81,26 +84,13 @@ void LaserScanMerger::ScanCallback(const sensor_msgs::LaserScanConstPtr& scan_ms
   rotation_right << rot_cos, -rot_sin,
                     rot_sin, rot_cos;
 
-  float right_angle_min = laser_scan_right_->angle_min;
-  float right_angle_inc = laser_scan_right_->angle_increment;
+  range = laser_scan_right_->ranges.at(angle_min_index);
+  scan_pt_x = range * cos(angle_min);
+  scan_pt_y = range * sin(angle_min);
 
-  for (int i = 0; i < laser_scan_right_->ranges.size(); i++) {
-    float range = laser_scan_left_->ranges.at(i);
-
-    if (range < laser_scan_right_->range_max && range > laser_scan_right_->range_min) {
-      float angle = right_angle_min + i * right_angle_inc;
-
-      float scan_pt_x = range * cos(angle);
-      float scan_pt_y = range * sin(angle);
-
-      Eigen::Vector2d scan_pt(scan_pt_x, scan_pt_y);
-      Eigen::Vector2d robot_pt = rotation_right * scan_pt + translation_right;
-      angle_min = atan2(robot_pt[1], robot_pt[0]);
-      angle_min_index = i;
-
-      break;
-    }
-  }
+  scan_pt = Eigen::Vector2d(scan_pt_x, scan_pt_y);
+  robot_pt = rotation_right * scan_pt + translation_right;
+  angle_min = atan2(robot_pt[1], robot_pt[0]);
 
   // Initialize the ranges vector in the merged laser scan
   int ranges_size = (angle_max - angle_min) / angle_increment_;
@@ -111,7 +101,7 @@ void LaserScanMerger::ScanCallback(const sensor_msgs::LaserScanConstPtr& scan_ms
     float angle = left_angle_min + i * left_angle_inc;
     float range = laser_scan_left_->ranges.at(i);
 
-    if (range < laser_scan_left_->range_max && range > laser_scan_left_->range_min) {
+    if (left_scan_processor.IsRangeValid(range)) {
       float scan_pt_x = range * cos(angle);
       float scan_pt_y = range * sin(angle);
 
@@ -135,7 +125,7 @@ void LaserScanMerger::ScanCallback(const sensor_msgs::LaserScanConstPtr& scan_ms
     float angle = right_angle_min + i * right_angle_inc;
     float range = laser_scan_right_->ranges.at(i);
 
-    if (range < laser_scan_right_->range_max && range > laser_scan_right_->range_min) {
+    if (right_scan_processor.IsRangeValid(range)) {
       float scan_pt_x = range * cos(angle);
       float scan_pt_y = range * sin(angle);
 
