@@ -4,8 +4,17 @@ This repository contains the code for Auto_trax project by Frank Lanke Fu Tarimo
 ## IO package
 The io package takes care of using ROS and interfacing with the low level hardware in order to provide topics and services to wrap the low level commands.
 
+## Message package
+The message package takes car of all needed custom ros message specific to the auto trax project.
+
 ## Sensors package
 The sensors package collects data from the sensors and convert it to more meaningful data for the control of the car.
+
+## Test package
+The test package stores different tests on our way to fully automate auto_trax (e.g. wall following).
+
+## Gazebo package
+The gazebo package takes care of simulating auto_trax in a gazebo ros environment.
 
 ## Dependencies
  1. Install catkin_simple
