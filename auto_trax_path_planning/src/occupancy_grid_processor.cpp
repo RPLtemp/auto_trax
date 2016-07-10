@@ -4,14 +4,14 @@
 
 #include "auto_trax_path_planning/occupancy_grid_processor.h"
 
-OCGridProcessor::OCGridProcessor(const ros::NodeHandle& nh, OCGridParameterBag parameters)
+OCGridProcessor::OCGridProcessor(const ros::NodeHandle& nh, const OCGridParameterBag& parameters)
 : nh_(nh),
   oc_grid_param_(parameters)
 {
   ROS_DEBUG("Occupancy Grid Processor started!");
 
-  sub_scan_summary_ = nh_.subscribe("/scan_center",
-                                    1,
+  sub_scan_summary_ = nh_.subscribe(oc_grid_param_.subscribed_rostopic_scan_summary,
+                                    oc_grid_param_.queue_size_subscriber_scan_summary,
                                     &OCGridProcessor::CallbackScanSummary,
                                     this);
   pub_oc_grid_ = nh_.advertise<nav_msgs::OccupancyGrid>(oc_grid_param_.published_rostopic_oc_grid,
@@ -23,7 +23,6 @@ OCGridProcessor::~OCGridProcessor() {}
 void OCGridProcessor::CallbackScanSummary(const auto_trax_msgs::MergedScan &scan_summary)
 {
   ROS_DEBUG("Scan Summary received!");
-  ROS_WARN("The limit on the right is %.2f", scan_summary.valid_angle_min);
 
 }
 
