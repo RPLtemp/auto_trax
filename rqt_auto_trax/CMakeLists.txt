@@ -4,6 +4,8 @@ project(rqt_auto_trax)
 find_package(catkin_simple REQUIRED)
 catkin_simple(ALL_DEPS_REQUIRED)
 
+catkin_python_setup()
+
 ##########
 # EXPORT #
 ##########
