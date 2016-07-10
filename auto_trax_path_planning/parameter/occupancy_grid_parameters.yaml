@@ -6,5 +6,23 @@ queue_size_subscriber_scan_summary: 1                                   # queue 
 published_rostopic_oc_grid: /oc_grid                    # published rostopic
 queue_size_pub_oc_grid: 1                               # queue size of the publisher
 
+grid_height: 80
+grid_width: 80
+grid_resolution: 0.05
 
-setpoint: 0.0
+origin_position_x: -2
+origin_position_y: -2
+origin_position_z: 0
+
+origin_quaternion_x: 0
+origin_quaternion_y: 0
+origin_quaternion_z: 0
+origin_quaternion_w: 1
+
+frame_id: robot
+
+obstacle_padding: .1
+
+sensor_available_range: 4                        # This is a scaling parameter for the resoluion
+                                                # of the grid in meters
+
