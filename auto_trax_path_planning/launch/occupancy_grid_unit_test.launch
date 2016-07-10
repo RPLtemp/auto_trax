@@ -1,0 +1,9 @@
+<?xml version="1.0" ?>
+
+<launch>
+    <!-- Launch Recorded Data Bag -->
+    <include file="$(find auto_trax_tests)/launch/laser_scan_merger_test.launch" />
+
+    <!-- Launch Self -->
+    <node pkg = "auto_trax_path_planning" type = "occupancy_grid_node" name="oc_grid_test" output="screen" />
+</launch>
