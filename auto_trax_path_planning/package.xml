@@ -16,4 +16,5 @@
 
   <depend>roscpp</depend>
   <depend>std_msgs</depend>
+  <depend>auto_trax_msgs</depend>
 </package>

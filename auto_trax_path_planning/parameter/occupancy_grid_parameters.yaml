@@ -1,0 +1,10 @@
+node_name: occupancy_grid
+
+subscribed_rostopic_scan_summary: scan_summary                       # subscribed rostopic
+queue_size_subscriber_scan_summary: 1                                   # queue size of the subscriber
+
+published_rostopic_oc_grid: /oc_grid                    # published rostopic
+queue_size_pub_oc_grid: 1                               # queue size of the publisher
+
+
+setpoint: 0.0
