@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>295</width>
-    <height>200</height>
+    <height>234</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -35,17 +35,66 @@ QGroupBox::title {
     padding:10 13px;
  }</string>
   </property>
-  <widget class="QPushButton" name="stop_motor_button">
+  <widget class="QGroupBox" name="motor_speed_group_box">
    <property name="geometry">
     <rect>
-     <x>90</x>
-     <y>80</y>
-     <width>101</width>
-     <height>31</height>
+     <x>20</x>
+     <y>40</y>
+     <width>141</width>
+     <height>151</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string/>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+   </property>
+   <widget class="QWidget" name="verticalLayoutWidget">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>10</y>
+      <width>101</width>
+      <height>121</height>
+     </rect>
+    </property>
+    <layout class="QVBoxLayout" name="verticalLayout">
+     <item>
+      <widget class="QSpinBox" name="motor_speed_spin_box">
+       <property name="maximum">
+        <number>10</number>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="set_motor_speed_button">
+       <property name="text">
+        <string>Set Speed</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="stop_motor_button">
+       <property name="text">
+        <string>STOP</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QLabel" name="motor_speed_label">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>10</y>
+     <width>151</width>
+     <height>21</height>
     </rect>
    </property>
    <property name="text">
-    <string>STOP</string>
+    <string>Motor Speed Control</string>
    </property>
   </widget>
  </widget>
