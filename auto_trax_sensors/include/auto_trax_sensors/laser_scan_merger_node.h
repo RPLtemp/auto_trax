@@ -13,7 +13,7 @@ namespace auto_trax {
 // Default values
 static const std::string kDefaultScanCenterPubTopic = "scan_center";
 static const std::string kDefaultMergedScanPubTopic = "merged_scan";
-static const std::string kDefaultAdvancedMergedScanPubTopic = "advanced_merged_scan";
+static const std::string kDefaultScanSummaryPubTopic = "scan_summary";
 static const std::string kDefaultScanSubTopic = "/scan";
 static const std::string kDefaultFrameIdLeft = "camera_left";
 static const std::string kDefaultFrameIdRight = "camera_right";
@@ -34,14 +34,14 @@ class LaserScanMerger {
     ros::Subscriber scan_sub_;
     ros::Publisher center_pt_pub_;
     ros::Publisher merged_scan_pub_;
-    ros::Publisher advanced_merged_scan_pub_;
+    ros::Publisher scan_summary_pub_;
 
     sensor_msgs::LaserScanConstPtr laser_scan_left_;
     sensor_msgs::LaserScanConstPtr laser_scan_right_;
 
     std::string scan_center_pub_topic_;
     std::string merged_scan_pub_topic_;
-    std::string advanced_merged_scan_pub_topic_;
+    std::string scan_summary_pub_topic_;
     std::string scan_sub_topic_;
     std::string frame_id_left_;
     std::string frame_id_right_;

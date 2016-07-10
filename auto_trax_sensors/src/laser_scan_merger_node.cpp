@@ -8,7 +8,7 @@ LaserScanMerger::LaserScanMerger() {
   // Retrieve all parameters or set to default
   pnh.param("scan_center_pub_topic", scan_center_pub_topic_, kDefaultScanCenterPubTopic);
   pnh.param("merged_scan_pub_topic", merged_scan_pub_topic_, kDefaultMergedScanPubTopic);
-  pnh.param("advanced_merged_scan_pub_topic", advanced_merged_scan_pub_topic_, kDefaultAdvancedMergedScanPubTopic);
+  pnh.param("scan_summary_pub_topic", scan_summary_pub_topic_, kDefaultScanSummaryPubTopic);
   pnh.param("scan_sub_topic", scan_sub_topic_, kDefaultScanSubTopic);
   pnh.param("frame_id_left", frame_id_left_, kDefaultFrameIdLeft);
   pnh.param("frame_id_right", frame_id_right_, kDefaultFrameIdRight);
@@ -21,7 +21,7 @@ LaserScanMerger::LaserScanMerger() {
 
   center_pt_pub_ = nh_.advertise<geometry_msgs::PointStamped>(scan_center_pub_topic_, 1, true);
   merged_scan_pub_ = nh_.advertise<sensor_msgs::LaserScan>(merged_scan_pub_topic_, 1, true);
-  advanced_merged_scan_pub_ = nh_.advertise<auto_trax_msgs::MergedScan>(advanced_merged_scan_pub_topic_, 1, this);
+  scan_summary_pub_ = nh_.advertise<auto_trax_msgs::MergedScan>(scan_summary_pub_topic_, 1, this);
 }
 
 LaserScanMerger::~LaserScanMerger() {
@@ -242,7 +242,7 @@ void LaserScanMerger::ScanCallback(const sensor_msgs::LaserScanConstPtr& scan_ms
   merged_scan_pub_.publish(output_scan_msg);
 
   // Publish the merged laser scan message
-  advanced_merged_scan_pub_.publish(merged_scan_msg);
+  scan_summary_pub_.publish(merged_scan_msg);
 
   // Clear the individual laser scan messages
   laser_scan_left_.reset();
