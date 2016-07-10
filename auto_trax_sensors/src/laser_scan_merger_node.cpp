@@ -31,6 +31,7 @@ LaserScanMerger::~LaserScanMerger() {
 void LaserScanMerger::ScanCallback(const sensor_msgs::LaserScanConstPtr& scan_msg) {
   ROS_DEBUG("Scan received!");
 
+  // Don't do anything until we have individual scans from both sensors
   if (!laser_scan_left_ && scan_msg->header.frame_id == frame_id_left_)
     laser_scan_left_ = scan_msg;
   else if(!laser_scan_right_ && scan_msg->header.frame_id == frame_id_right_)
@@ -39,15 +40,34 @@ void LaserScanMerger::ScanCallback(const sensor_msgs::LaserScanConstPtr& scan_ms
   if (!laser_scan_left_ || !laser_scan_right_)
     return;
 
+  // Initialize the messages for publishing
   geometry_msgs::PointStampedPtr scan_center_msg(new geometry_msgs::PointStamped());
   sensor_msgs::LaserScanPtr output_scan_msg(new sensor_msgs::LaserScan());
   auto_trax_msgs::MergedScanPtr merged_scan_msg(new auto_trax_msgs::MergedScan());
 
+  // Extract parameters from individual scans
   float angle_increment = laser_scan_left_->angle_increment;
   float left_angle_min = laser_scan_left_->angle_min;
   float left_angle_inc = laser_scan_left_->angle_increment;
   float right_angle_min = laser_scan_right_->angle_min;
   float right_angle_inc = laser_scan_right_->angle_increment;
+
+  // Create the transforms from individual sensors into robot frame
+  double rot_cos = cos(left_camera_orientation_ * M_PI / 180.0);
+  double rot_sin = sin(left_camera_orientation_ * M_PI / 180.0);
+
+  Eigen::Vector2d translation_left(0.0, left_camera_offset_);
+  Eigen::Matrix2d rotation_left;
+  rotation_left << rot_cos, -rot_sin,
+          rot_sin, rot_cos;
+
+  rot_cos = cos(right_camera_orientation_ * M_PI / 180.0);
+  rot_sin = sin(right_camera_orientation_ * M_PI / 180.0);
+
+  Eigen::Vector2d translation_right(0.0, right_camera_offset_);
+  Eigen::Matrix2d rotation_right;
+  rotation_right << rot_cos, -rot_sin,
+          rot_sin, rot_cos;
 
   // Create the objects for processing the two scans
   LaserScanProcessor left_scan_processor(laser_scan_left_);
@@ -56,49 +76,41 @@ void LaserScanMerger::ScanCallback(const sensor_msgs::LaserScanConstPtr& scan_ms
   // Get the left-most angle and range
   float angle_max;
   int angle_max_index;
-  left_scan_processor.GetMaxValidAngle(angle_max, angle_max_index);
+  bool valid_left_scan = left_scan_processor.GetMaxValidAngle(angle_max, angle_max_index);
 
-  // Transform the max angle from left scan into robot frame
-  double rot_cos = cos(left_camera_orientation_ * M_PI / 180.0);
-  double rot_sin = sin(left_camera_orientation_ * M_PI / 180.0);
+  // Transform the max angle from left scan into robot frame if there is valid data
+  if (valid_left_scan) {
+    float range = laser_scan_left_->ranges.at(angle_max_index);
+    float scan_pt_x = range * cos(angle_max);
+    float scan_pt_y = range * sin(angle_max);
 
-  Eigen::Vector2d translation_left(0.0, left_camera_offset_);
-  Eigen::Matrix2d rotation_left;
-  rotation_left << rot_cos, -rot_sin,
-                   rot_sin, rot_cos;
-
-  float range = laser_scan_left_->ranges.at(angle_max_index);
-  float scan_pt_x = range * cos(angle_max);
-  float scan_pt_y = range * sin(angle_max);
-
-  Eigen::Vector2d scan_pt(scan_pt_x, scan_pt_y);
-  Eigen::Vector2d robot_pt = rotation_left * scan_pt + translation_left;
-  angle_max = atan2(robot_pt[1], robot_pt[0]);
+    Eigen::Vector2d scan_pt(scan_pt_x, scan_pt_y);
+    Eigen::Vector2d robot_pt = rotation_left * scan_pt + translation_left;
+    angle_max = atan2(robot_pt[1], robot_pt[0]);
+  }
+  else
+    angle_max = laser_scan_left_->angle_max;
 
   // Get the right-most angle and range
   float angle_min;
   int angle_min_index;
-  right_scan_processor.GetMinValidAngle(angle_min, angle_min_index);
+  bool valid_right_scan = right_scan_processor.GetMinValidAngle(angle_min, angle_min_index);
 
-  // Transform the min angle from right scan into robot frame
-  rot_cos = cos(right_camera_orientation_ * M_PI / 180.0);
-  rot_sin = sin(right_camera_orientation_ * M_PI / 180.0);
+  // Transform the min angle from right scan into robot frame  if there is valid data
+  if (valid_right_scan) {
+    float range = laser_scan_right_->ranges.at(angle_min_index);
+    float scan_pt_x = range * cos(angle_min);
+    float scan_pt_y = range * sin(angle_min);
 
-  Eigen::Vector2d translation_right(0.0, right_camera_offset_);
-  Eigen::Matrix2d rotation_right;
-  rotation_right << rot_cos, -rot_sin,
-                    rot_sin, rot_cos;
-
-  range = laser_scan_right_->ranges.at(angle_min_index);
-  scan_pt_x = range * cos(angle_min);
-  scan_pt_y = range * sin(angle_min);
-
-  scan_pt = Eigen::Vector2d(scan_pt_x, scan_pt_y);
-  robot_pt = rotation_right * scan_pt + translation_right;
-  angle_min = atan2(robot_pt[1], robot_pt[0]);
+    Eigen::Vector2d scan_pt(scan_pt_x, scan_pt_y);
+    Eigen::Vector2d robot_pt = rotation_right * scan_pt + translation_right;
+    angle_min = atan2(robot_pt[1], robot_pt[0]);
+  }
+  else
+    angle_min = right_angle_min;
 
   // Initialize the ranges vector in the merged laser scan
-  int ranges_size = (angle_max - angle_min) / angle_increment;
+  int ranges_size = (angle_max - angle_min) / angle_increment + 1;
   output_scan_msg->ranges.assign(ranges_size, std::numeric_limits<float>::quiet_NaN());
 
   // Initialize the scan point coordinate accumulator
@@ -111,105 +123,124 @@ void LaserScanMerger::ScanCallback(const sensor_msgs::LaserScanConstPtr& scan_ms
   float valid_range_min = std::numeric_limits<float>::max();
   float valid_range_max = std::numeric_limits<float>::min();
 
-  // Transform points from left scan into robot frame
-  for (int i = 0; i <= angle_max_index; i++) {
-    float angle = left_angle_min + i * left_angle_inc;
-    float range = laser_scan_left_->ranges.at(i);
+  // Transform points from left scan into robot frame if there is valid data
+  if (valid_left_scan) {
+    for (int i = 0; i <= angle_max_index; i++) {
+      float angle = left_angle_min + i * left_angle_inc;
+      float range = laser_scan_left_->ranges.at(i);
 
-    if (left_scan_processor.IsRangeValid(range)) {
-      float scan_pt_x = range * cos(angle);
-      float scan_pt_y = range * sin(angle);
+      if (left_scan_processor.IsRangeValid(range)) {
+        float scan_pt_x = range * cos(angle);
+        float scan_pt_y = range * sin(angle);
 
-      Eigen::Vector2d scan_pt(scan_pt_x, scan_pt_y);
-      Eigen::Vector2d robot_pt = rotation_left * scan_pt + translation_left;
+        Eigen::Vector2d scan_pt(scan_pt_x, scan_pt_y);
+        Eigen::Vector2d robot_pt = rotation_left * scan_pt + translation_left;
 
-      points_sum += robot_pt;
-      points_count++;
+        points_sum += robot_pt;
+        points_count++;
 
-      float angle_robot = atan2(robot_pt[1], robot_pt[0]);
-      float range_robot = robot_pt.norm();
+        float angle_robot = atan2(robot_pt[1], robot_pt[0]);
+        float range_robot = robot_pt.norm();
 
-      if (angle_robot < valid_angle_min)
-        valid_angle_min = angle_robot;
+        if (angle_robot < valid_angle_min)
+          valid_angle_min = angle_robot;
 
-      if (angle_robot > valid_angle_max)
-        valid_angle_max = angle_robot;
+        if (angle_robot > valid_angle_max)
+          valid_angle_max = angle_robot;
 
-      if (range_robot < valid_range_min)
-        valid_range_min = range_robot;
+        if (range_robot < valid_range_min)
+          valid_range_min = range_robot;
 
-      if (range_robot > valid_range_max)
-        valid_range_max = range_robot;
+        if (range_robot > valid_range_max)
+          valid_range_max = range_robot;
 
-      int angle_ind = (angle_robot - angle_min) / angle_increment - 1;
+        int angle_ind = (angle_robot - angle_min) / angle_increment;
 
-      if (angle_ind < 0 ||
-              angle_ind > (output_scan_msg->ranges.size() - 1)) {
-        continue;
-      }
+        if (angle_ind < 0 ||
+                angle_ind > (output_scan_msg->ranges.size() - 1)) {
+          continue;
+        }
 
-      if (range_robot < output_scan_msg->ranges.at(angle_ind) ||
-              isnan(output_scan_msg->ranges.at(angle_ind))) {
-        output_scan_msg->ranges.at(angle_ind) = range_robot;
+        if (range_robot < output_scan_msg->ranges.at(angle_ind) ||
+                isnan(output_scan_msg->ranges.at(angle_ind))) {
+          output_scan_msg->ranges.at(angle_ind) = range_robot;
+        }
       }
     }
   }
 
-  // Transform points from right scan into robot frame
-  for (int i = angle_min_index; i < laser_scan_right_->ranges.size(); i++) {
-    float angle = right_angle_min + i * right_angle_inc;
-    float range = laser_scan_right_->ranges.at(i);
+  // Transform points from right scan into robot frame if there is valid data
+  if (valid_right_scan) {
+    for (int i = angle_min_index; i < laser_scan_right_->ranges.size(); i++) {
+      float angle = right_angle_min + i * right_angle_inc;
+      float range = laser_scan_right_->ranges.at(i);
 
-    if (right_scan_processor.IsRangeValid(range)) {
-      float scan_pt_x = range * cos(angle);
-      float scan_pt_y = range * sin(angle);
+      if (right_scan_processor.IsRangeValid(range)) {
+        float scan_pt_x = range * cos(angle);
+        float scan_pt_y = range * sin(angle);
 
-      Eigen::Vector2d scan_pt(scan_pt_x, scan_pt_y);
-      Eigen::Vector2d robot_pt = rotation_right * scan_pt + translation_right;
+        Eigen::Vector2d scan_pt(scan_pt_x, scan_pt_y);
+        Eigen::Vector2d robot_pt = rotation_right * scan_pt + translation_right;
 
-      points_sum += robot_pt;
-      points_count++;
+        points_sum += robot_pt;
+        points_count++;
 
-      float angle_robot = atan2(robot_pt[1], robot_pt[0]);
-      float range_robot = robot_pt.norm();
+        float angle_robot = atan2(robot_pt[1], robot_pt[0]);
+        float range_robot = robot_pt.norm();
 
-      if (angle_robot < valid_angle_min)
-        valid_angle_min = angle_robot;
+        if (angle_robot < valid_angle_min)
+          valid_angle_min = angle_robot;
 
-      if (angle_robot > valid_angle_max)
-        valid_angle_max = angle_robot;
+        if (angle_robot > valid_angle_max)
+          valid_angle_max = angle_robot;
 
-      if (range_robot < valid_range_min)
-        valid_range_min = range_robot;
+        if (range_robot < valid_range_min)
+          valid_range_min = range_robot;
 
-      if (range_robot > valid_range_max)
-        valid_range_max = range_robot;
+        if (range_robot > valid_range_max)
+          valid_range_max = range_robot;
 
-      int angle_ind = (angle_robot - angle_min) / angle_increment + 1;
+        int angle_ind = (angle_robot - angle_min) / angle_increment;
 
-      if (angle_ind < 0 ||
-              angle_ind > (output_scan_msg->ranges.size() - 1)) {
-        continue;
-      }
+        if (angle_ind < 0 ||
+                angle_ind > (output_scan_msg->ranges.size() - 1)) {
+          continue;
+        }
 
-      if (range_robot < output_scan_msg->ranges.at(angle_ind) ||
-              isnan(output_scan_msg->ranges.at(angle_ind))) {
-        output_scan_msg->ranges.at(angle_ind) = range_robot;
+        if (range_robot < output_scan_msg->ranges.at(angle_ind) ||
+                isnan(output_scan_msg->ranges.at(angle_ind))) {
+          output_scan_msg->ranges.at(angle_ind) = range_robot;
+        }
       }
     }
+  }
+
+  // If there was no valid data in either scan, set max and min valid angles and ranges to NaN
+  if (!(valid_left_scan || valid_right_scan)) {
+    valid_angle_min = std::numeric_limits<float>::quiet_NaN();
+    valid_angle_max = std::numeric_limits<float>::quiet_NaN();
+    valid_range_min = std::numeric_limits<float>::quiet_NaN();
+    valid_range_max = std::numeric_limits<float>::quiet_NaN();
   }
 
   // Get the current time stamp
   ros::Time current_time = ros::Time::now();
 
   // Compute the center point of the scan
-  Eigen::Vector2d center_pt = points_sum / points_count;
   scan_center_msg->header.frame_id = "robot";
   scan_center_msg->header.stamp.sec = current_time.sec;
   scan_center_msg->header.stamp.nsec = current_time.nsec;
-  scan_center_msg->point.x = center_pt[0];
-  scan_center_msg->point.y = center_pt[1];
-  scan_center_msg->point.z = 0.0;
+  if (!(valid_left_scan || valid_right_scan)) {
+    scan_center_msg->point.x = 1.0;
+    scan_center_msg->point.y = 0.0;
+    scan_center_msg->point.z = 0.0;
+  }
+  else {
+    Eigen::Vector2d center_pt = points_sum / points_count;
+    scan_center_msg->point.x = center_pt[0];
+    scan_center_msg->point.y = center_pt[1];
+    scan_center_msg->point.z = 0.0;
+  }
 
   // Fill the new laser scan message
   output_scan_msg->header.frame_id = "robot";
@@ -226,8 +257,8 @@ void LaserScanMerger::ScanCallback(const sensor_msgs::LaserScanConstPtr& scan_ms
   merged_scan_msg->header.frame_id = "robot";
   merged_scan_msg->header.stamp.sec = current_time.sec;
   merged_scan_msg->header.stamp.nsec = current_time.nsec;
-  merged_scan_msg->coordinate.x = center_pt[0];
-  merged_scan_msg->coordinate.y = center_pt[1];
+  merged_scan_msg->coordinate.x = scan_center_msg->point.x;
+  merged_scan_msg->coordinate.y = scan_center_msg->point.y;
   merged_scan_msg->coordinate.z = 0.0;
   merged_scan_msg->merged_scan = *output_scan_msg;
   merged_scan_msg->valid_angle_min = valid_angle_min;

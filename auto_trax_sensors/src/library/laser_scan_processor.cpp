@@ -24,28 +24,32 @@ float LaserScanProcessor::GetClosestRange(const std::vector<float> &ranges) {
   return *(std::min(ranges.begin(), ranges.end()));
 }
 
-void LaserScanProcessor::GetMaxValidAngle(float& angle, int& ind) {
+bool LaserScanProcessor::GetMaxValidAngle(float& angle, int& ind) {
   for (int i = ranges_.size() - 1; i >= 0; i--) {
     float range = ranges_.at(i);
 
     if (IsRangeValid(range)) {
       angle = angle_min_ + i * angle_increment_;
       ind = i;
-      break;
+      return true;
     }
   }
+
+  return false;
 }
 
-void LaserScanProcessor::GetMinValidAngle(float& angle, int& ind) {
+bool LaserScanProcessor::GetMinValidAngle(float& angle, int& ind) {
   for (int i = 0; i < ranges_.size(); i++) {
     float range = ranges_.at(i);
 
     if (IsRangeValid(range)) {
       angle = angle_min_ + i * angle_increment_;
       ind = i;
-      break;
+      return true;
     }
   }
+
+  return false;
 }
 
 }
