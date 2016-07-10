@@ -4,7 +4,7 @@
 
 #include "auto_trax_path_planning/occupancy_grid_processor.h"
 
-void InitializeParameters(const ros::NodeHandle nh, OCGridParameterBag* parameter){
+void InitializeParameters(const ros::NodeHandle& nh, OCGridParameterBag* parameter){
   nh.param("subscribed_rostopic_scan_summary", parameter->subscribed_rostopic_scan_summary, kDefaultScanSummarySubTopic);
   nh.param("queue_size_subscriber_scan_summary", parameter->queue_size_subscriber_scan_summary, kDefaultScanSummarySubQueueSize);
   nh.param("published_rostopic_oc_grid", parameter->published_rostopic_oc_grid, kDefaultOCGridPubTopic);
@@ -20,7 +20,7 @@ int main(int argc, char** argv)
   OCGridParameterBag parameter;
   InitializeParameters(nh, &parameter);
 
-  OCGridProcessor(nh, parameter);
+  OCGridProcessor ocGridProcessor(nh, parameter);
 
   ros::spin();
 }

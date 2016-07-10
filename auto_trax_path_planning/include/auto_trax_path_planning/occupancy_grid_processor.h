@@ -26,7 +26,7 @@ static const int kDefaultScanSummarySubQueueSize = 1;
 class OCGridProcessor
 {
 public:
-  OCGridProcessor(const ros::NodeHandle& nh, OCGridParameterBag parameters);
+  OCGridProcessor(const ros::NodeHandle& nh, const OCGridParameterBag& parameters);
   virtual ~OCGridProcessor();
 
   // Callback
