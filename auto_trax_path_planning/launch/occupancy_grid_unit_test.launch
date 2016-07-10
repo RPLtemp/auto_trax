@@ -6,4 +6,6 @@
 
     <!-- Launch Self -->
     <node pkg = "auto_trax_path_planning" type = "occupancy_grid_node" name="oc_grid_test" output="screen" />
+
+    <rosparam command="load" file="$(find auto_trax_path_planning)/parameter/occupancy_grid_parameters.yaml" />
 </launch>
