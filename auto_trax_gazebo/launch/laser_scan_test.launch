@@ -6,19 +6,22 @@
     <arg name="gui" value="true" />
   </include>
 
-  <node name="auto_trax_wall_detection" pkg="auto_trax_sensors" type="wall_detection_node" output="screen"/>
-
-  <node name="controller" pkg="pid" type="controller" output="screen" >
-    <param name="node_name" value="left_wheel_pid" />
-    <param name="Kp" value="3.0" />
-    <param name="Ki" value="0.0" />
-    <param name="Kd" value="0.1" />
-    <param name="upper_limit" value="1.0" />
-    <param name="lower_limit" value="-1.0" />
-    <param name="windup_limit" value="10" />
-    <param name="diagnostic_period" value="0.25" />
-    <param name="max_loop_frequency" value="100.0" />
-    <param name="min_loop_frequency" value="100.0" />
-    <remap from="setpoint" to="/setpoint" />
+  <node name="laser_scan_merger_node" pkg="auto_trax_sensors" type="laser_scan_merger_node" output="screen">
+    <param name="scan_center_pub_topic" value="scan_center" />
+    <param name="merged_scan_pub_topic" value="merged_scan" />
+    <param name="scan_summary_pub_topic" value="scan_summary" />
+    <param name="scan_sub_topic" value="/scan" />
+    <param name="frame_id_left" value="camera_left" />
+    <param name="frame_id_right" value="camera_right" />
+    <param name="left_camera_offset" value="0.2" />
+    <param name="left_camera_orientation" value="45" />
+    <param name="right_camera_offset" value="-0.2" />
+    <param name="right_camera_orientation" value="-45" />
   </node>
+
+  <node name="drive_to_center_test_node" pkg="auto_trax_path_planning" type="drive_to_centroid_node" output="screen" />
+
+  <include file="$(find auto_trax_controller)/launch/auto_trax_controller.launch" />
+
+  <include file="$(find auto_trax_io)/launch/servo_driver_interface.launch" />
 </launch>
