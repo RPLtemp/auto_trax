@@ -126,7 +126,7 @@ void LaserScanMerger::ScanCallback(const sensor_msgs::LaserScanConstPtr& scan_ms
       points_sum += robot_pt;
       points_count++;
 
-      float angle_robot = atan2(robot_pt[1], robot_pt[0]) - angle_min;
+      float angle_robot = atan2(robot_pt[1], robot_pt[0]);
       float range_robot = robot_pt.norm();
 
       if (angle_robot < valid_angle_min)
@@ -141,7 +141,7 @@ void LaserScanMerger::ScanCallback(const sensor_msgs::LaserScanConstPtr& scan_ms
       if (range_robot > valid_range_max)
         valid_range_max = range_robot;
 
-      int angle_ind = angle_robot / angle_increment - 1;
+      int angle_ind = (angle_robot - angle_min) / angle_increment - 1;
 
       if (angle_ind < 0 ||
               angle_ind > (output_scan_msg->ranges.size() - 1)) {
@@ -170,7 +170,7 @@ void LaserScanMerger::ScanCallback(const sensor_msgs::LaserScanConstPtr& scan_ms
       points_sum += robot_pt;
       points_count++;
 
-      float angle_robot = atan2(robot_pt[1], robot_pt[0]) - angle_min;
+      float angle_robot = atan2(robot_pt[1], robot_pt[0]);
       float range_robot = robot_pt.norm();
 
       if (angle_robot < valid_angle_min)
@@ -185,7 +185,7 @@ void LaserScanMerger::ScanCallback(const sensor_msgs::LaserScanConstPtr& scan_ms
       if (range_robot > valid_range_max)
         valid_range_max = range_robot;
 
-      int angle_ind = angle_robot / angle_increment + 1;
+      int angle_ind = (angle_robot - angle_min) / angle_increment + 1;
 
       if (angle_ind < 0 ||
               angle_ind > (output_scan_msg->ranges.size() - 1)) {
