@@ -11,6 +11,7 @@ add_definitions(-std=c++11)
 #############
 cs_add_library(${PROJECT_NAME}
         src/occupancy_grid_processor.cpp
+        src/rrt_path_processor.cpp
         )
 
 ############
@@ -29,6 +30,12 @@ cs_add_executable(occupancy_grid_node
         )
 
 target_link_libraries(occupancy_grid_node ${PROJECT_NAME})
+
+cs_add_executable(rrt_path_node
+        src/rrt_path_node.cpp
+        )
+
+target_link_libraries(rrt_path_node ${PROJECT_NAME})
 
 
 
