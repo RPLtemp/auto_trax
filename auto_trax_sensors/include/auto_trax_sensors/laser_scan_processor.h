@@ -17,9 +17,9 @@ class LaserScanProcessor {
 
     float GetClosestRange(const std::vector<float> &ranges);
 
-    void GetMaxValidAngle(float& angle, int& ind);
+    bool GetMaxValidAngle(float& angle, int& ind);
 
-    void GetMinValidAngle(float& angle, int& ind);
+    bool GetMinValidAngle(float& angle, int& ind);
 
     inline bool IsRangeValid(float range) {
       return (range < range_max_ && range > range_min_);

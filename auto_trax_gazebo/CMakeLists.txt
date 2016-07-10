@@ -5,6 +5,9 @@ find_package(catkin_simple REQUIRED)
 catkin_simple(ALL_DEPS_REQUIRED)
 
 find_package(gazebo REQUIRED)
+include_directories(${GAZEBO_INCLUDE_DIRS})
+
+add_definitions(-std=c++11)
 
 #############
 # LIBRARIES #

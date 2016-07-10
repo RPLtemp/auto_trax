@@ -30,17 +30,27 @@
     </include>
   
     <include>
-      <uri>model://cart_front_steer_laser</uri>
+      <uri>model://cart_front_steer_two_lasers</uri>
     </include>
 
     <include>
       <uri>model://grey_wall</uri>
-      <pose>3.5 1.0 0 0 0 0</pose>
+      <pose>3.5 1.5 0 0 0 0</pose>
     </include>
 
     <include>
       <uri>model://grey_wall</uri>
-      <pose>10.75 -0.75 0 0 0 -0.5</pose>
+      <pose>3.5 -1.5 0 0 0 0</pose>
+    </include>
+
+    <include>
+      <uri>model://grey_wall</uri>
+      <pose>10.75 -0.25 0 0 0 -0.5</pose>
+    </include>
+
+    <include>
+      <uri>model://grey_wall</uri>
+      <pose>10.75 -3.25 0 0 0 -0.5</pose>
     </include>
   </world>
 </sdf>
