@@ -8,10 +8,10 @@ LaserScanMerger::LaserScanMerger() {
   // Retrieve all parameters or set to default
   pnh.param("scan_center_pub_topic", scan_center_pub_topic_, kDefaultScanCenterPubTopic);
   pnh.param("merged_scan_pub_topic", merged_scan_pub_topic_, kDefaultMergedScanPubTopic);
+  pnh.param("advanced_merged_scan_pub_topic", advanced_merged_scan_pub_topic_, kDefaultAdvancedMergedScanPubTopic);
   pnh.param("scan_sub_topic", scan_sub_topic_, kDefaultScanSubTopic);
   pnh.param("frame_id_left", frame_id_left_, kDefaultFrameIdLeft);
   pnh.param("frame_id_right", frame_id_right_, kDefaultFrameIdRight);
-  pnh.param("angle_increment", angle_increment_, kDefaultAngleIncrement);
   pnh.param("left_camera_offset", left_camera_offset_, kDefaultLeftCameraOffset);
   pnh.param("left_camera_orientation", left_camera_orientation_, kDefaultLeftCameraOrientation);
   pnh.param("right_camera_offset", right_camera_offset_, kDefaultRightCameraOffset);
@@ -21,6 +21,7 @@ LaserScanMerger::LaserScanMerger() {
 
   center_pt_pub_ = nh_.advertise<geometry_msgs::PointStamped>(scan_center_pub_topic_, 1, true);
   merged_scan_pub_ = nh_.advertise<sensor_msgs::LaserScan>(merged_scan_pub_topic_, 1, true);
+  advanced_merged_scan_pub_ = nh_.advertise<auto_trax_msgs::MergedScan>(advanced_merged_scan_pub_topic_, 1, this);
 }
 
 LaserScanMerger::~LaserScanMerger() {
@@ -39,9 +40,10 @@ void LaserScanMerger::ScanCallback(const sensor_msgs::LaserScanConstPtr& scan_ms
     return;
 
   geometry_msgs::PointStampedPtr scan_center_msg(new geometry_msgs::PointStamped());
-  sensor_msgs::LaserScanPtr merged_scan_msg(new sensor_msgs::LaserScan());
+  sensor_msgs::LaserScanPtr output_scan_msg(new sensor_msgs::LaserScan());
+  auto_trax_msgs::MergedScanPtr merged_scan_msg(new auto_trax_msgs::MergedScan());
 
-  angle_increment_ = laser_scan_left_->angle_increment;
+  float angle_increment = laser_scan_left_->angle_increment;
   float left_angle_min = laser_scan_left_->angle_min;
   float left_angle_inc = laser_scan_left_->angle_increment;
   float right_angle_min = laser_scan_right_->angle_min;
@@ -96,12 +98,18 @@ void LaserScanMerger::ScanCallback(const sensor_msgs::LaserScanConstPtr& scan_ms
   angle_min = atan2(robot_pt[1], robot_pt[0]);
 
   // Initialize the ranges vector in the merged laser scan
-  int ranges_size = (angle_max - angle_min) / angle_increment_;
-  merged_scan_msg->ranges.assign(ranges_size, std::numeric_limits<float>::quiet_NaN());
+  int ranges_size = (angle_max - angle_min) / angle_increment;
+  output_scan_msg->ranges.assign(ranges_size, std::numeric_limits<float>::quiet_NaN());
 
   // Initialize the scan point coordinate accumulator
   Eigen::Vector2d points_sum(0.0, 0.0);
   int points_count = 0;
+
+  // Initialize the minimum and maximum range and angle trackers
+  float valid_angle_min = std::numeric_limits<float>::max();
+  float valid_angle_max = std::numeric_limits<float>::min();
+  float valid_range_min = std::numeric_limits<float>::max();
+  float valid_range_max = std::numeric_limits<float>::min();
 
   // Transform points from left scan into robot frame
   for (int i = 0; i <= angle_max_index; i++) {
@@ -121,16 +129,28 @@ void LaserScanMerger::ScanCallback(const sensor_msgs::LaserScanConstPtr& scan_ms
       float angle_robot = atan2(robot_pt[1], robot_pt[0]) - angle_min;
       float range_robot = robot_pt.norm();
 
-      int angle_ind = angle_robot / angle_increment_ - 1;
+      if (angle_robot < valid_angle_min)
+        valid_angle_min = angle_robot;
+
+      if (angle_robot > valid_angle_max)
+        valid_angle_max = angle_robot;
+
+      if (range_robot < valid_range_min)
+        valid_range_min = range_robot;
+
+      if (range_robot > valid_range_max)
+        valid_range_max = range_robot;
+
+      int angle_ind = angle_robot / angle_increment - 1;
 
       if (angle_ind < 0 ||
-              angle_ind > (merged_scan_msg->ranges.size() - 1)) {
+              angle_ind > (output_scan_msg->ranges.size() - 1)) {
         continue;
       }
 
-      if (range_robot < merged_scan_msg->ranges.at(angle_ind) ||
-              isnan(merged_scan_msg->ranges.at(angle_ind))) {
-        merged_scan_msg->ranges.at(angle_ind) = range_robot;
+      if (range_robot < output_scan_msg->ranges.at(angle_ind) ||
+              isnan(output_scan_msg->ranges.at(angle_ind))) {
+        output_scan_msg->ranges.at(angle_ind) = range_robot;
       }
     }
   }
@@ -153,16 +173,28 @@ void LaserScanMerger::ScanCallback(const sensor_msgs::LaserScanConstPtr& scan_ms
       float angle_robot = atan2(robot_pt[1], robot_pt[0]) - angle_min;
       float range_robot = robot_pt.norm();
 
-      int angle_ind = angle_robot / angle_increment_ + 1;
+      if (angle_robot < valid_angle_min)
+        valid_angle_min = angle_robot;
+
+      if (angle_robot > valid_angle_max)
+        valid_angle_max = angle_robot;
+
+      if (range_robot < valid_range_min)
+        valid_range_min = range_robot;
+
+      if (range_robot > valid_range_max)
+        valid_range_max = range_robot;
+
+      int angle_ind = angle_robot / angle_increment + 1;
 
       if (angle_ind < 0 ||
-              angle_ind > (merged_scan_msg->ranges.size() - 1)) {
+              angle_ind > (output_scan_msg->ranges.size() - 1)) {
         continue;
       }
 
-      if (range_robot < merged_scan_msg->ranges.at(angle_ind) ||
-              isnan(merged_scan_msg->ranges.at(angle_ind))) {
-        merged_scan_msg->ranges.at(angle_ind) = range_robot;
+      if (range_robot < output_scan_msg->ranges.at(angle_ind) ||
+              isnan(output_scan_msg->ranges.at(angle_ind))) {
+        output_scan_msg->ranges.at(angle_ind) = range_robot;
       }
     }
   }
@@ -179,22 +211,38 @@ void LaserScanMerger::ScanCallback(const sensor_msgs::LaserScanConstPtr& scan_ms
   scan_center_msg->point.y = center_pt[1];
   scan_center_msg->point.z = 0.0;
 
-  // Fill the new merged laser scan message
+  // Fill the new laser scan message
+  output_scan_msg->header.frame_id = "robot";
+  output_scan_msg->header.stamp.sec = current_time.sec;
+  output_scan_msg->header.stamp.nsec = current_time.nsec;
+  output_scan_msg->angle_min = angle_min;
+  output_scan_msg->angle_max = angle_max;
+  output_scan_msg->angle_increment = angle_increment;
+  output_scan_msg->scan_time = laser_scan_right_->scan_time;
+  output_scan_msg->range_min = 0.2;
+  output_scan_msg->range_max = 2.0;
+
+  // Fill the new advanced merged laser scan message
   merged_scan_msg->header.frame_id = "robot";
   merged_scan_msg->header.stamp.sec = current_time.sec;
   merged_scan_msg->header.stamp.nsec = current_time.nsec;
-  merged_scan_msg->angle_min = angle_min;
-  merged_scan_msg->angle_max = angle_max;
-  merged_scan_msg->angle_increment = angle_increment_;
-  merged_scan_msg->scan_time = laser_scan_right_->scan_time;
-  merged_scan_msg->range_min = 0.2;
-  merged_scan_msg->range_max = 2.0;
-
-  // Publish the new merged laser scan message
-  merged_scan_pub_.publish(merged_scan_msg);
+  merged_scan_msg->coordinate.x = center_pt[0];
+  merged_scan_msg->coordinate.y = center_pt[1];
+  merged_scan_msg->coordinate.z = 0.0;
+  merged_scan_msg->merged_scan = *output_scan_msg;
+  merged_scan_msg->valid_angle_min = valid_angle_min;
+  merged_scan_msg->valid_angle_max = valid_angle_max;
+  merged_scan_msg->valid_range_min = valid_range_min;
+  merged_scan_msg->valid_range_max = valid_range_max;
 
   // Publish the center point of the scan
   center_pt_pub_.publish(scan_center_msg);
+
+  // Publish the new laser scan message
+  merged_scan_pub_.publish(output_scan_msg);
+
+  // Publish the merged laser scan message
+  advanced_merged_scan_pub_.publish(merged_scan_msg);
 
   // Clear the individual laser scan messages
   laser_scan_left_.reset();

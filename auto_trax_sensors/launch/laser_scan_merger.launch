@@ -19,10 +19,10 @@
   <node name="auto_trax_laser_scan_merger_node" pkg="auto_trax_sensors" type="laser_scan_merger_node" output="screen">
     <param name="scan_center_pub_topic" value="scan_center" />
     <param name="merged_scan_pub_topic" value="merged_scan" />
+    <param name="advanced_merged_scan_pub_topic" value="advanced_merged_scan" />
     <param name="scan_sub_topic" value="/scan" />
     <param name="frame_id_left" value="camera_left" />
     <param name="frame_id_right" value="camera_right" />
-    <param name="angle_increment" value="0.01" />
     <param name="left_camera_offset" value="0.08" />
     <param name="left_camera_orientation" value="45" />
     <param name="right_camera_offset" value="-0.08" />
