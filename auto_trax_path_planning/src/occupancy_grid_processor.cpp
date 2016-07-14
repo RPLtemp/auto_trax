@@ -23,7 +23,7 @@ OCGridProcessor::OCGridProcessor(const ros::NodeHandle& nh, const OCGridParamete
 
 //  result_.info.resolution = oc_grid_param_.grid_resolution;
   result_.info.resolution = oc_grid_param_.sensor_available_range / oc_grid_param_.grid_width;
-
+  oc_grid_param_.grid_resolution = result_.info.resolution;
   result_.info.origin.position.x = oc_grid_param_.origin_position_x;
   result_.info.origin.position.y = oc_grid_param_.origin_position_y;
   result_.info.origin.position.z = oc_grid_param_.origin_position_z;
