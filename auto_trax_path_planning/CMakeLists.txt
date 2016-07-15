@@ -4,6 +4,10 @@ project(auto_trax_path_planning)
 find_package(catkin_simple REQUIRED)
 catkin_simple(ALL_DEPS_REQUIRED)
 
+find_package(Eigen REQUIRED)
+include_directories(${Eigen_INCLUDE_DIRS})
+
+
 add_definitions(-std=c++11)
 
 #############
@@ -12,6 +16,9 @@ add_definitions(-std=c++11)
 cs_add_library(${PROJECT_NAME}
         src/occupancy_grid_processor.cpp
         src/rrt_path_processor.cpp
+        include/rrt/2dplane/2dplane.cpp
+        include/rrt/2dplane/GridStateSpace.cpp
+        include/rrt/2dplane/ObstacleGrid.cpp
         )
 
 ############

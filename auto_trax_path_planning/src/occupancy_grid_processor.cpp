@@ -23,7 +23,7 @@ OCGridProcessor::OCGridProcessor(const ros::NodeHandle& nh, const OCGridParamete
 
 //  result_.info.resolution = oc_grid_param_.grid_resolution;
   result_.info.resolution = oc_grid_param_.sensor_available_range / oc_grid_param_.grid_width;
-
+  oc_grid_param_.grid_resolution = result_.info.resolution;
   result_.info.origin.position.x = oc_grid_param_.origin_position_x;
   result_.info.origin.position.y = oc_grid_param_.origin_position_y;
   result_.info.origin.position.z = oc_grid_param_.origin_position_z;
@@ -90,6 +90,34 @@ void OCGridProcessor::CallbackScanSummary(const auto_trax_msgs::MergedScan &scan
       }
     }
     scanned_point_angle += scan_summary.merged_scan.angle_increment;
+  }
+
+  // Close the line between the origin and the left and right most corners from
+  // the scan
+  float wall_angles[] = {scan_summary.valid_angle_min,scan_summary.valid_angle_max};
+  for (float scan_angle : wall_angles) {
+    for (float scanned_point_depth = 0; scanned_point_depth < scan_summary.valid_range_max;) {
+      // To be appended later to account for robot pose
+      float scanned_point_x = cos(scan_angle) * scanned_point_depth
+                              - oc_grid_param_.origin_position_x
+                              - 2 * obstacle_padding_;
+      float scanned_point_y = sin(scan_angle) * scanned_point_depth
+                              - oc_grid_param_.origin_position_y;
+      int scanned_point_index_i = scanned_point_y / result_.info.resolution;
+      int scanned_point_index_j = scanned_point_x / result_.info.resolution;
+
+      int index_wise_padding = int(obstacle_padding_ / oc_grid_param_.grid_resolution);
+
+      SetIsObstacle(scanned_point_index_i, scanned_point_index_j);
+
+      for (int j = -index_wise_padding; j < index_wise_padding; j++) {
+        for (int k = -index_wise_padding; k < index_wise_padding; k++) {
+          SetIsObstacle(scanned_point_index_i + j, scanned_point_index_j + k);
+        }
+      }
+
+      scanned_point_depth += 0.1;
+    }
   }
 
   pub_oc_grid_.publish(result_);
