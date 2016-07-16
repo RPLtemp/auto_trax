@@ -30,7 +30,7 @@ ControllerProcessor::ControllerProcessor(const ros::NodeHandle& nodehandle,
 
   // Service for steering angle
   ros::service::waitForService(parameter_.service_rostopic_steering_angle);
-  client_ = nh_.serviceClient<auto_trax_io::ApplySteeringAngle>(
+  client_ = nh_.serviceClient<auto_trax_io::IOSetpoint>(
       parameter_.service_rostopic_steering_angle);
 }
 
@@ -56,12 +56,12 @@ void ControllerProcessor::CallbackPlantState(const std_msgs::Float64& state_msg)
   std::cout << "Control_effort: " << control_effort << std::endl;
 
   float steering_angle = static_cast<float>(control_effort);
-  auto_trax_io::ApplySteeringAngle srv;
-  srv.request.Message.steering_angle = steering_angle;
+  auto_trax_io::IOSetpoint srv;
+  srv.request.setpoint = steering_angle;
 
   if (client_.call(srv)) {
     ROS_INFO("Steering Angle: %d | %f \n", srv.response.success,
-             srv.request.Message.steering_angle);
+             srv.request.setpoint);
     std::cout << "--Steering" << std::endl;
   } else {
     ROS_INFO("Failed to call service!!");

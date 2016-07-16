@@ -2,17 +2,11 @@
 // Created by marius on 16.04.16.
 //
 
-#ifndef AUTO_TRAX_PID_PROCESSOR_H
-#define AUTO_TRAX_PID_PROCESSOR_H
+#ifndef AUTO_TRAX_CONTROLLER_PROCESSOR_H
+#define AUTO_TRAX_CONTROLLER_PROCESSOR_H
 
-#include <ackermann_msgs/AckermannDrive.h>
-#include <auto_trax_io/ApplySteeringAngle.h>
-#include <ros/ros.h>
-#include <ros/package.h>
+#include <auto_trax_io/IOSetpoint.h>
 #include <std_msgs/Float64.h>
-
-#include <iostream>
-#include <vector>
 
 #include "auto_trax_controller/parameter/parameter_bag.h"
 #include "auto_trax_controller/pid.h"
@@ -56,4 +50,4 @@ class ControllerProcessor {
 
 } // namespace auto_trax
 
-#endif //AUTO_TRAX_PID_PROCESSOR_H
+#endif //AUTO_TRAX_CONTROLLER_PROCESSOR_H
