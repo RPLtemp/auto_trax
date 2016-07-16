@@ -24,13 +24,13 @@ double PID::GetControlEffort(const float& setpoint, const float& plant_state) {
     ROS_WARN("All three gains (Kp, Ki, Kd) should have the same sign for stability.");
   }
 
-  std::cout << "Plant_state: " << plant_state << std::endl;
+  ROS_DEBUG("Plant_state: %f", plant_state);
 
   error_.at(2) = error_.at(1);
   error_.at(1) = error_.at(0);
   error_.at(0) = plant_state - setpoint; // Current error goes to slot 0
 
-  std::cout << "Error: " << error_.at(0) << std::endl;
+  ROS_DEBUG("Error: %f", error_.at(0));
 
   // Calculate delta_t
   ros::Duration delta_t;
@@ -64,8 +64,7 @@ double PID::GetControlEffort(const float& setpoint, const float& plant_state) {
   double derivative = pid_param_.Kd * error_deriv_.at(0);
   double control_effort = proportional + integral + derivative;
 
-  std::cout << "P: " << proportional << " | I: " << integral << " | D: "
-      << derivative << std::endl;
+  ROS_DEBUG("P: %f, I: %f, D: %f", proportional, integral, derivative);
 
   // Apply saturation limits
   if (control_effort > pid_param_.upper_limit) {

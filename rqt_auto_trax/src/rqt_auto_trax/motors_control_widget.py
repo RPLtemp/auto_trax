@@ -6,7 +6,7 @@ from python_qt_binding import loadUi
 from python_qt_binding import QtGui
 from python_qt_binding import QtCore
 
-from auto_trax_io.srv import IOSetpoint
+from auto_trax_msgs.srv import IOSetpoint
 
 class MotorsControlWidget(QtGui.QWidget):
 	# String constants

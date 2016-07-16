@@ -24,6 +24,9 @@ struct ParameterBag {
   std::string subscribed_rostopic_plantstate;
   int queue_size_subscriber_plantstate;
 
+  std::string subscribed_rostopic_pathstate;
+  int queue_size_subscriber_pathstate;
+
   std::string pub_rostopic_control_effort;
   int queue_size_pub_control_effort;
 
