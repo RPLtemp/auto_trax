@@ -4,7 +4,7 @@ queue_size_subscriber_setpoint: 1                            # queue size of the
 subscribed_rostopic_plantstate: speed_plantstate             # rostopic for receiving current plant state
 queue_size_subscriber_plantstate: 1                          # queue size of the plant state topic
 
-subscribed_rostopic_pathstate: path_found                    # rostopic for receiving the validity of path information
+subscribed_rostopic_pathstate: /path_found                    # rostopic for receiving the validity of path information
 queue_size_subscriber_pathstate: 1                           # queue size of the path state topic
 
 pub_rostopic_control_effort: speed_control_effort            # rostopic for publishing control effort

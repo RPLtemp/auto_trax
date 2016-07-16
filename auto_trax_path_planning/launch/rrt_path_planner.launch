@@ -12,10 +12,14 @@
     <include file="$(find auto_trax_sensors)/launch/laser_scan_merger.launch" />
 
     <!-- Launch Steering Controller -->
-    <include file="$(find auto_trax_controller)/launch/steering_angle_controller.launch" />
+    <group ns="steering">
+      <include file="$(find auto_trax_controller)/launch/steering_angle_controller.launch" />
+    </group>
 
     <!-- Launch Motor Speed Controller -->
-    <include file="$(find auto_trax_controller)/launch/motor_speed_controller.launch" />
+    <group ns="motor_speed">
+      <include file="$(find auto_trax_controller)/launch/motor_speed_controller.launch" />
+    </group>
 
     <!-- Launch IO Interface -->
     <include file="$(find auto_trax_io)/launch/driver_interface.launch" />
@@ -24,7 +28,9 @@
     <node pkg="auto_trax_path_planning" type="occupancy_grid_node" name="oc_grid_test" output="screen" />
 
     <!-- Launch the rrt path planner -->
-    <node pkg="auto_trax_path_planning" type="rrt_path_node" name="rrt_path_planner_node" output="screen" />
+    <node pkg="auto_trax_path_planning" type="rrt_path_node" name="rrt_path_planner_node" output="screen" >
+      <remap from="setpoint_angle" to="steering/setpoint_angle" />
+    </node>
 
     <!-- Load the occupancy grid parameters -->
     <rosparam command="load" file="$(find auto_trax_path_planning)/parameter/occupancy_grid_parameters.yaml" />
