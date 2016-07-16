@@ -57,8 +57,9 @@ void ControllerProcessor::CallbackPlantState(const std_msgs::Float64ConstPtr &st
     control_effort = pid_.GetControlEffort(setpoint_, plant_state);
   }
   else {
-    ROS_WARN("Path not valid, publishing control effort of zero");
-    control_effort = 0.0;
+    //ROS_WARN("Path not valid, publishing control effort of zero");
+    //control_effort = 0.0;
+    return;
   }
 
   // Publish the stabilizing control effort
@@ -82,6 +83,18 @@ void ControllerProcessor::CallbackPlantState(const std_msgs::Float64ConstPtr &st
 
 void ControllerProcessor::CallbackPathState(const std_msgs::BoolConstPtr& path_state_msg) {
   path_valid_ = path_state_msg->data;
+
+  if (!path_valid_) {
+    auto_trax_msgs::IOSetpoint srv;
+    srv.request.setpoint = 0.0;
+
+    if (client_.call(srv)) {
+      ROS_INFO("IO Setpoint: %d | %f \n", srv.response.success,
+               srv.request.setpoint);
+    } else {
+      ROS_INFO("Failed to call service!!");
+    }
+  }
 }
 
 } // namespace auto_trax
