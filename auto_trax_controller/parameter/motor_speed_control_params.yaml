@@ -1,13 +1,13 @@
-subscribed_rostopic_setpoint: setpoint                       # subscribed rostopic
-queue_size_subscriber_setpoint: 1                            # queue size of the subscriber
+subscribed_rostopic_setpoint: setpoint_speed                 # rostopic for receiving controller setpoint
+queue_size_subscriber_setpoint: 1                            # queue size of the setpoint topic
 
-subscribed_rostopic_plantstate: setpoint_angle               # subscribed rostopic
-queue_size_subscriber_plantstate: 1                          # queue size of the subscriber
+subscribed_rostopic_plantstate: speed_plantstate             # rostopic for receiving current plant state
+queue_size_subscriber_plantstate: 1                          # queue size of the plant state topic
 
-pub_rostopic_control_effort: control_effort                  # published output rostopic
-queue_size_pub_control_effort: 1                             # queue size of the publisher
+pub_rostopic_control_effort: speed_control_effort            # rostopic for publishing control effort
+queue_size_pub_control_effort: 1                             # queue size of the output topic
 
-service_rostopic_steering_angle: auto_trax_io/apply_steering_angle
+output_service_name: auto_trax_io/apply_motor_speed          # name of the service for applying control effort
 
-setpoint: 0.0
+setpoint: 0.0                                                # initial setpoint
 

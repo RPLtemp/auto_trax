@@ -27,7 +27,7 @@ struct ParameterBag {
   std::string pub_rostopic_control_effort;
   int queue_size_pub_control_effort;
 
-  std::string service_rostopic_steering_angle;
+  std::string output_service_name;
 
   float setpoint;
 };

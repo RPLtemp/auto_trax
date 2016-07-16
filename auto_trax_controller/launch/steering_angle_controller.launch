@@ -1,6 +1,6 @@
 <launch>
   <node pkg="auto_trax_controller" name="steering_angle_controller_node"
-        type="controller_node" clear_params="true" respawn="true" output="screen" />
+        type="controller_node" clear_params="true" output="screen" />
 
   <rosparam command="load" file="$(find auto_trax_controller)/parameter/steering_angle_control_params.yaml" />
   <rosparam command="load" file="$(find auto_trax_controller)/parameter/steering_angle_pid_params.yaml" />

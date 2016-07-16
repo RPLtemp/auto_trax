@@ -1,6 +1,4 @@
 <launch>
-
   <node pkg="auto_trax_controller" name="setpoint_plantstate_node"
         type="setpoint_plantstate_node" clear_params="true" respawn="true" output="screen" />
-
 </launch>

@@ -28,10 +28,10 @@ ControllerProcessor::ControllerProcessor(const ros::NodeHandle& nodehandle,
       parameter_.pub_rostopic_control_effort,
       parameter_.queue_size_pub_control_effort);
 
-  // Service for steering angle
-  ros::service::waitForService(parameter_.service_rostopic_steering_angle);
+  // Service for applying the controller output
+  ros::service::waitForService(parameter_.output_service_name);
   client_ = nh_.serviceClient<auto_trax_io::IOSetpoint>(
-      parameter_.service_rostopic_steering_angle);
+      parameter_.output_service_name);
 }
 
 ControllerProcessor::~ControllerProcessor(){
@@ -55,14 +55,13 @@ void ControllerProcessor::CallbackPlantState(const std_msgs::Float64& state_msg)
 
   std::cout << "Control_effort: " << control_effort << std::endl;
 
-  float steering_angle = static_cast<float>(control_effort);
+  float io_setpoint = static_cast<float>(control_effort);
   auto_trax_io::IOSetpoint srv;
-  srv.request.setpoint = steering_angle;
+  srv.request.setpoint = io_setpoint;
 
   if (client_.call(srv)) {
-    ROS_INFO("Steering Angle: %d | %f \n", srv.response.success,
+    ROS_INFO("IO Setpoint: %d | %f \n", srv.response.success,
              srv.request.setpoint);
-    std::cout << "--Steering" << std::endl;
   } else {
     ROS_INFO("Failed to call service!!");
   }

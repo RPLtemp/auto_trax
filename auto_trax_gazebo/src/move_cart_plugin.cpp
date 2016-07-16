@@ -26,7 +26,7 @@ namespace gazebo
         main_link_ = model_->GetLink("chassis");
 
         // Subscribe to receive the next desired position
-        steering_sub_ = nh_.subscribe("control_effort", 10, &MoveCart::SteeringCallback, this);
+        steering_sub_ = nh_.subscribe("steering_control_effort", 10, &MoveCart::SteeringCallback, this);
       }
 
       void SteeringCallback(const std_msgs::Float64ConstPtr& msg) {

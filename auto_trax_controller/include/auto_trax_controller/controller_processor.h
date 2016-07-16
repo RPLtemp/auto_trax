@@ -12,18 +12,11 @@
 #include "auto_trax_controller/pid.h"
 
 namespace auto_trax {
-
 // Default values
-static const std::string kDefaultSetPointSubTopic          = "/set_point";
-static const std::string kDefaultPlantStateSubTopic        = "/distance_result";
-static const std::string kDefaultControlEffortPubTopic     = "control_effort";
-static const std::string kDefaultSteeringAngleServiceTopic = "/auto_trax_io/apply_steering_angle";
-
 static constexpr int kDefaultSetPointSubQueueSize       = 1;
 static constexpr int kDefaultPlantStateSubQueueSize     = 1;
 static constexpr int kDefaultControlEffortPubQueueSize  = 1;
-
-static constexpr float kDefaultSetPoint = 0.5;
+static constexpr float kDefaultSetPoint = 0.0;
 
 class ControllerProcessor {
  public:

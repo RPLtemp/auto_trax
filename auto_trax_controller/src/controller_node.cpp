@@ -7,27 +7,39 @@
 namespace auto_trax {
 
 void InitializeParameters(const ros::NodeHandle& nh, ParameterBag* parameter) {
-  // Retrieve all parameters or set to default
-  nh.param("subscribed_rostopic_setpoint",
-           parameter->subscribed_rostopic_setpoint, kDefaultSetPointSubTopic);
+  // Retrieve all the necessary parameters
+  if (!nh.getParam("subscribed_rostopic_setpoint",
+                   parameter->subscribed_rostopic_setpoint)) {
+    ROS_ERROR("Please specify subscribed setpoint topic for the controller");
+    ros::shutdown();
+  }
   nh.param("queue_size_subscriber_setpoint",
            parameter->queue_size_subscriber_setpoint,
            kDefaultSetPointSubQueueSize);
-  nh.param("subscribed_rostopic_plantstate",
-           parameter->subscribed_rostopic_plantstate,
-           kDefaultPlantStateSubTopic);
+
+  if (!nh.getParam("subscribed_rostopic_plantstate",
+                   parameter->subscribed_rostopic_plantstate)) {
+    ROS_ERROR("Please specify subscribed plant state topic for the controller");
+    ros::shutdown();
+  }
   nh.param("queue_size_subscriber_plantstate",
            parameter->queue_size_subscriber_plantstate,
            kDefaultPlantStateSubQueueSize);
-  nh.param("pub_rostopic_control_effort",
-           parameter->pub_rostopic_control_effort,
-           kDefaultControlEffortPubTopic);
+
+  if (!nh.getParam("pub_rostopic_control_effort",
+                   parameter->pub_rostopic_control_effort)) {
+    ROS_ERROR("Please specify published control effort topic for the controller");
+    ros::shutdown();
+  }
   nh.param("queue_size_pub_control_effort",
            parameter->queue_size_pub_control_effort,
            kDefaultControlEffortPubQueueSize);
-  nh.param("service_rostopic_steering_angle",
-           parameter->service_rostopic_steering_angle,
-           kDefaultSteeringAngleServiceTopic);
+
+  if (!nh.getParam("output_service_name", parameter->output_service_name)) {
+    ROS_ERROR("Please specify output service name for the controller");
+    ros::shutdown();
+  }
+
   nh.param("setpoint", parameter->setpoint, kDefaultSetPoint);
 
   // Retrieve PID Parameters
