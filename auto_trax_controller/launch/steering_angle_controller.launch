@@ -1,13 +1,9 @@
 <launch>
-
-  <include file="$(find auto_trax_controller)/launch/auto_trax_setpoint_plantstate.launch" />
-
-  <node pkg="auto_trax_controller" name="auto_trax_controller_node"
+  <node pkg="auto_trax_controller" name="steering_angle_controller_node"
         type="auto_trax_controller_node" clear_params="true" respawn="true" output="screen" />
 
   <rosparam command="load" file="$(find auto_trax_controller)/parameter/parameter_bag.yaml" />
   <rosparam command="load" file="$(find auto_trax_controller)/parameter/pid_bag.yaml" />
-
 </launch>
 
 

@@ -107,7 +107,7 @@ void RRTPathProcessor::CallbackOCGrid(const nav_msgs::OccupancyGrid &oc_grid) {
   if (findSolution()){
     printPath();
     pub_oc_grid_debug.publish(rrt_oc_grid_);
-
+    
     path_found_.data = true;
     pub_path_found_.publish(path_found_);
     setpoint_.data = getFirstSetpoint();
