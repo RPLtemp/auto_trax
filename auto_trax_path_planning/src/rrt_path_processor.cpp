@@ -41,6 +41,8 @@ RRTPathProcessor::RRTPathProcessor(const ros::NodeHandle& nh,
 
   pub_setpoint_ = nh_.advertise<std_msgs::Float64>("setpoint_angle", 1);
 
+  pub_path_found_ = nh_.advertise<std_msgs::Bool>("path_found", 1);
+
   _stateSpace = make_shared<GridStateSpace>(rrt_param_.grid_height,
                                             rrt_param_.grid_width,
                                             rrt_param_.grid_height,
@@ -106,8 +108,16 @@ void RRTPathProcessor::CallbackOCGrid(const nav_msgs::OccupancyGrid &oc_grid) {
     printPath();
     pub_oc_grid_debug.publish(rrt_oc_grid_);
 
+    path_found_.data = true;
+    pub_path_found_.publish(path_found_);
     setpoint_.data = getFirstSetpoint();
     pub_setpoint_.publish(setpoint_);
+
+  } else {
+    result_.poses.clear();
+    pub_path_.publish(result_);
+    path_found_.data = false;
+    pub_path_found_.publish(path_found_);
   }
 
 }
@@ -158,7 +168,6 @@ void RRTPathProcessor::step(int numTimes) {
 bool RRTPathProcessor::findSolution() {
   reset();
   int counter = 0;
-  cout << "finding solution before max iteration at " << rrt_max_iteration_ << endl;
   while (_biRRT->startSolutionNode() == nullptr && counter < rrt_max_iteration_)
   {
     step(1);
@@ -169,6 +178,7 @@ bool RRTPathProcessor::findSolution() {
     }
   }
 
+  cout << "Path not found in "<< counter << " iterations." << endl;
   return false;
 }
 

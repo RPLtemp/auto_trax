@@ -10,6 +10,7 @@
 #include <nav_msgs/Path.h>
 #include <std_msgs/Float64.h>
 #include <std_msgs/String.h>
+#include <std_msgs/Bool.h>
 #include <auto_trax_msgs/MergedScan.h>
 
 #include <Eigen/Dense>
@@ -87,10 +88,12 @@ private:
   ros::Publisher pub_path_;
   ros::Publisher pub_oc_grid_debug;
   ros::Publisher pub_setpoint_;
+  ros::Publisher pub_path_found_;
 
   nav_msgs::OccupancyGrid rrt_oc_grid_;
   nav_msgs::Path result_;
   std_msgs::Float64 setpoint_;
+  std_msgs::Bool path_found_;
 
   std::shared_ptr<RRT::GridStateSpace> _stateSpace;
   RRT::BiRRT<Eigen::Vector2f>* _biRRT;
