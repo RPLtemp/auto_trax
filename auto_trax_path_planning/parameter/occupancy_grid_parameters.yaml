@@ -5,9 +5,9 @@ subscribed_rostopic_oc_grid: /oc_grid
 queue_size_subscriber_scan_summary: 1                                   # queue size of the subscriber
 queue_size_subscriber_oc_grid: 1
 
-published_rostopic_oc_grid: /oc_grid                    # published rostopic
+published_rostopic_oc_grid: oc_grid                    # published rostopic
 queue_size_pub_oc_grid: 1                               # queue size of the publisher
-published_rostopic_path: /path                    # published rostopic
+published_rostopic_path: path                    # published rostopic
 queue_size_pub_path: 1                               # queue size of the publisher
 
 grid_height: 400
@@ -26,8 +26,8 @@ origin_quaternion_w: 1
 start_state_x: 0.0
 start_state_y: 0.0
 
-goal_state_x: 1
-goal_state_y: 1
+goal_state_x: 1.8
+goal_state_y: 0
 
 rrt_step_size: 10
 rrt_max_step_size: 30
@@ -42,7 +42,7 @@ rrt_weighpoints_size: 20                  # max number of waypoints for a path
 
 rrt_max_iteration: 1000
 
-frame_id: /robot
+frame_id: robot
 
 obstacle_padding: 0.1
 
