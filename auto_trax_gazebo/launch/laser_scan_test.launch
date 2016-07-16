@@ -23,5 +23,5 @@
 
   <include file="$(find auto_trax_controller)/launch/steering_angle_controller.launch" />
 
-  <include file="$(find auto_trax_io)/launch/servo_driver_interface.launch" />
+  <include file="$(find auto_trax_io)/launch/driver_interface.launch" />
 </launch>
