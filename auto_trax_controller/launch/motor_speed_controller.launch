@@ -1,9 +1,10 @@
 <launch>
   <node pkg="auto_trax_controller" name="motor_speed_controller_node"
-        type="controller_node" clear_params="true" output="screen" />
+        type="controller_node" clear_params="true" output="screen" args="motor_speed" >
 
-  <rosparam command="load" file="$(find auto_trax_controller)/parameter/motor_speed_control_params.yaml" />
-  <rosparam command="load" file="$(find auto_trax_controller)/parameter/motor_speed_pid_params.yaml" />
+    <rosparam command="load" file="$(find auto_trax_controller)/parameter/motor_speed_control_params.yaml" />
+    <rosparam command="load" file="$(find auto_trax_controller)/parameter/motor_speed_pid_params.yaml" />
+  </node>
 </launch>
 
 

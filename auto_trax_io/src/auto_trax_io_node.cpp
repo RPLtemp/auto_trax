@@ -135,7 +135,7 @@ bool AutoTraxIoNode::InitializeParameters() {
 
 int main(int argc, char **argv) {
   // Init ros
-  ros::init(argc, argv, "auto trax io node");
+  ros::init(argc, argv, "auto_trax_io_node");
 
   // Instantiate the io node
   auto_trax::AutoTraxIoNode io_node;
