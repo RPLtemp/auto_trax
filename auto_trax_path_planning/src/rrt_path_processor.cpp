@@ -36,9 +36,10 @@ RRTPathProcessor::RRTPathProcessor(const ros::NodeHandle& nh,
   pub_path_ = nh_.advertise<nav_msgs::Path>(rrt_param_.published_rostopic_path,
                                             rrt_param_.queue_size_pub_path);
 
-  pub_oc_grid_debug = nh_.advertise<nav_msgs::OccupancyGrid>("/rrt_oc_grid",
+  pub_oc_grid_debug = nh_.advertise<nav_msgs::OccupancyGrid>("rrt_oc_grid",
                                                              rrt_param_.queue_size_pub_oc_grid);
 
+  pub_setpoint_ = nh_.advertise<std_msgs::Float32>("setpoint_angle", 1);
 
   _stateSpace = make_shared<GridStateSpace>(rrt_param_.grid_height,
                                             rrt_param_.grid_width,
@@ -70,9 +71,9 @@ RRTPathProcessor::RRTPathProcessor(const ros::NodeHandle& nh,
 
 }
 
-RRTPathProcessor::~RRTPathProcessor(){ }
+RRTPathProcessor::~RRTPathProcessor() { }
 
-void RRTPathProcessor::CallbackOCGrid(const nav_msgs::OccupancyGrid &oc_grid){
+void RRTPathProcessor::CallbackOCGrid(const nav_msgs::OccupancyGrid &oc_grid) {
 
   clearObstacles();
   rrt_oc_grid_.data.clear();
@@ -108,12 +109,15 @@ void RRTPathProcessor::CallbackOCGrid(const nav_msgs::OccupancyGrid &oc_grid){
   if (findSolution()){
     printPath();
     pub_oc_grid_debug.publish(rrt_oc_grid_);
+
+    setpoint_.data = getFirstSetpoint();
+    pub_setpoint_.publish(setpoint_);
   }
 
 }
 
 
-void RRTPathProcessor::reset(){
+void RRTPathProcessor::reset() {
 
   //  store waypoint cache
   vector<Vector2f> waypoints;
@@ -172,7 +176,7 @@ bool RRTPathProcessor::findSolution() {
   return false;
 }
 
-void RRTPathProcessor::printPath(){
+void RRTPathProcessor::printPath() {
   if (_previousSolution.size() > 0) {
 
     std::cout << "Path covers ... " << std::endl;
@@ -183,7 +187,7 @@ void RRTPathProcessor::printPath(){
 
     for (int i = 0; i < _previousSolution.size(); i++) {
       std::cout << _previousSolution[i].x() * rrt_param_.grid_resolution +
-                   rrt_param_.origin_position_x<< '\t'
+                   rrt_param_.origin_position_x << '\t'
                 << _previousSolution[i].y()* rrt_param_.grid_resolution +
                    rrt_param_.origin_position_y << std::endl;
       result_.poses[i].pose.position.x = _previousSolution[i].x() * rrt_param_.grid_resolution +
@@ -197,8 +201,7 @@ void RRTPathProcessor::printPath(){
 
 }
 
-void RRTPathProcessor::setObstacleAt(float x, float y)
-{
+void RRTPathProcessor::setObstacleAt(float x, float y) {
   Vector2i gridLoc = Vector2i((x - rrt_param_.origin_position_x) /
                                       rrt_param_.grid_resolution,
                               (y - rrt_param_.origin_position_y) /
@@ -208,5 +211,12 @@ void RRTPathProcessor::setObstacleAt(float x, float y)
 
 }
 
-void RRTPathProcessor::debug_print(){
+void RRTPathProcessor::debugPrint() {
+}
+
+float RRTPathProcessor::getFirstSetpoint() {
+  Eigen::Vector2f path_point = _previousSolution.at(1);
+  float x = path_point.x() * rrt_param_.grid_resolution + rrt_param_.origin_position_x;
+  float y = path_point.y() * rrt_param_.grid_resolution + rrt_param_.origin_position_y;
+  return atan2(y, x);
 }

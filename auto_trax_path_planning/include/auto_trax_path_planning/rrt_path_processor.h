@@ -8,6 +8,7 @@
 #include <ros/ros.h>
 #include <nav_msgs/OccupancyGrid.h>
 #include <nav_msgs/Path.h>
+#include <std_msgs/Float32.h>
 #include <std_msgs/String.h>
 #include <auto_trax_msgs/MergedScan.h>
 
@@ -77,16 +78,19 @@ public:
   void step(int nTimes);
   bool findSolution();
   void printPath();
-
-  void debug_print();
+  void debugPrint();
+  float getFirstSetpoint();
 
 private:
   ros::NodeHandle nh_;
   ros::Subscriber sub_oc_grid_;
   ros::Publisher pub_path_;
-
   ros::Publisher pub_oc_grid_debug;
+  ros::Publisher pub_setpoint_;
+
+  nav_msgs::OccupancyGrid rrt_oc_grid_;
   nav_msgs::Path result_;
+  std_msgs::Float32 setpoint_;
 
   std::shared_ptr<RRT::GridStateSpace> _stateSpace;
   RRT::BiRRT<Eigen::Vector2f>* _biRRT;
@@ -98,10 +102,6 @@ private:
   OCGridParameterBag rrt_param_;
 
   int rrt_weighpoints_size_, rrt_max_iteration_;
-
-  nav_msgs::OccupancyGrid rrt_oc_grid_;
-
-
 };
 
 
