@@ -21,7 +21,7 @@
 
   <node name="drive_to_center_test_node" pkg="auto_trax_path_planning" type="drive_to_centroid_node" output="screen" />
 
-  <include file="$(find auto_trax_controller)/launch/auto_trax_controller.launch" />
+  <include file="$(find auto_trax_controller)/launch/steering_angle_controller.launch" />
 
   <include file="$(find auto_trax_io)/launch/servo_driver_interface.launch" />
 </launch>
