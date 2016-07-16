@@ -5,8 +5,6 @@
 #ifndef AUTO_TRAX_PID_PID_BAG_H
 #define AUTO_TRAX_PID_PID_BAG_H
 
-#include <string>
-
 namespace auto_trax {
 
 struct PidBag {

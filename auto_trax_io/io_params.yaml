@@ -9,7 +9,7 @@ motor_min: 304 # 204
 motor_max: 325 # 409
 motor_lower_pwm_threshold: 305  # 298
 motor_upper_pwm_threshold: 315
-minimum_linear_velocity_m_s: 1
-maximum_linear_velocity_m_s: 10 # 20
+min_linear_velocity_m_s: 1
+max_linear_velocity_m_s: 10 # 20
 zero_speed_pwm: 307
 

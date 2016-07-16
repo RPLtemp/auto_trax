@@ -21,8 +21,8 @@ int main(int argc, char **argv)
 
   setpoint.data = 0.0;
   state.data = 1.0;
-  ros::Publisher setpoint_pub = nh.advertise<std_msgs::Float64>("/setpoint", 1);
-  ros::Publisher state_pub = nh.advertise<std_msgs::Float64>("/plant_state", 1);
+  ros::Publisher setpoint_pub = nh.advertise<std_msgs::Float64>("setpoint_angle", 1);
+  ros::Publisher state_pub = nh.advertise<std_msgs::Float64>("steering_plantstate", 1);
 
 
   ros::Rate loop_rate(1);
@@ -36,8 +36,7 @@ int main(int argc, char **argv)
 
     // Publish plant state
     state.data += 1.0;
-//    state_pub.publish(state);
-
+    state_pub.publish(state);
 
     loop_rate.sleep();
   }

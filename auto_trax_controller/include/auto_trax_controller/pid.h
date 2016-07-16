@@ -5,7 +5,6 @@
 #ifndef AUTO_TRAX_CONTROLLER_PID_H
 #define AUTO_TRAX_CONTROLLER_PID_H
 
-#include <iostream>
 #include <ros/ros.h>
 
 #include "auto_trax_controller/parameter/pid_bag.h"

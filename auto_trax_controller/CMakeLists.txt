@@ -20,10 +20,10 @@ cs_add_library(${PROJECT_NAME}
 ############
 # BINARIES #
 ############
-cs_add_executable(auto_trax_controller_node
-        src/auto_trax_controller_node.cpp
+cs_add_executable(controller_node
+        src/controller_node.cpp
         )
-target_link_libraries(auto_trax_controller_node ${PROJECT_NAME})
+target_link_libraries(controller_node ${PROJECT_NAME})
 
 cs_add_executable(setpoint_plantstate_node
         src/setpoint_plantstate_node.cpp

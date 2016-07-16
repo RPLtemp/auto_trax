@@ -6,9 +6,7 @@ from python_qt_binding import loadUi
 from python_qt_binding import QtGui
 from python_qt_binding import QtCore
 
-from ackermann_msgs.msg import AckermannDrive
-from auto_trax_io.srv import ApplyMotorSpeed
-from auto_trax_io.srv import ApplySteeringAngle
+from auto_trax_msgs.srv import IOSetpoint
 
 class MotorsControlWidget(QtGui.QWidget):
 	# String constants
@@ -24,23 +22,17 @@ class MotorsControlWidget(QtGui.QWidget):
 		loadUi(ui_file, self)
 
 		# Create ROS service proxies
-		self.set_motor_speed = rospy.ServiceProxy(self.STR_APPLY_MOTOR_SPEED_SERVICE_NAME, ApplyMotorSpeed)
-		self.set_steering_angle = rospy.ServiceProxy(self.STR_APPLY_STEERING_ANGLE_SERVICE_NAME, ApplySteeringAngle)
+		self.set_motor_speed = rospy.ServiceProxy(self.STR_APPLY_MOTOR_SPEED_SERVICE_NAME, IOSetpoint)
+		self.set_steering_angle = rospy.ServiceProxy(self.STR_APPLY_STEERING_ANGLE_SERVICE_NAME, IOSetpoint)
 
 		# Set the functions that are called when signals are emitted
 		self.set_motor_speed_button.pressed.connect(self.set_motor_speed_button_pressed)
 		self.stop_motor_button.pressed.connect(self.stop_motor_button_pressed)
 
 	def set_motor_speed_button_pressed(self):
-		msg = AckermannDrive()
-		msg.speed = self.motor_speed_spin_box.value()
-		self.set_motor_speed(msg)
+		speed = self.motor_speed_spin_box.value()
+		self.set_motor_speed(speed)
 
 	def stop_motor_button_pressed(self):
-		motor_speed_msg = AckermannDrive()
-		motor_speed_msg.speed = 0
-		self.set_motor_speed(motor_speed_msg)
-
-		steering_angle_msg = AckermannDrive()
-		steering_angle_msg.steering_angle = 0
-		self.set_steering_angle(steering_angle_msg)
+		self.set_motor_speed(0)
+		self.set_steering_angle(0)

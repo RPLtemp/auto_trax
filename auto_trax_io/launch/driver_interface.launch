@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<launch>
+  <!-- Start "auto_trax_io" to provide IO interface for auto_trax  -->
+  <node name="driver_interface" pkg="auto_trax_io" type="driver_interface" output="screen"/>
+
+  <!-- Start parameters --> 
+  <rosparam command="load" file="$(find auto_trax_io)/io_params.yaml"/>
+</launch>

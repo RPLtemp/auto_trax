@@ -13,10 +13,10 @@
   <buildtool_depend>catkin</buildtool_depend>
   <buildtool_depend>catkin_simple</buildtool_depend>
 
+  <depend>auto_trax_msgs</depend>
   <depend>rospy</depend>
   <depend>rqt_gui</depend>
   <depend>rqt_gui_py</depend>
-  <depend>ackermann_msgs</depend>
 
   <export>
     <rqt_gui plugin="${prefix}/plugin.xml" />

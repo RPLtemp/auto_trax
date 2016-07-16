@@ -1,0 +1,16 @@
+subscribed_rostopic_setpoint: setpoint_angle                 # rostopic for receiving controller setpoint
+queue_size_subscriber_setpoint: 1                            # queue size of the setpoint topic
+
+subscribed_rostopic_plantstate: steering_plantstate          # rostopic for receiving current plant state
+queue_size_subscriber_plantstate: 1                          # queue size of the plant state topic
+
+subscribed_rostopic_pathstate: path_found                    # rostopic for receiving the validity of path information
+queue_size_subscriber_pathstate: 1                           # queue size of the path state topic
+
+pub_rostopic_control_effort: steering_control_effort         # rostopic for publishing control effort
+queue_size_pub_control_effort: 1                             # queue size of the output topic
+
+output_service_name: auto_trax_io/apply_steering_angle       # name of the service for applying control effort
+
+setpoint: 0.0                                                # initial setpoint
+

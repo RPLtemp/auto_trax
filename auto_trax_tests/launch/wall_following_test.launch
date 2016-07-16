@@ -6,7 +6,7 @@
   <include file="$(find auto_trax_controller)/launch/steering_angle_controller.launch" />
 
   <!-- Launch IO Interface -->
-  <include file="$(find auto_trax_io)/launch/servo_driver_interface.launch" />
+  <include file="$(find auto_trax_io)/launch/driver_interface.launch" />
 
   <!-- Launch Openni2 for the Carmine 1.09 sensor -->
   <include file="$(find openni2_launch)/launch/openni2.launch" />
