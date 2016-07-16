@@ -16,6 +16,7 @@ add_definitions(-std=c++11)
 cs_add_library(${PROJECT_NAME}
         src/occupancy_grid_processor.cpp
         src/rrt_path_processor.cpp
+        src/rrt_path_unit_test.cpp
         include/rrt/2dplane/2dplane.cpp
         include/rrt/2dplane/GridStateSpace.cpp
         include/rrt/2dplane/ObstacleGrid.cpp
@@ -43,6 +44,12 @@ cs_add_executable(rrt_path_node
         )
 
 target_link_libraries(rrt_path_node ${PROJECT_NAME})
+
+cs_add_executable(rrt_unit_test_node
+        src/rrt_unit_test_node.cpp
+        )
+
+target_link_libraries(rrt_unit_test_node ${PROJECT_NAME})
 
 
 

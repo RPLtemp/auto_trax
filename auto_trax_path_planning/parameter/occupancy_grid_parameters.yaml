@@ -10,8 +10,8 @@ queue_size_pub_oc_grid: 1                               # queue size of the publ
 published_rostopic_path: path                    # published rostopic
 queue_size_pub_path: 1                               # queue size of the publisher
 
-grid_height: 200
-grid_width: 200
+grid_height: 400
+grid_width: 400
 grid_resolution: 0.05
 
 origin_position_x: -4
@@ -26,7 +26,7 @@ origin_quaternion_w: 1
 start_state_x: 0.0
 start_state_y: 0.0
 
-goal_state_x: 3
+goal_state_x: 3.5
 goal_state_y: 0
 
 rrt_step_size: 10

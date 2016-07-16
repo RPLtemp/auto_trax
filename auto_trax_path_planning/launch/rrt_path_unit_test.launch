@@ -1,0 +1,13 @@
+<?xml version="1.0" ?>
+
+<launch>
+    <!-- Launch Occupancy Grid Processor -->
+    <include file="$(find auto_trax_path_planning)/launch/occupancy_grid_unit_test.launch" />
+
+    <!-- Launch the rrt path planner -->
+    <node pkg="auto_trax_path_planning" type="rrt_unit_test_node" name="rrt_path_unit_test_node" output="screen" />
+
+    <!-- Load the occupancy grid parameters -->
+    <rosparam command="load" file="$(find auto_trax_path_planning)/parameter/occupancy_grid_parameters.yaml" />
+
+</launch>
