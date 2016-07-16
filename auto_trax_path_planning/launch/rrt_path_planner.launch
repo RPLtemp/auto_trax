@@ -11,8 +11,11 @@
     <!-- Launch Scan Merger and Scan Center -->
     <include file="$(find auto_trax_sensors)/launch/laser_scan_merger.launch" />
 
-    <!-- Launch Controller -->
+    <!-- Launch Steering Controller -->
     <include file="$(find auto_trax_controller)/launch/steering_angle_controller.launch" />
+
+    <!-- Launch Motor Speed Controller -->
+    <include file="$(find auto_trax_controller)/launch/motor_speed_controller.launch" />
 
     <!-- Launch IO Interface -->
     <include file="$(find auto_trax_io)/launch/driver_interface.launch" />
