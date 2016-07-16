@@ -81,9 +81,9 @@ inline double AutoTraxIoNode::SpeedConversion(double speed_in_m_s){
 }
 
 
-bool AutoTraxIoNode::steeringServiceCallback(auto_trax_io::ApplySteeringAngle::Request  &req,
-                                             auto_trax_io::ApplySteeringAngle::Response &res) {
-    double angle_in_radians = req.Message.steering_angle;
+bool AutoTraxIoNode::SteeringServiceCallback(auto_trax_io::IOSetpoint::Request  &req,
+                                             auto_trax_io::IOSetpoint::Response &res) {
+    double angle_in_radians = req.setpoint;
     double pwm_angle = AngleConversion(angle_in_radians);
 
     std::cout << "Pwm angle: " << pwm_angle << std::endl;
@@ -98,9 +98,9 @@ bool AutoTraxIoNode::steeringServiceCallback(auto_trax_io::ApplySteeringAngle::R
     return false;
 }
 
-bool AutoTraxIoNode::motorServiceCallback(auto_trax_io::ApplyMotorSpeed::Request  &req,
-                                          auto_trax_io::ApplyMotorSpeed::Response &res) {
-    double speed_in_m_s = req.Message.speed;
+bool AutoTraxIoNode::MotorServiceCallback(auto_trax_io::IOSetpoint::Request  &req,
+                                          auto_trax_io::IOSetpoint::Response &res) {
+    double speed_in_m_s = req.setpoint;
     double pwm_speed = SpeedConversion(speed_in_m_s);
 
     std::cout << "Pwm speed: " << pwm_speed << std::endl;
@@ -150,12 +150,12 @@ int main(int argc, char **argv){
 
     ros::ServiceServer steering_service =
             nh.advertiseService(steering_service_name,
-                                &AutoTraxIoNode::steeringServiceCallback,
+                                &AutoTraxIoNode::SteeringServiceCallback,
                                 &node);
 
     ros::ServiceServer motor_service =
             nh.advertiseService(motor_service_name,
-                                &AutoTraxIoNode::motorServiceCallback,
+                                &AutoTraxIoNode::MotorServiceCallback,
                                 &node);
 
     ros::spin();

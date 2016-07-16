@@ -14,10 +14,10 @@ cs_add_library(${PROJECT_NAME}
 ############
 # BINARIES #
 ############
-cs_add_executable(servo_driver_interface
+cs_add_executable(driver_interface
         src/auto_trax_io_node.cpp
         )
-target_link_libraries(servo_driver_interface ${PROJECT_NAME})
+target_link_libraries(driver_interface ${PROJECT_NAME})
 
 ##########
 # EXPORT #
