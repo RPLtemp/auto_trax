@@ -198,10 +198,10 @@ void RRTPathProcessor::printPath() {
 }
 
 void RRTPathProcessor::setObstacleAt(float x, float y) {
-  Vector2i gridLoc = Vector2i((x - rrt_param_.origin_position_x) /
-                                      rrt_param_.grid_resolution,
-                              (y - rrt_param_.origin_position_y) /
-                                      rrt_param_.grid_resolution);
+  Vector2i gridLoc = Vector2i(round((x - rrt_param_.origin_position_x) /
+                                      rrt_param_.grid_resolution),
+                              round((y - rrt_param_.origin_position_y) /
+                                      rrt_param_.grid_resolution));
 
   _stateSpace->obstacleGrid().obstacleAt(gridLoc) = true;
 

@@ -24,8 +24,8 @@
     <param name="frame_id_left" value="camera_left" />
     <param name="frame_id_right" value="camera_right" />
     <param name="left_camera_offset" value="0.08" />
-    <param name="left_camera_orientation" value="45" />
+    <param name="left_camera_orientation" value="25" />
     <param name="right_camera_offset" value="-0.08" />
-    <param name="right_camera_orientation" value="-45" />
+    <param name="right_camera_orientation" value="-28" />
   </node>
 </launch>
