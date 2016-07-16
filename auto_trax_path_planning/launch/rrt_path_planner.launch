@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+
+<launch>
+
+    <!-- Launch Camera 1 -->
+    <include file="$(find auto_trax_sensors)/launch/openni2_1.launch" />
+
+    <!-- Launch Camera 2 -->
+    <include file="$(find auto_trax_sensors)/launch/openni2_2.launch" />
+
+    <!-- Launch Scan Merger and Scan Center -->
+    <include file="$(find auto_trax_sensors)/launch/laser_scan_merger.launch" />
+
+    <!-- Launch Controller -->
+    <include file="$(find auto_trax_controller)/launch/auto_trax_controller.launch" />
+
+    <!-- Launch IO Interface -->
+    <include file="$(find auto_trax_io)/launch/servo_driver_interface.launch" />
+
+    <!-- Launch the occupancy grid processor -->
+    <node pkg="auto_trax_path_planning" type="occupancy_grid_node" name="oc_grid_test" output="screen" />
+
+    <!-- Launch the rrt path planner -->
+    <node pkg="auto_trax_path_planning" type="rrt_path_node" name="rrt_path_planner_node" output="screen" />
+
+    <!-- Load the occupancy grid parameters -->
+    <rosparam command="load" file="$(find auto_trax_path_planning)/parameter/occupancy_grid_parameters.yaml" />
+
+</launch>

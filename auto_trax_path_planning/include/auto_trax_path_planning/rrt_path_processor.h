@@ -8,7 +8,7 @@
 #include <ros/ros.h>
 #include <nav_msgs/OccupancyGrid.h>
 #include <nav_msgs/Path.h>
-#include <std_msgs/Float32.h>
+#include <std_msgs/Float64.h>
 #include <std_msgs/String.h>
 #include <auto_trax_msgs/MergedScan.h>
 
@@ -79,7 +79,7 @@ public:
   bool findSolution();
   void printPath();
   void debugPrint();
-  float getFirstSetpoint();
+  double getFirstSetpoint();
 
 private:
   ros::NodeHandle nh_;
@@ -90,7 +90,7 @@ private:
 
   nav_msgs::OccupancyGrid rrt_oc_grid_;
   nav_msgs::Path result_;
-  std_msgs::Float32 setpoint_;
+  std_msgs::Float64 setpoint_;
 
   std::shared_ptr<RRT::GridStateSpace> _stateSpace;
   RRT::BiRRT<Eigen::Vector2f>* _biRRT;

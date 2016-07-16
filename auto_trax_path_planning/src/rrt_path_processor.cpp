@@ -39,13 +39,12 @@ RRTPathProcessor::RRTPathProcessor(const ros::NodeHandle& nh,
   pub_oc_grid_debug = nh_.advertise<nav_msgs::OccupancyGrid>("rrt_oc_grid",
                                                              rrt_param_.queue_size_pub_oc_grid);
 
-  pub_setpoint_ = nh_.advertise<std_msgs::Float32>("setpoint_angle", 1);
+  pub_setpoint_ = nh_.advertise<std_msgs::Float64>("setpoint_angle", 1);
 
   _stateSpace = make_shared<GridStateSpace>(rrt_param_.grid_height,
                                             rrt_param_.grid_width,
                                             rrt_param_.grid_height,
                                             rrt_param_.grid_width);
-
 
   _biRRT = new BiRRT<Vector2f>(_stateSpace);
 
@@ -66,9 +65,6 @@ RRTPathProcessor::RRTPathProcessor(const ros::NodeHandle& nh,
   _goalVel = Vector2f(rrt_param_.goal_vel_x, rrt_param_.goal_vel_y);
 
   result_.header.frame_id = rrt_param_.frame_id;
-
-
-
 }
 
 RRTPathProcessor::~RRTPathProcessor() { }
@@ -214,7 +210,7 @@ void RRTPathProcessor::setObstacleAt(float x, float y) {
 void RRTPathProcessor::debugPrint() {
 }
 
-float RRTPathProcessor::getFirstSetpoint() {
+double RRTPathProcessor::getFirstSetpoint() {
   Eigen::Vector2f path_point = _previousSolution.at(1);
   float x = path_point.x() * rrt_param_.grid_resolution + rrt_param_.origin_position_x;
   float y = path_point.y() * rrt_param_.grid_resolution + rrt_param_.origin_position_y;
