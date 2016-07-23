@@ -5,7 +5,8 @@
 #include <image_transport/image_transport.h>
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
-#include "opencv2/objdetect/objdetect.hpp"
+#include <opencv2/objdetect/objdetect.hpp>
+#include <opencv2/features2d/features2d.hpp>
 #include <ros/ros.h>
 #include <sensor_msgs/Image.h>
 
