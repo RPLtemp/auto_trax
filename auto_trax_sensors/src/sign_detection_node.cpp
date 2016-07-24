@@ -24,6 +24,20 @@ SignDetectionNode::SignDetectionNode():
     ros::shutdown();
   }
 
+  // Extract descriptors from the original sign image
+  orb_ = cv::ORB::create("ORB");
+  cv::Mat sign = cv::imread(sign_image_path_);
+  std::vector<cv::KeyPoint> keypoints;
+
+  orb_->detect(sign, keypoints);
+
+  descriptor_extractor_ = cv::ORB::create("ORB");
+  descriptor_extractor_->compute(sign, keypoints, sign_descriptors_);
+
+  // Create the descriptor matcher object
+  bf_matcher_ = cv::BFMatcher(cv::NORM_HAMMING, true);
+
+  // Initialize the ROS interfaces
   image_sub_ = it_.subscribe(image_sub_topic_, 1, &SignDetectionNode::ImageCallback, this);
   image_pub_ = it_.advertise(image_pub_topic_, 1, true);
 }
@@ -35,9 +49,6 @@ void SignDetectionNode::ImageCallback(const sensor_msgs::ImageConstPtr &image_ms
   cv::Mat gray_img;
   cv::Mat eq_img;
   cv::Mat result_img;
-  cv::Mat sign;
-  cv::Mat sign_descriptors;
-  cv::Mat detected_descriptors;
 
   // Convert the ROS image message to an OpenCV image
   cv_bridge::CvImagePtr cv_ptr;
@@ -62,37 +73,30 @@ void SignDetectionNode::ImageCallback(const sensor_msgs::ImageConstPtr &image_ms
   std::vector<cv::Rect> faces;
   cascade.detectMultiScale(eq_img, faces, scale_factor_, min_neighbors_, 0, cv::Size(size_min_, size_max_));
 
-  cv::Ptr<cv::FeatureDetector> orb = cv::ORB::create("ORB");
-  cv::BFMatcher bf = cv::BFMatcher(cv::NORM_HAMMING, true);
-
-  sign = cv::imread(sign_image_path_);
-  std::vector<cv::KeyPoint> keypoints;
-
-  orb->detect(sign, keypoints);
-
-  cv::Ptr<cv::DescriptorExtractor> descriptor_extractor = cv::ORB::create("ORB");
-  descriptor_extractor->compute(sign, keypoints, sign_descriptors);
-
   std::vector<cv::Rect>::const_iterator i;
   for (i = faces.begin(); i != faces.end(); ++i) {
-    cv::Mat object = cv::Mat(eq_img,
-                             cv::Range(i->y, i->y + i->height),
-                             cv::Range(i->x, i->x + i->width));
+    cv::Mat object;
+    cv::Mat detected_descriptors;
+
+    object = cv::Mat(eq_img,
+                     cv::Range(i->y, i->y + i->height),
+                     cv::Range(i->x, i->x + i->width));
     double ratio = 300.0 / object.size[1];
     cv::resize(object, object, cv::Size(300, int(object.size[0] * ratio)));
 
-    orb->detect(object, keypoints);
+    std::vector<cv::KeyPoint> keypoints;
+    orb_->detect(object, keypoints);
 
-    descriptor_extractor->compute(object, keypoints, detected_descriptors);
+    descriptor_extractor_->compute(object, keypoints, detected_descriptors);
 
-    if (keypoints.size() == 0 ||
-            detected_descriptors.empty()) continue;
+    if (keypoints.size() == 0 || detected_descriptors.empty())
+      continue;
 
     std::vector<cv::DMatch> matches;
-    bf.match(detected_descriptors, sign_descriptors, matches);
+    bf_matcher_.match(detected_descriptors, sign_descriptors_, matches);
 
-    std::cout << matches.size() << std::endl;
-    if (matches.size() < 100) continue;
+    if (matches.size() < 100)
+      continue;
 
     cv::rectangle(
                 result_img,

@@ -43,6 +43,12 @@ class SignDetectionNode {
     int min_neighbors_;
     int size_min_;
     int size_max_;
+
+    cv::Mat sign_descriptors_;
+
+    cv::BFMatcher bf_matcher_;
+    cv::Ptr<cv::FeatureDetector> orb_;
+    cv::Ptr<cv::DescriptorExtractor> descriptor_extractor_;
 };
 }
 
