@@ -8,5 +8,6 @@
     <param name="size_min" value="40" />
     <param name="size_max" value="40" />
     <param name="classifier_path" value="$(find auto_trax_sensors)/config/cascade.xml" />
+    <param name="sign_image_path" value="$(find auto_trax_sensors)/resources/sign.jpg" />
   </node>
 </launch>

@@ -19,6 +19,11 @@ SignDetectionNode::SignDetectionNode():
     ros::shutdown();
   }
 
+  if (!pnh.getParam("sign_image_path", sign_image_path_)) {
+    ROS_ERROR("Please specify the path to the sign image");
+    ros::shutdown();
+  }
+
   image_sub_ = it_.subscribe(image_sub_topic_, 1, &SignDetectionNode::ImageCallback, this);
   image_pub_ = it_.advertise(image_pub_topic_, 1, true);
 }
@@ -60,7 +65,7 @@ void SignDetectionNode::ImageCallback(const sensor_msgs::ImageConstPtr &image_ms
   cv::Ptr<cv::FeatureDetector> orb = cv::ORB::create("ORB");
   cv::BFMatcher bf = cv::BFMatcher(cv::NORM_HAMMING, true);
 
-  sign = cv::imread("/home/pavel/auto_trax_ws/src/auto_trax/auto_trax_sensors/resources/sign.jpg");
+  sign = cv::imread(sign_image_path_);
   std::vector<cv::KeyPoint> keypoints;
 
   orb->detect(sign, keypoints);

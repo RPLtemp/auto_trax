@@ -37,6 +37,7 @@ class SignDetectionNode {
     std::string image_pub_topic_;
 
     std::string classifier_path_;
+    std::string sign_image_path_;
 
     double scale_factor_;
     int min_neighbors_;
