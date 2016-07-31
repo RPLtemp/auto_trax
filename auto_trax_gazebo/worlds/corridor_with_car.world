@@ -30,6 +30,11 @@
     </include>
 
     <include>
+      <uri>model://cart_front_steer_two_lasers</uri>
+      <pose>0 0.5 0 0 0 0</pose>
+    </include>
+
+    <include>
       <uri>model://grey_wall</uri>
       <pose>3 2 -2 0 0 0</pose>
     </include>
@@ -41,17 +46,17 @@
 
     <include>
       <uri>model://grey_wall</uri>
-      <pose>6.85 -1.65 -2 0 0 1.57079632679</pose>
+      <pose>6.85 -1.65 -2 0 0 1.5708</pose>
     </include>
 
     <include>
       <uri>model://grey_wall</uri>
-      <pose>-6.85 -7.65 -2 0 0 1.57079632679</pose>
+      <pose>-6.85 -7.65 -2 0 0 1.5708</pose>
     </include>
 
     <include>
       <uri>model://grey_wall</uri>
-      <pose>3.85 -4.65 -2 0 0 1.57079632679</pose>
+      <pose>3.85 -4.65 -2 0 0 1.5708</pose>
     </include>
 
     <include>
@@ -66,17 +71,17 @@
 
     <include>
       <uri>model://grey_wall</uri>
-      <pose>6.85 -7.65 -2 0 0 1.57079632679</pose>
+      <pose>6.85 -7.65 -2 0 0 1.5708</pose>
     </include>
 
     <include>
       <uri>model://grey_wall</uri>
-      <pose>-3.85 -4.65 -2 0 0 1.57079632679</pose>
+      <pose>-3.85 -4.65 -2 0 0 1.5708</pose>
     </include>
 
     <include>
       <uri>model://grey_wall</uri>
-      <pose>-6.85 -1.65 -2 0 0 1.57079632679</pose>
+      <pose>-6.85 -1.65 -2 0 0 1.5708</pose>
     </include>
 
     <include>
@@ -89,14 +94,6 @@
       <pose>-3 -11.3 -2 0 0 0</pose>
     </include>
 
-    <plugin name="occupancy_grid" filename="liboccupancy_grid.so" >
-      <MapLength>14.0</MapLength>
-      <MapWidth>14.0</MapWidth>
-      <Resolution>0.05</Resolution>
-      <OriginX>0.0</OriginX>
-      <OriginY>-4.65</OriginY>
-      <OriginZ>0.1</OriginZ>
-      <ImagePath>/home/pavel/test.png</ImagePath>
-    </plugin>
+    <plugin name="occupancy_grid" filename="liboccupancy_grid.so"/>
   </world>
 </sdf>
