@@ -220,7 +220,7 @@
     </joint>
 
     <link name="laser_sensor_link_1">
-      <pose>0.45 0.2 0.4 0 0 0.785398</pose>
+      <pose>0.45 0.2 0.4 0 0 0.349066</pose>
       <collision name="collision">
         <geometry>
           <box>
@@ -249,8 +249,8 @@
             <horizontal>
               <samples>360</samples>
               <resolution>1</resolution>
-              <min_angle>-0.785398</min_angle>
-              <max_angle>0.785398</max_angle>
+              <min_angle>-0.4974188</min_angle>
+              <max_angle>0.4974188</max_angle>
             </horizontal>
           </scan>
           <range>
@@ -275,7 +275,7 @@
     </joint>
 
     <link name="laser_sensor_link_2">
-      <pose>0.45 -0.2 0.4 0 0 -0.785398</pose>
+      <pose>0.45 -0.2 0.4 0 0 -0.349066</pose>
       <collision name="collision">
         <geometry>
           <box>
@@ -304,8 +304,8 @@
             <horizontal>
               <samples>360</samples>
               <resolution>1</resolution>
-              <min_angle>-0.785398</min_angle>
-              <max_angle>0.785398</max_angle>
+              <min_angle>-0.4974188</min_angle>
+              <max_angle>0.4974188</max_angle>
             </horizontal>
           </scan>
           <range>
