@@ -92,7 +92,7 @@
     <plugin name="occupancy_grid" filename="liboccupancy_grid.so" >
       <MapLength>14.0</MapLength>
       <MapWidth>14.0</MapWidth>
-      <Resolution>0.05</Resolution>
+      <Resolution>0.1</Resolution>
       <OriginX>0.0</OriginX>
       <OriginY>-4.65</OriginY>
       <OriginZ>0.1</OriginZ>
