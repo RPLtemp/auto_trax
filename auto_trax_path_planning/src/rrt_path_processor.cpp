@@ -93,7 +93,7 @@ void RRTPathProcessor::CallbackOCGrid(const nav_msgs::OccupancyGrid &oc_grid) {
   }
 
 
-   for (int i = 0; i < rrt_param_.grid_width; i++)
+  for (int i = 0; i < rrt_param_.grid_width; i++)
   {
     for (int j = 0; j < rrt_param_.grid_height; j++)
     {
@@ -174,29 +174,29 @@ bool RRTPathProcessor::findSolution() {
     step(1);
     counter++;
     if (_biRRT->startSolutionNode() != nullptr) {
-      cout << "Path found " << endl;
+      //cout << "Path found " << endl;
       return true;
     }
   }
 
-  cout << "Path not found in "<< counter << " iterations." << endl;
+  //cout << "Path not found in " << counter << " iterations." << endl;
   return false;
 }
 
 void RRTPathProcessor::printPath() {
   if (_previousSolution.size() > 0) {
 
-    std::cout << "Path covers ... " << std::endl;
-    std::cout << " x " << '\t' <<   " y "  << std::endl;
+    //std::cout << "Path covers ... " << std::endl;
+    //std::cout << " x " << '\t' <<   " y "  << std::endl;
 
     result_.poses.clear();
     result_.poses.resize(_previousSolution.size());
 
     for (int i = 0; i < _previousSolution.size(); i++) {
-      std::cout << _previousSolution[i].x() * rrt_param_.grid_resolution +
+      /*std::cout << _previousSolution[i].x() * rrt_param_.grid_resolution +
                    rrt_param_.origin_position_x << '\t'
                 << _previousSolution[i].y()* rrt_param_.grid_resolution +
-                   rrt_param_.origin_position_y << std::endl;
+                   rrt_param_.origin_position_y << std::endl;*/
       result_.poses[i].pose.position.x = _previousSolution[i].x() * rrt_param_.grid_resolution +
                                          rrt_param_.origin_position_x;
       result_.poses[i].pose.position.y = _previousSolution[i].y() * rrt_param_.grid_resolution +
