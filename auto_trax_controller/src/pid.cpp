@@ -34,17 +34,18 @@ double PID::GetControlEffort(const float& setpoint, const float& plant_state) {
 
   // Calculate delta_t
   ros::Duration delta_t;
+  ros::Time current_time = ros::Time::now();
   if (!prev_time_.isZero()) { // Not first time through the program
-    delta_t = ros::Time::now() - prev_time_;
-    prev_time_ = ros::Time::now();
+    delta_t = current_time - prev_time_;
+    prev_time_ = current_time;
     if (0 == delta_t.toSec()) {
       ROS_ERROR("delta_t is 0, skipping this loop. Possible overloaded cpu at time: %f",
-                ros::Time::now().toSec());
+                current_time.toSec());
       return 0.0;
     }
   } else {
     ROS_INFO("prev_time is 0, doing nothing");
-    prev_time_ = ros::Time::now();
+    prev_time_ = current_time;
     return 0.0;
   }
 
