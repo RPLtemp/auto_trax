@@ -93,7 +93,5 @@
       <uri>model://grey_wall</uri>
       <pose>-3 -11.3 -2 0 0 0</pose>
     </include>
-
-    <plugin name="occupancy_grid" filename="liboccupancy_grid.so"/>
   </world>
 </sdf>
