@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
-
-<sdf version="1.5">
-  <model name="cart_front_steer">
+<sdf version="1.4">
+  <model name="auto_trax_car">
     <link name="chassis">
       <pose>0 0 0.15  0 0 0</pose>
       <inertial>
@@ -24,6 +23,7 @@
         </geometry>
       </collision>
       <visual name="visual">
+        <cast_shadows>false</cast_shadows>
         <geometry>
           <box>
             <size>1.0 0.5 0.1</size>
@@ -60,6 +60,7 @@
         </geometry>
       </collision>
       <visual name="visual">
+        <cast_shadows>false</cast_shadows>
         <geometry>
           <cylinder>
             <radius>0.15</radius>
@@ -105,6 +106,7 @@
         </geometry>
       </collision>
       <visual name="visual">
+        <cast_shadows>false</cast_shadows>
         <geometry>
           <cylinder>
             <radius>0.15</radius>
@@ -128,7 +130,6 @@
       </axis>
     </joint>
     
-    
     <link name="wheel_rear_left">
       <pose>-0.5 0.298 0.15  -1.5707963267948966 0 0</pose>
       <inertial>
@@ -151,6 +152,7 @@
         </geometry>
       </collision>
       <visual name="visual">
+        <cast_shadows>false</cast_shadows>
         <geometry>
           <cylinder>
             <radius>0.15</radius>
@@ -196,6 +198,7 @@
         </geometry>
       </collision>
       <visual name="visual">
+        <cast_shadows>false</cast_shadows>
         <geometry>
           <cylinder>
             <radius>0.15</radius>
@@ -219,7 +222,7 @@
       </axis>
     </joint>
 
-    <link name="left_laser_sensor_link">
+    <link name="left_kinect_link">
       <pose>0.45 0.2 0.4 0 0 0.349066</pose>
       <collision name="collision">
         <geometry>
@@ -229,6 +232,7 @@
         </geometry>
       </collision>
       <visual name="visual">
+        <cast_shadows>false</cast_shadows>
         <geometry>
           <box>
             <size>0.1 0.1 0.1</size>
@@ -264,17 +268,48 @@
           <topicName>scan</topicName>
         </plugin>
       </sensor>
+      <sensor type="camera" name="camera_left">
+	<pose>0 0 0 0 0 0</pose>
+        <update_rate>30.0</update_rate>
+        <camera name="left_camera">
+	  <pose>0 0 0 0 0 0</pose>
+          <horizontal_fov>1.55</horizontal_fov>
+          <image>
+            <width>640</width>
+            <height>480</height>
+            <format>L8</format>
+          </image>
+          <clip>
+            <near>0.02</near>
+            <far>50</far>
+          </clip>
+	  <noise>
+            <type>gaussian</type>
+            <mean>0.0</mean>
+            <stddev>0.007</stddev>
+          </noise>
+        </camera>
+        <plugin name="left_camera_controller" filename="libgazebo_ros_camera.so">
+          <alwaysOn>true</alwaysOn>
+          <updateRate>30.0</updateRate>
+          <cameraName>gazebo_left_camera</cameraName>
+          <imageTopicName>image_raw</imageTopicName>
+          <cameraInfoTopicName>camera_info</cameraInfoTopicName>
+          <hackBaseline>0.07</hackBaseline>
+          <frameName>left_kinect_link</frameName>
+        </plugin>
+      </sensor>
     </link>
 
-    <joint name="laser_sensor_joint_left" type="fixed">
+    <joint name="kinect_joint_left" type="fixed">
       <parent>chassis</parent>
-      <child>left_laser_sensor_link</child>
+      <child>left_kinect_link</child>
       <axis>
         <xyz>0 0 1</xyz>
       </axis>
     </joint>
 
-    <link name="right_laser_sensor_link">
+    <link name="right_kinect_link">
       <pose>0.45 -0.2 0.4 0 0 -0.349066</pose>
       <collision name="collision">
         <geometry>
@@ -284,6 +319,7 @@
         </geometry>
       </collision>
       <visual name="visual">
+        <cast_shadows>false</cast_shadows>
         <geometry>
           <box>
             <size>0.1 0.1 0.1</size>
@@ -319,99 +355,6 @@
           <topicName>scan</topicName>
         </plugin>
       </sensor>
-    </link>
-
-    <joint name="laser_sensor_joint_right" type="fixed">
-      <parent>chassis</parent>
-      <child>right_laser_sensor_link</child>
-      <axis>
-        <xyz>0 0 1</xyz>
-      </axis>
-    </joint>
-
-    <link name="left_camera_link">
-      <pose>0.45 0.2 0.4 0 0 0.349066</pose>
-      <collision name="collision">
-        <geometry>
-          <box>
-            <size>0.1 0.1 0.1</size>
-          </box>
-        </geometry>
-      </collision>
-      <visual name="visual">
-        <geometry>
-          <box>
-            <size>0.1 0.1 0.1</size>
-          </box>
-        </geometry>
-        <material name="orange">
-          <ambient>1 0 0 1</ambient>
-          <diffuse>1 0 0 1</diffuse>
-          <specular>0.1 0.1 0.1 1</specular>
-        </material>
-      </visual>
-      <sensor type="camera" name="camera_left">
-	<pose>0 0 0 0 0 0</pose>
-        <update_rate>30.0</update_rate>
-        <camera name="left_camera">
-	  <pose>0 0 0 0 0 0</pose>
-          <horizontal_fov>1.55</horizontal_fov>
-          <image>
-            <width>640</width>
-            <height>480</height>
-            <format>L8</format>
-          </image>
-          <clip>
-            <near>0.02</near>
-            <far>50</far>
-          </clip>
-	  <noise>
-            <type>gaussian</type>
-            <mean>0.0</mean>
-            <stddev>0.007</stddev>
-          </noise>
-        </camera>
-        <plugin name="left_camera_controller" filename="libgazebo_ros_camera.so">
-          <alwaysOn>true</alwaysOn>
-          <updateRate>30.0</updateRate>
-          <cameraName>gazebo_left_camera</cameraName>
-          <imageTopicName>image_raw</imageTopicName>
-          <cameraInfoTopicName>camera_info</cameraInfoTopicName>
-          <hackBaseline>0.07</hackBaseline>
-          <frameName>left_camera_link</frameName>
-        </plugin>
-      </sensor>
-    </link>
-
-    <joint name="camera_joint_left" type="fixed">
-      <parent>chassis</parent>
-      <child>left_camera_link</child>
-      <axis>
-        <xyz>0 0 1</xyz>
-      </axis>
-    </joint>
-
-    <link name="right_camera_link">
-      <pose>0.45 -0.2 0.4 0 0 -0.349066</pose>
-      <collision name="collision">
-        <geometry>
-          <box>
-            <size>0.1 0.1 0.1</size>
-          </box>
-        </geometry>
-      </collision>
-      <visual name="visual">
-        <geometry>
-          <box>
-            <size>0.1 0.1 0.1</size>
-          </box>
-        </geometry>
-        <material name="orange">
-          <ambient>1 0 0 1</ambient>
-          <diffuse>1 0 0 1</diffuse>
-          <specular>0.1 0.1 0.1 1</specular>
-        </material>
-      </visual>
       <sensor type="camera" name="camera_right">
 	<pose>0 0 0 0 0 0</pose>
         <update_rate>30.0</update_rate>
@@ -440,19 +383,53 @@
           <imageTopicName>image_raw</imageTopicName>
           <cameraInfoTopicName>camera_info</cameraInfoTopicName>
           <hackBaseline>0.07</hackBaseline>
-          <frameName>right_camera_link</frameName>
+          <frameName>right_kinect_link</frameName>
         </plugin>
       </sensor>
     </link>
 
-    <joint name="camera_joint_right" type="fixed">
+    <joint name="kinect_joint_right" type="fixed">
       <parent>chassis</parent>
-      <child>right_camera_link</child>
+      <child>right_kinect_link</child>
       <axis>
         <xyz>0 0 1</xyz>
       </axis>
     </joint>
 
-    <!--<plugin name="move_cart" filename="libmove_cart.so"/>-->
+    <link name="tag_link">
+      <pose>-0.525 0 0.15 0 -1.57079632679 0</pose>
+      <collision name="collision">
+        <geometry>
+          <box>
+            <size>0.2 0.2 0.05</size>
+          </box>
+        </geometry>
+      </collision>
+      <visual name="visual">
+        <cast_shadows>false</cast_shadows>
+        <geometry>
+          <box>
+            <size>0.2 0.2 0.05</size>
+          </box>
+        </geometry>
+        <material>
+          <script>
+            <uri>model://april_tag/materials/scripts</uri>
+            <uri>model://april_tag/materials/textures</uri>
+            <name>April_Tag/Tag1</name>
+          </script>
+        </material>
+      </visual>
+    </link>
+
+    <joint name="tag_joint" type="fixed">
+      <parent>chassis</parent>
+      <child>tag_link</child>
+      <axis>
+        <xyz>1 0 0</xyz>
+      </axis>
+    </joint>
+
+    <plugin name="move_cart" filename="libmove_cart.so"/>
   </model>
 </sdf>
