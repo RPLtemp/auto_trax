@@ -15,7 +15,8 @@
 
 namespace auto_trax {
 // Default values
-static const std::string kDefaultImageSubTopic = "image_raw";
+static const std::string kDefaultImageSubTopic = "/gazebo_left_camera/image_raw";
+static const std::string kDefaultImagePubTopic = "detected_tag_image";
 
 class AprilTagDetectionNode {
   public:
@@ -29,9 +30,10 @@ class AprilTagDetectionNode {
 
     image_transport::ImageTransport it_;
     image_transport::Subscriber image_sub_;
+    image_transport::Publisher image_pub_;
 
-    AprilTags::TagDetector* tag_detector_;
     AprilTags::TagCodes tag_codes_;
+    AprilTags::TagDetector tag_detector_;
 };
 }
 

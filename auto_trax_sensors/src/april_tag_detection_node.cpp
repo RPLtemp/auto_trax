@@ -4,16 +4,19 @@ namespace auto_trax {
 
 AprilTagDetectionNode::AprilTagDetectionNode():
     it_(nh_),
-    tag_detector_(0),
-    tag_codes_(AprilTags::tagCodes36h11) {
+    tag_codes_(AprilTags::tagCodes16h5),
+    tag_detector_(tag_codes_) {
   ros::NodeHandle pnh("~");
 
   // Get the node parameters
   std::string image_sub_topic;
+  std::string image_pub_topic;
   pnh.param("image_sub_topic", image_sub_topic, kDefaultImageSubTopic);
+  pnh.param("image_pub_topic", image_pub_topic, kDefaultImagePubTopic);
 
   // Initialize the ROS interfaces
   image_sub_ = it_.subscribe(image_sub_topic, 1, &AprilTagDetectionNode::ImageCallback, this);
+  image_pub_ = it_.advertise(image_pub_topic, 1, true);
 }
 
 AprilTagDetectionNode::~AprilTagDetectionNode() {
@@ -35,23 +38,19 @@ void AprilTagDetectionNode::ImageCallback(const sensor_msgs::ImageConstPtr &imag
   cv::cvtColor(cv_ptr->image, gray_img, CV_BGR2GRAY);
 
   // Attempt to detect any tags in the current image
-  AprilTags::TagFamily fam = tag_detector_->thisTagFamily;
-  std::vector<AprilTags::TagDetection> detections = tag_detector_->extractTags(cv_ptr->image);
+  std::vector<AprilTags::TagDetection> detections = tag_detector_.extractTags(gray_img);
 
-  // Print out each detection
-  std::cout << detections.size() << " tags detected:" << std::endl;
+  // Add the detection outline to the input image
   for (int i = 0; i < detections.size(); i++) {
-    std::cout << i << std::endl;
+    detections[i].draw(cv_ptr->image);
   }
 
-  // Show the current image including any detections
-  /*if (m_draw) {
-    for (int i = 0; i < detections.size(); i++) {
-      // Also highlight in the image
-      detections[i].draw(image);
-    }
-    imshow(windowName, image);
-  }*/
+  // Publish the resultant image
+  sensor_msgs::ImagePtr result_image_msg =
+          cv_bridge::CvImage(std_msgs::Header(),
+                             sensor_msgs::image_encodings::BGR8,
+                             cv_ptr->image).toImageMsg();
+  image_pub_.publish(result_image_msg);
 }
 }
 
