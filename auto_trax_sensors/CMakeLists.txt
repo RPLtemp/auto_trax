@@ -9,7 +9,7 @@ add_definitions(-std=c++11)
 find_package(Eigen REQUIRED)
 find_package(OpenCV REQUIRED)
 
-link_directories(/home/pavel/auto_trax_ws/devel/lib)
+link_directories(${CATKIN_DEVEL_PREFIX}/../../lib)
 
 include_directories(
   include
