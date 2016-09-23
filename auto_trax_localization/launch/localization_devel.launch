@@ -4,4 +4,6 @@
     <node pkg="map_server" name="cab_map" type="map_server" args="$(find auto_trax_localization)/data/map/cab.yaml"
     output="screen"></node>
     <node pkg="rviz" name="rviz" type="rviz" args="$(find auto_trax_localization)/data/map/cab.rviz"></node>
+    <node pkg="rosbag" name="cab_bag" type="play" args="$(find auto_trax_localization)/data/bag/cab_full_run_bag -l"></node>
+
 </launch>

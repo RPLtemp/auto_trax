@@ -13,6 +13,7 @@ public:
   void setNParticles(int nParticles);
   void spawnParticles();
   void show(int n);
+  boost::shared_ptr<WheelBot> getParticle(int i);
 
 private:
 

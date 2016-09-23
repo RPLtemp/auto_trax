@@ -47,3 +47,9 @@ void ParticleFilter::show(int n)
     }
   }
 }
+
+boost::shared_ptr<WheelBot> ParticleFilter::getParticle(int i)
+{
+  if(i < nParticles_) return particles_.at(i);
+  return nullptr;
+}
