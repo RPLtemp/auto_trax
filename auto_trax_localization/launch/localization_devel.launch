@@ -1,4 +1,7 @@
 <launch>
     <node pkg="auto_trax_localization" name="localization_devel" type="localization_node"
     output="screen"></node>
+    <node pkg="map_server" name="cab_map" type="map_server" args="$(find auto_trax_localization)/data/map/cab.yaml"
+    output="screen"></node>
+    <node pkg="rviz" name="rviz" type="rviz" args="$(find auto_trax_localization)/data/map/cab.rviz"></node>
 </launch>
