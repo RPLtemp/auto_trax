@@ -1,0 +1,16 @@
+#include <include/wheel_bot.hpp>
+
+WheelBot::WheelBot(){
+
+  this->setTheta( (float) rand() / (RAND_MAX)  );
+  this->setX(  (float) rand() / (RAND_MAX)  );
+  this->setY( (float) rand() / (RAND_MAX)  );
+
+}
+float WheelBot::getX() {return x_;}
+float WheelBot::getY() { return y_;}
+float WheelBot::getTheta() {return theta_;}
+
+void WheelBot::setX(float x) {x_ = x;}
+void WheelBot::setY(float y) {y_ = y;}
+void WheelBot::setTheta(float theta) {theta_ = theta;}
