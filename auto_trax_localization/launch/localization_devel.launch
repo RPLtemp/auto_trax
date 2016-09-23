@@ -1,0 +1,4 @@
+<launch>
+    <node pkg="auto_trax_localization" name="localization_devel" type="localization_node"
+    output="screen"></node>
+</launch>
