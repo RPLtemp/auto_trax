@@ -18,10 +18,7 @@ struct MapParams {
   float origin_x, origin_y, origin_theta;
 };
 
-
-
 class ParticleFilter{
-
 public:
   ParticleFilter();
   ParticleFilter(int nParticles);
@@ -42,6 +39,21 @@ public:
 
   geometry_msgs::PoseArray particlesToMarkers();
 
+  // Get the weight of a particle due to the correlation of scan scene and map
+  void GetParticleWeights(const sensor_msgs::LaserScanConstPtr& a_scan_msg);
+
+  // Convert the sensor measurement to points in the global map (Get the laser scan points in the global frame of one particle)
+  void ConvertSensorMeasurementToPoints(boost::shared_ptr<WheelBot>& particle,
+                                        const sensor_msgs::LaserScanConstPtr& a_scan_msg,
+                                        std::vector<geometry_msgs::Point>& a_points);
+
+  // Get the correlation of the particle and the map
+  int CorrelationParticleMap(const std::vector<geometry_msgs::Point>& a_points);
+
+  // Clean particles outside of the map and set weight diminishing small
+  void CleanWeightOfParticle(boost::shared_ptr<WheelBot>& particle,
+                             float& particle_weight);
+
 private:
   void propagate();
   void perturb();
@@ -54,11 +66,7 @@ private:
   ParticleLaserScanParams laserScanParams_;
   MapParams mapParams_;
   std::vector<int> map_data_;
-
-
-
 };
-
 
 struct ParticleVisualProperties{
   float length,width,height;
