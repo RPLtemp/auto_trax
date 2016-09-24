@@ -10,13 +10,14 @@
 #include <tf/transform_broadcaster.h>
 
 #include <barc/Encoder.h>
-#include <include/particle_filter.hpp>
+#include "particle_filter.hpp"
 
 class LocalizationNode{
 
 public:
   LocalizationNode(ros::NodeHandle nh);
   void publishParticlesRViz();
+  void publishParticleRViz();
 
 
 private:
