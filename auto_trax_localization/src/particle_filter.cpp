@@ -1,4 +1,4 @@
-#include <include/particle_filter.hpp>
+#include "particle_filter.hpp"
 
 ParticleFilter::ParticleFilter()
 {
@@ -124,3 +124,41 @@ void ParticleFilter::setMap(std::vector<int>& map)
 {
   map_data_ = map;
 }
+
+void ParticleFilter::propagate(float delta_x, float delta_y)
+{
+  for (int i = 0; i < nParticles_; i++)
+  {
+    particles_.at(i)->addX(delta_x);
+    particles_.at(i)->addY(-delta_y);
+  }
+}
+
+geometry_msgs::PoseArray ParticleFilter::particlesToMarkers() {
+  // Create an array of poses message from particle values
+  geometry_msgs::PoseArray poses;
+
+  // Particle heading
+  double theta;
+
+  for (int i = 0; i < nParticles_; i++) {
+    // Create a pose
+    geometry_msgs::Pose pose;
+    pose.position.x = particles_.at(i)->getX();
+    pose.position.y = particles_.at(i)->getY();
+    pose.position.z = 0.0;
+    pose.orientation.x = 0.0;
+    pose.orientation.y = 0.0;
+    pose.orientation.z = sin(0.5 * -0.5 * M_PI);
+    pose.orientation.w = cos(0.5 * -0.5 * M_PI);
+
+    // Add the pose to the array
+    poses.poses.push_back(pose);
+  }
+
+  poses.header.frame_id = "map";
+  poses.header.seq = 0;
+
+  return poses;
+}
+

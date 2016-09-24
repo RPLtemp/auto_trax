@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <include/wheel_bot.hpp>
+#include <geometry_msgs/PoseArray.h>
 #include <boost/shared_ptr.hpp>
 #include <iostream>
 
@@ -13,6 +14,8 @@ struct MapParams {
   int width, height;
   float origin_x, origin_y, origin_theta;
 };
+
+
 
 class ParticleFilter{
 
@@ -32,8 +35,11 @@ public:
   void extract_particle_local_scan(boost::shared_ptr<WheelBot>& particle, std::vector<float>& scanRanges);
   boost::shared_ptr<WheelBot> getParticle(int i);
 
-private:
+  void propagate(float delta_x, float delta_y);
 
+  geometry_msgs::PoseArray particlesToMarkers();
+
+private:
   void propagate();
   void perturb();
   void resample();
@@ -41,6 +47,7 @@ private:
 private:
   int nParticles_;
   std::vector<boost::shared_ptr<WheelBot>> particles_;
+
   ParticleLaserScanParams laserScanParams_;
   MapParams mapParams_;
   std::vector<int> map_data_;
@@ -49,7 +56,7 @@ private:
 
 };
 
-struct ParticleVisualProperties{
-  float length, width, height;
-};
 
+struct ParticleVisualProperties{
+  float length,width,height;
+};
