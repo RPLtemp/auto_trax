@@ -18,6 +18,7 @@ public:
   LocalizationNode(ros::NodeHandle nh);
   void publishParticlesRViz();
   void publishParticleRViz();
+  void publishPoseTF();
 
 
 private:
@@ -38,7 +39,7 @@ private:
   ros::Publisher particles_pub_;
 
   ros::Publisher particle_laser_scan_pub_;
-
+  tf::TransformBroadcaster pose_br_;
   ros::Publisher particles_poses_pub_;
 
 
