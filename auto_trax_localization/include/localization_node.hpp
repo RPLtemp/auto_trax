@@ -11,13 +11,11 @@
 #include <barc/Encoder.h>
 #include <include/particle_filter.hpp>
 
-
-
 class LocalizationNode{
 
 public:
   LocalizationNode(ros::NodeHandle nh);
-  void publishParticleRViz();
+  void publishParticlesRViz();
 
 
 private:
@@ -31,6 +29,7 @@ private:
   ros::Subscriber depthScanSub, encoderSub;
   ros::Publisher posePub;
   ros::Publisher particles_pub_;
+  ros::Publisher particles_poses_pub_;
 
   ParticleFilter particleFilter_;
 
@@ -38,4 +37,5 @@ private:
 
   ParticleVisualProperties particleVisualProperties;
 
+  float prev_encoder_FR_;
 };

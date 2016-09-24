@@ -18,7 +18,8 @@ LocalizationNode::LocalizationNode(ros::NodeHandle nh) : nh_(nh)
   this);
   encoderSub   = nh_.subscribe("encoder", 1, &LocalizationNode::encoderCB, this);
 
-  particles_pub_ = nh_.advertise<visualization_msgs::Marker>( "visualization_marker", 0 );
+  particles_pub_ = nh_.advertise<visualization_msgs::Marker>("visualization_marker", 0);
+  particles_poses_pub_ = nh_.advertise<geometry_msgs::PoseArray>("particle_poses", 1);
 
   particleFilter_.setNParticles(100);
   particleFilter_.spawnParticles();
@@ -27,7 +28,9 @@ LocalizationNode::LocalizationNode(ros::NodeHandle nh) : nh_(nh)
   ROS_INFO("Displaying %i particles",nToShow);
   particleFilter_.show(nToShow);
 
-  publishParticleRViz();
+  publishParticlesRViz();
+
+  prev_encoder_FR_ = 0.0;
 }
 
 void LocalizationNode::depthScanCB(const sensor_msgs::LaserScanConstPtr &scan_msg)
@@ -37,15 +40,22 @@ void LocalizationNode::depthScanCB(const sensor_msgs::LaserScanConstPtr &scan_ms
 
 void LocalizationNode::encoderCB(const barc::EncoderConstPtr &encoder_msg)
 {
+  float delta_encoder_turns = encoder_msg->FR - prev_encoder_FR_;
+  float delta_y = delta_encoder_turns * 0.08;
+  float delta_x = 0.0;
+
+  particleFilter_.propagate(delta_x, delta_y);
+
+  prev_encoder_FR_ = encoder_msg->FR;
+
 //  ROS_INFO("EncoderCallBack");
-  publishParticleRViz();
+  publishParticlesRViz();
 }
 
-void LocalizationNode::publishParticleRViz()
+void LocalizationNode::publishParticlesRViz()
 {
-  visualization_msgs::Marker* marker = generateMarker(initial_pose_);
-  particles_pub_.publish( *marker );
-
+  geometry_msgs::PoseArray particle_poses = particleFilter_.particlesToMarkers();
+  particles_poses_pub_.publish(particle_poses);
 }
 
 void LocalizationNode::initializeParameters()
@@ -54,16 +64,16 @@ void LocalizationNode::initializeParameters()
 
   float initial_x, initial_y, initial_theta;
   bool allParametersSet = true;
-  nh_.param("initial_pose_x", initial_x,DefaultInitialX);
-  nh_.param("initial_pose_y", initial_y,DefaultInitialY);
-  nh_.param("initial_pose_theta", initial_theta,DefaultInitialTheta);
-  nh_.param("particle_marker_length", particleVisualProperties.length,DefaultParticleVisualLength);
-  nh_.param("particle_marker_width", particleVisualProperties.width,DefaultParticleVisualLength);
-  nh_.param("particle_marker_height", particleVisualProperties.height,DefaultParticleVisualLength);
+  nh_.param("initial_pose_x", initial_x, DefaultInitialX);
+  nh_.param("initial_pose_y", initial_y, DefaultInitialY);
+  nh_.param("initial_pose_theta", initial_theta, DefaultInitialTheta);
+  nh_.param("particle_marker_length", particleVisualProperties.length, DefaultParticleVisualLength);
+  nh_.param("particle_marker_width", particleVisualProperties.width, DefaultParticleVisualLength);
+  nh_.param("particle_marker_height", particleVisualProperties.height, DefaultParticleVisualLength);
 
   ROS_INFO("Particle length %.2f",particleVisualProperties.length);
 
-  initial_pose_->setPose(initial_x,initial_y,initial_theta);
+  initial_pose_->setPose(initial_x, initial_y, initial_theta);
 
   if (!allParametersSet) ROS_WARN("Some crucial parameters aren't set!");
   if (allParametersSet) ROS_WARN("All parameters are set!");

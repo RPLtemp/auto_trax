@@ -10,6 +10,9 @@ public:
   float getY();
   float getTheta();
 
+  void addX(float x);
+  void addY(float y);
+
   void setX(float x);
   void setY(float y);
   void setTheta(float theta);

@@ -4,6 +4,7 @@
 #include <boost/shared_ptr.hpp>
 #include <iostream>
 
+#include <geometry_msgs/PoseArray.h>
 
 class ParticleFilter{
 
@@ -15,8 +16,11 @@ public:
   void show(int n);
   boost::shared_ptr<WheelBot> getParticle(int i);
 
-private:
+  void propagate(float delta_x, float delta_y);
 
+  geometry_msgs::PoseArray particlesToMarkers();
+
+private:
   void propagate();
   void perturb();
   void resample();
@@ -24,7 +28,6 @@ private:
 private:
   int nParticles_;
   std::vector<boost::shared_ptr<WheelBot>> particles_;
-
 };
 
 struct ParticleVisualProperties{
