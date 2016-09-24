@@ -10,7 +10,7 @@
 #include <tf/transform_broadcaster.h>
 
 #include <barc/Encoder.h>
-#include "particle_filter.hpp"
+#include <particle_filter.hpp>
 
 class LocalizationNode{
 

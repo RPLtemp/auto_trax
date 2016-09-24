@@ -21,7 +21,12 @@ public:
 
   void setPose(float x, float y, float theta);
 
+  double getWeight();
+
+  void setWeight(double w);
 
 private:
   float x_,y_,theta_;
+
+  double weight_;
 };

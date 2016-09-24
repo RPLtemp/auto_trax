@@ -18,3 +18,11 @@ void WheelBot::addY(float y) {y_ += y;}
 
 void WheelBot::setTheta(float theta) {theta_ = theta;}
 void WheelBot::setPose(float x, float y, float theta){x_ = x; y_ = y; theta_ = theta;}
+
+double WheelBot::getWeight() {
+  return weight_;
+}
+
+void WheelBot::setWeight(double w) {
+  weight_ = w;
+}

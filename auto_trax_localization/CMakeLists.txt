@@ -9,16 +9,14 @@ include_directories(include ${Eigen_INCLUDE_DIRS})
 
 add_definitions(-std=c++11)
 
-
 cs_add_library(${PROJECT_NAME}
         src/localization_node.cpp
         src/particle_filter.cpp
+        src/resampling.cpp
+        src/sampling_distribution.cpp
         src/wheel_bot.cpp)
 
-
-
-cs_add_executable(localization_node
-        main.cpp)
+cs_add_executable(localization_node main.cpp)
 target_link_libraries(localization_node ${PROJECT_NAME})
 
 cs_install()
