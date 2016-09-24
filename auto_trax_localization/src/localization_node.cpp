@@ -17,8 +17,10 @@ LocalizationNode::LocalizationNode(ros::NodeHandle nh) : nh_(nh)
   depthScanSub = nh_.subscribe("merged_scan",1,&LocalizationNode::depthScanCB,
   this);
   encoderSub   = nh_.subscribe("encoder", 1, &LocalizationNode::encoderCB, this);
+  mapSub       =nh_.subscribe("map", 1, &LocalizationNode::mapCB, this);
 
   particles_pub_ = nh_.advertise<visualization_msgs::Marker>( "visualization_marker", 0 );
+  particle_laser_scan_pub_ = nh_.advertise<sensor_msgs::LaserScan>("particle_laser_scan", 0);
 
   particleFilter_.setNParticles(100);
   particleFilter_.spawnParticles();
@@ -32,7 +34,18 @@ LocalizationNode::LocalizationNode(ros::NodeHandle nh) : nh_(nh)
 
 void LocalizationNode::depthScanCB(const sensor_msgs::LaserScanConstPtr &scan_msg)
 {
-//  ROS_INFO("DepthScanCallBack");
+
+  if (!laserScanParamsInitialized)
+  {
+    ROS_INFO("Initializing laser scan parameters");
+    particleFilter_.initializeLaserScanParameters(scan_msg->angle_min, scan_msg->angle_max, scan_msg->angle_increment,
+                                                  scan_msg->range_min, scan_msg->range_max);
+    laserScanParamsInitialized = true;
+    last_scan_msg_ptr = sensor_msgs::LaserScanPtr(new sensor_msgs::LaserScan);
+  }
+
+  *last_scan_msg_ptr = *scan_msg;
+
 }
 
 void LocalizationNode::encoderCB(const barc::EncoderConstPtr &encoder_msg)
@@ -41,8 +54,32 @@ void LocalizationNode::encoderCB(const barc::EncoderConstPtr &encoder_msg)
   publishParticleRViz();
 }
 
+void LocalizationNode::mapCB(const nav_msgs::OccupancyGridConstPtr& map_msg){
+  if (!mapParamsInitialized)
+  {
+    ROS_INFO("Initializing map parameters");
+    particleFilter_.initializeMapParameters(map_msg->info.resolution, map_msg->info.width, map_msg->info.height,
+                                            map_msg->info.origin.position.x, map_msg->info.origin.position.y,
+                                            2*std::acos(map_msg->info.origin.orientation.w));
+    std::vector<int> map;
+    for (int i = 0; i < map_msg->data.size(); i++) map.push_back(map_msg->data[i]);
+    particleFilter_.setMap(map);
+    mapParamsInitialized = true;
+  }
+
+}
+
 void LocalizationNode::publishParticleRViz()
 {
+  if (laserScanParamsInitialized && mapParamsInitialized) {
+    std::vector<float> ranges;
+    particleFilter_.extract_particle_local_scan(initial_pose_, ranges);
+    sensor_msgs::LaserScan laserScan;
+    laserScan = *last_scan_msg_ptr;
+    laserScan.ranges = ranges;
+    particle_laser_scan_pub_.publish(laserScan);
+  }
+
   visualization_msgs::Marker* marker = generateMarker(initial_pose_);
   particles_pub_.publish( *marker );
 
