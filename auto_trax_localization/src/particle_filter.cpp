@@ -32,7 +32,7 @@ void ParticleFilter::spawnParticles(WheelBot pose)
   for (int i = 0; i < nParticles_; i++)
   {
     particles_.push_back(boost::shared_ptr<WheelBot>(new WheelBot(pose.getX(),pose.getY(),pose.getTheta(),
-                                                         .001, .001, 0.5 )));
+                                                         .001, .001, 0.005 )));
   }
 }
 
