@@ -1,10 +1,17 @@
 #pragma once
-#include <ros/ros.h>
+
 #include <iostream>
+
+#include <ros/ros.h>
+
 #include <sensor_msgs/LaserScan.h>
 #include <visualization_msgs/Marker.h>
+#include <tf/transform_broadcaster.h>
+
 #include <barc/Encoder.h>
 #include <include/particle_filter.hpp>
+
+
 
 class LocalizationNode{
 
@@ -16,6 +23,9 @@ public:
 private:
   void depthScanCB(const sensor_msgs::LaserScanConstPtr& scan_msg);
   void encoderCB(const barc::EncoderConstPtr& encoder_msg);
+  void initializeParameters();
+  visualization_msgs::Marker* generateMarker(boost::shared_ptr<WheelBot> particle);
+
 
   ros::NodeHandle nh_;
   ros::Subscriber depthScanSub, encoderSub;
@@ -23,5 +33,9 @@ private:
   ros::Publisher particles_pub_;
 
   ParticleFilter particleFilter_;
+
+  boost::shared_ptr<WheelBot> initial_pose_;
+
+  ParticleVisualProperties particleVisualProperties;
 
 };

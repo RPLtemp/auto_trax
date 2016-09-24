@@ -14,3 +14,4 @@ float WheelBot::getTheta() {return theta_;}
 void WheelBot::setX(float x) {x_ = x;}
 void WheelBot::setY(float y) {y_ = y;}
 void WheelBot::setTheta(float theta) {theta_ = theta;}
+void WheelBot::setPose(float x, float y, float theta){x_ = x; y_ = y; theta_ = theta;}

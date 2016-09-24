@@ -15,6 +15,9 @@ public:
   void setTheta(float theta);
 
 
+  void setPose(float x, float y, float theta);
+
+
 private:
   float x_,y_,theta_;
 };

@@ -26,3 +26,7 @@ private:
   std::vector<boost::shared_ptr<WheelBot>> particles_;
 
 };
+
+struct ParticleVisualProperties{
+  float length,width,height;
+};
