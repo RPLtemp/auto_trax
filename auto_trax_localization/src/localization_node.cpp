@@ -81,7 +81,7 @@ void LocalizationNode::mapCB(const nav_msgs::OccupancyGridConstPtr& map_msg){
 
 }
 
-void LocalizationNode::publishParticleRViz() {
+void LocalizationNode::publishParticlesRViz() {
   if (laserScanParamsInitialized && mapParamsInitialized) {
     std::vector<float> ranges;
     particleFilter_.extract_particle_local_scan(initial_pose_, ranges);
