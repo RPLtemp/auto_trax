@@ -1,6 +1,4 @@
 #include "localization_node.hpp"
-#include "particle_filter.hpp"
-#include <string>
 
 static constexpr float DefaultInitialX = 20.0;
 static constexpr float DefaultInitialY = 0.0;
@@ -8,18 +6,16 @@ static constexpr float DefaultInitialTheta = 0.0;
 static constexpr float DefaultParticleVisualLength = 15;
 
 LocalizationNode::LocalizationNode(ros::NodeHandle nh) : nh_(nh)
-
 {
   initializeParameters();
 
   ROS_WARN("Localization node%s started!", (
           nh_.getNamespace() == "/" ? "" : nh_.getNamespace().c_str()));
-  depthScanSub = nh_.subscribe("merged_scan",1,&LocalizationNode::depthScanCB,
-  this);
+  depthScanSub = nh_.subscribe("merged_scan",1,&LocalizationNode::depthScanCB, this);
   encoderSub   = nh_.subscribe("encoder", 1, &LocalizationNode::encoderCB, this);
   mapSub       =nh_.subscribe("map", 1, &LocalizationNode::mapCB, this);
 
-  particles_pub_ = nh_.advertise<visualization_msgs::Marker>( "visualization_marker", 0 );
+  particle_pub_ = nh_.advertise<visualization_msgs::Marker>( "visualization_marker", 0 );
   particle_laser_scan_pub_ = nh_.advertise<sensor_msgs::LaserScan>("particle_laser_scan", 0);
   particles_poses_pub_ = nh_.advertise<geometry_msgs::PoseArray>("particle_poses", 1);
 
@@ -30,14 +26,15 @@ LocalizationNode::LocalizationNode(ros::NodeHandle nh) : nh_(nh)
   ROS_INFO("Displaying %i particles",nToShow);
   particleFilter_.show(nToShow);
 
-  publishParticlesRViz();
-
   prev_encoder_FR_ = 0.0;
+}
+
+LocalizationNode::~LocalizationNode()
+{
 }
 
 void LocalizationNode::depthScanCB(const sensor_msgs::LaserScanConstPtr &scan_msg)
 {
-
   if (!laserScanParamsInitialized)
   {
     ROS_INFO("Initializing laser scan parameters");
@@ -49,6 +46,11 @@ void LocalizationNode::depthScanCB(const sensor_msgs::LaserScanConstPtr &scan_ms
 
   *last_scan_msg_ptr = *scan_msg;
 
+  particleFilter_.GetParticleWeights(scan_msg);
+
+  boost::shared_ptr<WheelBot> pose_estimate = particleFilter_.Resample();
+
+  publishParticleRViz(pose_estimate);
 }
 
 void LocalizationNode::encoderCB(const barc::EncoderConstPtr &encoder_msg)
@@ -61,15 +63,12 @@ void LocalizationNode::encoderCB(const barc::EncoderConstPtr &encoder_msg)
 
   prev_encoder_FR_ = encoder_msg->FR;
 
-//  ROS_INFO("EncoderCallBack");
-//  publishParticlesRViz();
-  publishParticleRViz();
+  publishParticlesRViz();
 }
 
-
-void LocalizationNode::mapCB(const nav_msgs::OccupancyGridConstPtr& map_msg){
-  if (!mapParamsInitialized)
-  {
+void LocalizationNode::mapCB(const nav_msgs::OccupancyGridConstPtr& map_msg)
+{
+  if (!mapParamsInitialized) {
     ROS_INFO("Initializing map parameters");
     particleFilter_.initializeMapParameters(map_msg->info.resolution, map_msg->info.width, map_msg->info.height,
                                             map_msg->info.origin.position.x, map_msg->info.origin.position.y,
@@ -79,24 +78,19 @@ void LocalizationNode::mapCB(const nav_msgs::OccupancyGridConstPtr& map_msg){
     particleFilter_.setMap(map);
     mapParamsInitialized = true;
   }
-
 }
 
-void LocalizationNode::publishParticlesRViz() {
-
+void LocalizationNode::publishParticlesRViz()
+{
   geometry_msgs::PoseArray particle_poses = particleFilter_.particlesToMarkers();
   particles_poses_pub_.publish(particle_poses);
 }
 
-void LocalizationNode::publishParticleRViz()
+void LocalizationNode::publishParticleRViz(boost::shared_ptr<WheelBot> particle)
 {
-
-
   if (laserScanParamsInitialized && mapParamsInitialized) {
-    publishPoseTF(particleFilter_.getParticle(0));
-    std::vector<float> ranges;
-    boost::shared_ptr<WheelBot> particle = boost::shared_ptr<WheelBot>(new WheelBot);
-    *particle = *particleFilter_.getParticle(0);
+    publishPoseTF(particle);
+    /*std::vector<float> ranges;
     particleFilter_.extract_particle_local_scan(particle, ranges);
     sensor_msgs::LaserScan laserScan;
     laserScan = *last_scan_msg_ptr;
@@ -105,12 +99,11 @@ void LocalizationNode::publishParticleRViz()
     laserScan.angle_increment = particleFilter_.getLaserScanParams().angle_increment;
     laserScan.header.frame_id = "robot";
     laserScan.ranges = ranges;
-    particle_laser_scan_pub_.publish(laserScan);
+    particle_laser_scan_pub_.publish(laserScan);*/
   }
 
-  visualization_msgs::Marker *marker = generateMarker(initial_pose_);
-  particles_pub_.publish(*marker);
-
+  visualization_msgs::Marker *marker = generateMarker(particle);
+  particle_pub_.publish(*marker);
 }
 
 void LocalizationNode::initializeParameters()
@@ -132,7 +125,6 @@ void LocalizationNode::initializeParameters()
 
   if (!allParametersSet) ROS_WARN("Some crucial parameters aren't set!");
   if (allParametersSet) ROS_WARN("All parameters are set!");
-
 }
 
 visualization_msgs::Marker* LocalizationNode::generateMarker(boost::shared_ptr<WheelBot> particle)
@@ -160,16 +152,6 @@ visualization_msgs::Marker* LocalizationNode::generateMarker(boost::shared_ptr<W
   marker->color.b = 0.0;
   marker->lifetime = ros::Duration(1000);
   return marker;
-}
-
-void LocalizationNode::publishPoseTF()
-{
-  tf::Transform transform;
-  transform.setOrigin( tf::Vector3(initial_pose_->getX(), initial_pose_->getY(), 0.0) );
-  tf::Quaternion q;
-  q.setRPY(0, 0, initial_pose_->getTheta());
-  transform.setRotation(q);
-  pose_br_.sendTransform(tf::StampedTransform(transform, last_scan_msg_ptr->header.stamp, "map", "robot"));
 }
 
 void LocalizationNode::publishPoseTF(boost::shared_ptr<WheelBot> particle)
