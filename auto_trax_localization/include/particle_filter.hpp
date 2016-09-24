@@ -1,12 +1,13 @@
 #pragma once
 #include <vector>
 #include <wheel_bot.hpp>
+#include <geometry_msgs/Point.h>
 #include <geometry_msgs/PoseArray.h>
 #include <boost/shared_ptr.hpp>
 #include <iostream>
 #include <Eigen/Geometry>
 #include <Eigen/Dense>
-
+#include <sensor_msgs/LaserScan.h>
 
 struct ParticleLaserScanParams {
   float angle_min, angle_max, angle_increment, range_min, range_max;
@@ -18,10 +19,7 @@ struct MapParams {
   float origin_x, origin_y, origin_theta;
 };
 
-
-
 class ParticleFilter{
-
 public:
   ParticleFilter();
   ParticleFilter(int nParticles);
@@ -44,7 +42,24 @@ public:
 
   geometry_msgs::PoseArray particlesToMarkers();
 
+
   ParticleLaserScanParams getLaserScanParams() {return laserScanParams_;}
+
+  // Get the weight of a particle due to the correlation of scan scene and map
+  void GetParticleWeights(const sensor_msgs::LaserScanConstPtr& a_scan_msg);
+
+  // Convert the sensor measurement to points in the global map (Get the laser scan points in the global frame of one particle)
+  void ConvertSensorMeasurementToPoints(boost::shared_ptr<WheelBot>& particle,
+                                        const sensor_msgs::LaserScanConstPtr& a_scan_msg,
+                                        std::vector<geometry_msgs::Point>& a_points);
+
+  // Get the correlation of the particle and the map
+  int CorrelationParticleMap(const std::vector<geometry_msgs::Point>& a_points);
+
+  // Clean particles outside of the map and set weight diminishing small
+  void CleanWeightOfParticle(boost::shared_ptr<WheelBot>& particle,
+                             float& particle_weight);
+
 
 private:
   void propagate();
@@ -58,11 +73,7 @@ private:
   ParticleLaserScanParams laserScanParams_;
   MapParams mapParams_;
   std::vector<int> map_data_;
-
-
-
 };
-
 
 struct ParticleVisualProperties{
   float length,width,height;

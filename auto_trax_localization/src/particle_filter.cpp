@@ -235,6 +235,7 @@ geometry_msgs::PoseArray ParticleFilter::particlesToMarkers() {
   return poses;
 }
 
+
 void ParticleFilter::clipToMap(int &x, int &y)
 {
     //clip left
@@ -245,5 +246,95 @@ void ParticleFilter::clipToMap(int &x, int &y)
   y = y > mapParams_.height ? mapParams_.height : y;
   //clip bottom
   y = y < 0 ? 0 : y;
+}
+
+
+void ParticleFilter::GetParticleWeights(const sensor_msgs::LaserScanConstPtr& scan_msg) {
+  std::vector<geometry_msgs::Point> points;
+
+  for (int i = 0; i < particles_.size(); ++i) {
+    // Convert sensor measurement to points in global map
+    ConvertSensorMeasurementToPoints(particles_.at(i), scan_msg, points);
+
+    // Get correlation value of particle and map
+    int correlation = CorrelationParticleMap(points);
+
+    float particle_weight = static_cast<float>(correlation);
+
+    // Clean the particle weights such that particles are highly unlikely to be outside of the map
+    CleanWeightOfParticle(particles_.at(i), particle_weight);
+  }
+}
+
+void ParticleFilter::ConvertSensorMeasurementToPoints(
+    boost::shared_ptr<WheelBot>& particle,
+    const sensor_msgs::LaserScanConstPtr& scan_msg,
+    std::vector<geometry_msgs::Point>& points) {
+  for (int i = 0; i < scan_msg->ranges.size(); ++i) {
+    // Range and angle of laser scan point in local camera frame
+    float range = scan_msg->ranges.at(i);
+    float angle = scan_msg->angle_min + i*scan_msg->angle_increment;
+
+    // If range is within [range_min range_max] of the scan
+    if (range > scan_msg->range_min && range < scan_msg->range_max) {
+      geometry_msgs::Point point_scan, translation, rotation, pos;
+
+      // Calculate polar rotation of the scan point in camera frame
+      point_scan.x = range * cosf(angle);
+      point_scan.y = range * sinf(angle);
+      point_scan.z = 0.0;
+
+      // Calculate rotational part
+      rotation.x = point_scan.x * cosf(particle->getTheta()) - point_scan.y * sinf(particle->getTheta());
+      rotation.y = point_scan.x * sinf(particle->getTheta()) + point_scan.y * cosf(particle->getTheta());
+      rotation.z = 0.0;
+
+      // Calculate translational part
+      translation.x = particle->getX();
+      translation.y = particle->getY();
+      translation.z = 0.0;
+
+      // Get final coordinates of point in global map
+      pos.x = rotation.x + translation.x;
+      pos.y = rotation.y + translation.y;
+      pos.z = 0.0;
+
+      points.push_back(pos);
+    }
+  }
+}
+
+int ParticleFilter::CorrelationParticleMap(const std::vector<geometry_msgs::Point>& points) {
+  int correlation = 0;
+
+  for (int i = 0; i < points.size(); ++i) {
+    int ind_i = int(points.at(i).x/mapParams_.resolution);
+    int ind_j = int(points.at(i).y/mapParams_.resolution);
+
+    int map_index = ind_i + ind_j*mapParams_.width;
+
+    if (ind_i > 0 && ind_i < mapParams_.height && ind_j > 0 && ind_j < mapParams_.width ) {
+      if (map_data_.at(map_index) == 100) {
+        correlation += 1;
+      }
+    }
+  }
+
+  return correlation;
+}
+
+void ParticleFilter::CleanWeightOfParticle(boost::shared_ptr<WheelBot>& particle,
+                                           float& particle_weight) {
+  int ind_i = int(particle->getX()/mapParams_.resolution);
+  int ind_j = int(particle->getY()/mapParams_.resolution);
+
+  int map_index = ind_i + ind_j*mapParams_.width;
+
+  if (particle->getX() > mapParams_.width*mapParams_.resolution || particle->getX() < 0.0 ||
+      particle->getY() > mapParams_.height*mapParams_.resolution || particle->getY() < 0.0 ||
+      map_data_.at(map_index) == 100 || particle_weight == 0) {
+    // Assign low correlation/ particle weight
+    particle_weight = 0.0001;
+  }
 }
 
