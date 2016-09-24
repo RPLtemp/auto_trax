@@ -2,6 +2,7 @@
 
 ParticleFilter::ParticleFilter()
 {
+  max_weight_particle_ = boost::shared_ptr<WheelBot> (new WheelBot());
   Resampling::RougheningParams roughening_params;
   roughening_params.th_roughening_ = 0.0;
   roughening_params.xy_roughening_ = 0.0;
@@ -251,22 +252,17 @@ void ParticleFilter::GetParticleWeights(const sensor_msgs::LaserScanConstPtr& sc
 
   for (int i = 0; i < particles_.size(); ++i) {
     std::vector<geometry_msgs::Point> points;
-    //std::vector<float> local_scan;
 
     // Convert sensor measurement to points in global map
     WheelBot particle = *(particles_.at(i));
-
-    //extract_particle_local_scan(particles_.at(i), local_scan);
-    //scan_msg->ranges.clear();
-    //scan_msg->ranges.reserve(local_scan.size());
-
-    //for (int i = 0; i < local_scan.size(); i++)
-    //  scan_msg->ranges.push_back(local_scan[]);
 
     ConvertSensorMeasurementToPoints(particle, scan_msg, points);
 
     // Get correlation value of particle and map
     int correlation = CorrelationParticleMap(points);
+
+//    std::cout << "Number of Points: " << points.size() << std::endl;
+//    std::cout << "Correlation: " << correlation << std::endl;
 
     double particle_weight = static_cast<double>(correlation);
 
@@ -276,7 +272,7 @@ void ParticleFilter::GetParticleWeights(const sensor_msgs::LaserScanConstPtr& sc
       max_weight_particle_ = particles_.at(i);
     }
 
-    particle.setWeight(particle_weight);
+    particles_.at(i)->setWeight(particle_weight);
     resampler_->addParticle(particles_.at(i));
 
     // Clean the particle weights such that particles are highly unlikely to be outside of the map
@@ -326,13 +322,14 @@ int ParticleFilter::CorrelationParticleMap(const std::vector<geometry_msgs::Poin
   int correlation = 0;
 
   for (int i = 0; i < points.size(); ++i) {
-    int ind_i = int(points.at(i).x/mapParams_.resolution);
-    int ind_j = int(points.at(i).y/mapParams_.resolution);
+    int ind_j = round((points.at(i).x - mapParams_.origin_x)/mapParams_.resolution);
+    int ind_i = round((points.at(i).y - mapParams_.origin_y)/mapParams_.resolution);
 
-    int map_index = ind_i + ind_j*mapParams_.width;
+
+    int map_index = ind_i * mapParams_.width + ind_j;
 
     if (ind_i > 0 && ind_i < mapParams_.height && ind_j > 0 && ind_j < mapParams_.width ) {
-      if (map_data_.at(map_index) == 100) {
+      if (map_data_.at(map_index) > 0) {
         correlation += 1;
       }
     }
@@ -357,7 +354,7 @@ void ParticleFilter::CleanWeightOfParticle(WheelBot particle,
 }
 
 boost::shared_ptr<WheelBot> ParticleFilter::Resample() {
-  particles_ = resampler_->resample();
+//  particles_ = resampler_->resample();
 
   return max_weight_particle_;
 }

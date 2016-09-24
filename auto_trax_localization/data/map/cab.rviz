@@ -120,13 +120,13 @@ Visualization Manager:
       Topic: /map
       Value: true
     - Class: rviz/Marker
-      Enabled: true
+      Enabled: false
       Marker Topic: /visualization_marker
       Name: Marker
       Namespaces:
-        particles: true
+        {}
       Queue Size: 100
-      Value: true
+      Value: false
     - Alpha: 1
       Autocompute Intensity Bounds: true
       Autocompute Value Bounds:
@@ -156,6 +156,13 @@ Visualization Manager:
       Use Fixed Frame: true
       Use rainbow: true
       Value: true
+    - Arrow Length: 0.3
+      Class: rviz/PoseArray
+      Color: 255; 25; 0
+      Enabled: true
+      Name: PoseArray
+      Topic: /particle_poses
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -178,7 +185,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 28.3308
+      Distance: 70.5947
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.06
         Stereo Focal Distance: 1
@@ -190,10 +197,10 @@ Visualization Manager:
         Z: -7.01472
       Name: Current View
       Near Clip Distance: 0.01
-      Pitch: 1.0498
+      Pitch: 1.2198
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 1.88502
+      Yaw: 1.64502
     Saved:
       - Class: rviz/Orbit
         Distance: 0.01

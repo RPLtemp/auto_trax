@@ -56,14 +56,14 @@ std::vector<Particle> StochasticUniversalResampling::resample() {
     for (int s = prev_sample_ind; s < samples_.size(); s++) {
       if ((s + 1) == samples_.size()) {
         prev_sample_ind = s;
-        new_particles.push_back(samples_.at(s + 1));
+        new_particles.push_back(samples_.at(s));
         break;
       }
       else {
         if (samples_.at(s + 1)->getWeight() > curr_weight) {
           prev_sample_ind = s;
 
-          Particle p = samples_.at(s + 1);
+          Particle p = samples_.at(s);
 
           // Add roughening
           /*dx = MathUtils::randNumInRange(-xy_range, xy_range);

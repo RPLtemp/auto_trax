@@ -46,9 +46,14 @@ void LocalizationNode::depthScanCB(const sensor_msgs::LaserScanConstPtr &scan_ms
 
   *last_scan_msg_ptr = *scan_msg;
 
-  particleFilter_.GetParticleWeights(scan_msg);
 
-  boost::shared_ptr<WheelBot> pose_estimate = particleFilter_.Resample();
+  particleFilter_.GetParticleWeights(scan_msg);
+  boost::shared_ptr<WheelBot> pose_estimate = boost::shared_ptr<WheelBot> (new WheelBot());
+  pose_estimate = particleFilter_.Resample();
+
+
+//  std::cout << "X: " << pose_estimate->getX() << " Y: " << pose_estimate->getY() <<std::endl;
+  publishPoseTF(pose_estimate);
 
   publishParticleRViz(pose_estimate);
 }
@@ -89,7 +94,6 @@ void LocalizationNode::publishParticlesRViz()
 void LocalizationNode::publishParticleRViz(boost::shared_ptr<WheelBot> particle)
 {
   if (laserScanParamsInitialized && mapParamsInitialized) {
-    publishPoseTF(particle);
     /*std::vector<float> ranges;
     particleFilter_.extract_particle_local_scan(particle, ranges);
     sensor_msgs::LaserScan laserScan;
