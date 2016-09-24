@@ -7,16 +7,16 @@
 
 #include "resampling.h"
 
-void Resampling::addParticle(WheelBot particle) {
+void Resampling::addParticle(Particle p) {
   // Accumulate total weight as addition of weights of consequent particles
   if (samples_.size() > 0) {
-    double p_weight = particle.getWeight();
-    double total_weight = samples_.back().getWeight();
-    particle.setWeight(total_weight + p_weight);
+    double p_weight = p->getWeight();
+    double total_weight = samples_.back()->getWeight();
+    p->setWeight(total_weight + p_weight);
   }
 
   // Add it to the vector of samples
-  samples_.push_back(particle);
+  samples_.push_back(p);
 }
 
 StochasticUniversalResampling::StochasticUniversalResampling(RougheningParams params) {
@@ -31,7 +31,7 @@ std::vector<Particle> StochasticUniversalResampling::resample() {
   std::vector<Particle> new_particles;
 
   // Compute the distance between samples
-  double sample_d = (samples_.back().getWeight() / samples_.size());
+  double sample_d = (samples_.back()->getWeight() / samples_.size());
 
   // Keep track of last particle we drew so that we can start at that index
   // the next drawing
@@ -41,11 +41,11 @@ std::vector<Particle> StochasticUniversalResampling::resample() {
   double curr_weight;
 
   // Roughening samples
-  double dx = 0.0;
+  /*double dx = 0.0;
   double dy = 0.0;
   double dtheta = 0.0;
   double xy_range = roughening_params_.xy_roughening_;
-  double th_range = roughening_params_.th_roughening_;
+  double th_range = roughening_params_.th_roughening_;*/
 
   // Draw the same number of particles as we had before
   for (int i = 0; i < samples_.size(); i++) {
@@ -60,7 +60,7 @@ std::vector<Particle> StochasticUniversalResampling::resample() {
         break;
       }
       else {
-        if (samples_.at(s + 1).getWeight() > curr_weight) {
+        if (samples_.at(s + 1)->getWeight() > curr_weight) {
           prev_sample_ind = s;
 
           Particle p = samples_.at(s + 1);
@@ -96,17 +96,17 @@ std::vector<Particle> RouletteWheelResampling::resample() {
   std::vector<Particle> new_particles;
 
   // Get the total weight for the range within which we'll draw random number
-  double total_weight = samples_.back().getWeight();
+  double total_weight = samples_.back()->getWeight();
 
   // Current weight
   double curr_weight;
 
   // Roughening samples
-  double dx = 0.0;
+  /*double dx = 0.0;
   double dy = 0.0;
   double dtheta = 0.0;
   double xy_range = roughening_params_.xy_roughening_;
-  double th_range = roughening_params_.th_roughening_;
+  double th_range = roughening_params_.th_roughening_;*/
 
   // Draw the same number of particles as we had before
   for (int i = 0; i < samples_.size(); i++) {
@@ -117,7 +117,7 @@ std::vector<Particle> RouletteWheelResampling::resample() {
     // particle has to have smaller weight than the weight we are checking,
     // and the particle immediately after it has to have a larger weight.
     int ind = 0;
-    while (samples_.at(ind).getWeight() < curr_weight) {
+    while (samples_.at(ind)->getWeight() < curr_weight) {
       // If we have reached the last particle we stop, otherwise check
       // the next one
       if (ind == (samples_.size() - 1)) {

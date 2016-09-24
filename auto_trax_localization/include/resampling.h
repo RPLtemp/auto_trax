@@ -15,7 +15,7 @@
 #include "wheel_bot.hpp"
 #include "sampling_distribution.h"
 
-typedef WheelBot Particle;
+typedef boost::shared_ptr<WheelBot> Particle;
 
 class Resampling {
  public:
