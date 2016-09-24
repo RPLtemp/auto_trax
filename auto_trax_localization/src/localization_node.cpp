@@ -62,7 +62,8 @@ void LocalizationNode::encoderCB(const barc::EncoderConstPtr &encoder_msg)
   prev_encoder_FR_ = encoder_msg->FR;
 
 //  ROS_INFO("EncoderCallBack");
-  publishParticlesRViz();
+//  publishParticlesRViz();
+  publishParticleRViz();
 }
 
 
@@ -82,23 +83,27 @@ void LocalizationNode::mapCB(const nav_msgs::OccupancyGridConstPtr& map_msg){
 }
 
 void LocalizationNode::publishParticlesRViz() {
+
+  geometry_msgs::PoseArray particle_poses = particleFilter_.particlesToMarkers();
+  particles_poses_pub_.publish(particle_poses);
+}
+
+void LocalizationNode::publishParticleRViz()
+{
+
   if (laserScanParamsInitialized && mapParamsInitialized) {
     std::vector<float> ranges;
     particleFilter_.extract_particle_local_scan(initial_pose_, ranges);
     sensor_msgs::LaserScan laserScan;
     laserScan = *last_scan_msg_ptr;
+    laserScan.header.frame_id = "map";
     laserScan.ranges = ranges;
     particle_laser_scan_pub_.publish(laserScan);
   }
 
-//  visualization_msgs::Marker *marker = generateMarker(initial_pose_);
-//  particles_pub_.publish(*marker);
+  visualization_msgs::Marker *marker = generateMarker(initial_pose_);
+  particles_pub_.publish(*marker);
 
-
-
-
-  geometry_msgs::PoseArray particle_poses = particleFilter_.particlesToMarkers();
-  particles_poses_pub_.publish(particle_poses);
 }
 
 void LocalizationNode::initializeParameters()

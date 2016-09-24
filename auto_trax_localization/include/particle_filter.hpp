@@ -4,6 +4,9 @@
 #include <geometry_msgs/PoseArray.h>
 #include <boost/shared_ptr.hpp>
 #include <iostream>
+#include <Eigen/Geometry>
+#include <Eigen/Dense>
+
 
 struct ParticleLaserScanParams {
   float angle_min, angle_max, angle_increment, range_min, range_max;

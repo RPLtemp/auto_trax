@@ -60,37 +60,75 @@ void ParticleFilter::extract_particle_local_scan(boost::shared_ptr<WheelBot>& pa
   scanRanges.clear();
   int n = ( (std::abs(laserScanParams_.angle_max - laserScanParams_.angle_min) )/laserScanParams_.angle_increment ) ;
   //set up box to search
-  int left_wall  = (particle->getX() - laserScanParams_.range_max - mapParams_.origin_x) / mapParams_.resolution;
-  int right_wall = (particle->getX() + laserScanParams_.range_max - mapParams_.origin_x) / mapParams_.resolution;
-  int up_wall    = (particle->getY() + laserScanParams_.range_max - mapParams_.origin_y) / mapParams_.resolution ;
-  int down_wall  = (particle->getY() - laserScanParams_.range_max - mapParams_.origin_y) / mapParams_.resolution;
+//  int left_wall  = (particle->getX() - laserScanParams_.range_max - mapParams_.origin_x) / mapParams_.resolution;
+//  int right_wall = (particle->getX() + laserScanParams_.range_max - mapParams_.origin_x) / mapParams_.resolution;
+//  int up_wall    = (particle->getY() + laserScanParams_.range_max - mapParams_.origin_y) / mapParams_.resolution ;
+//  int down_wall  = (particle->getY() - laserScanParams_.range_max - mapParams_.origin_y) / mapParams_.resolution;
+//
+//  //clip left
+//  left_wall = left_wall < 0 ? 0 : left_wall; right_wall = right_wall < 0 ? 0 : right_wall;
+//  //clip right
+//  right_wall = right_wall > mapParams_.width ? mapParams_.width : right_wall;
+//  left_wall = left_wall > mapParams_.width ? mapParams_.width : left_wall;
+//  //clip top
+//  up_wall = up_wall > mapParams_.height ? mapParams_.height : up_wall;
+//  down_wall = down_wall > mapParams_.height ? mapParams_.height : down_wall;
+//  //clip bottom
+//  up_wall = up_wall < 0 ? 0 : up_wall; down_wall = down_wall < 0 ? 0 : down_wall;
+//
+//  for (int i = down_wall; i < up_wall; i++)
+//  {
+//    for (int j = left_wall; j < right_wall; j++)
+//    {
+//      if (map_data_[i * mapParams_.width + j] > 0) {
+//        std::cout << "Occupied" << std::endl;
+//        float obstacle_x = mapParams_.origin_x + i * mapParams_.resolution - particle->getX();
+//        float obstacle_y = mapParams_.origin_y + j * mapParams_.resolution - particle->getY();
+//        float obstacle_theta = atan2(obstacle_y, obstacle_x);
+////        Eigen::Quaternionf q(2, 0, 1, -3);
+//        Eigen::Quaternionf obstacle_quaternion(cos(obstacle_theta/2),0.0,0.0,sin(obstacle_theta/2));
+//
+//        Eigen::Quaternionf particle_quaternion(cos(particle->getTheta()/2),0.0,0.0, sin(particle->getTheta()/2));
+//
+//        Eigen::Quaternionf  obstacle_scan_quaternion = obstacle_quaternion * particle_quaternion.inverse();
+//
+//        std::cout <<"Angle to turn is: " << 2*acos(obstacle_scan_quaternion.w()) <<std::endl;
+//
+//
+//      } else {
+////        std::cout << "Not Occupied" << std::endl;
+//      }
+//    }
+//  }
 
-  //clip left
-  left_wall = left_wall < 0 ? 0 : left_wall; right_wall = right_wall < 0 ? 0 : right_wall;
-  //clip right
-  right_wall = right_wall > mapParams_.width ? mapParams_.width : right_wall;
-  left_wall = left_wall > mapParams_.width ? mapParams_.width : left_wall;
-  //clip top
-  up_wall = up_wall > mapParams_.height ? mapParams_.height : up_wall;
-  down_wall = down_wall > mapParams_.height ? mapParams_.height : down_wall;
-  //clip bottom
-  up_wall = up_wall < 0 ? 0 : up_wall; down_wall = down_wall < 0 ? 0 : down_wall;
 
-  for (int i = down_wall; i < up_wall; i++)
+
+  for (int i = 0; i < n; i++)
   {
-    for (int j = left_wall; j < right_wall; j++)
+    bool obstacle_is_set = false;
+
+    for (float distance = laserScanParams_.range_min; distance < laserScanParams_.range_max; distance += mapParams_.resolution)
     {
-      if (map_data_[i * mapParams_.width + j] > 0) {
-        std::cout << "Occupied" << std::endl;
-      } else {
-        std::cout << "Not Occupied" << std::endl;
+      if (obstacle_is_set) {continue;}
+      float x = particle->getX() + distance * cos( particle->getTheta() + laserScanParams_.angle_min + i * laserScanParams_.angle_increment);
+      float y = particle->getY() + distance * sin( particle->getTheta() + laserScanParams_.angle_min + i * laserScanParams_.angle_increment);
+      int x_coord = round( (x - mapParams_.origin_x) / mapParams_.resolution);
+      int y_coord = round( (y - mapParams_.origin_y) / mapParams_.resolution);
+
+      if (map_data_[y_coord * mapParams_.width + x_coord] > 0)
+      {
+        scanRanges.push_back(distance);
+        obstacle_is_set = true;
+        break;
       }
+
     }
+    if (!obstacle_is_set)
+    {
+      scanRanges.push_back(std::numeric_limits<float>::quiet_NaN());
+    }
+
   }
-
-
-
-  for (int i = 0; i < n; i++) scanRanges.push_back( 1.0f );
 
 }
 

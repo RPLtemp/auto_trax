@@ -17,6 +17,7 @@ class LocalizationNode{
 public:
   LocalizationNode(ros::NodeHandle nh);
   void publishParticlesRViz();
+  void publishParticleRViz();
 
 
 private:

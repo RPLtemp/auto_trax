@@ -1,6 +1,6 @@
-/initial_pose_x: 0
-/initial_pose_y: 0
-/initial_pose_theta: -1.57
+/initial_pose_x: 1.0
+/initial_pose_y: -1.0
+/initial_pose_theta: 0.0
 
 /particle_marker_length: 10
 /particle_marker_width: 0.2
