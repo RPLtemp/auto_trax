@@ -107,7 +107,7 @@ void ParticleFilter::extract_particle_local_scan(boost::shared_ptr<WheelBot>& pa
   {
     bool obstacle_is_set = false;
 
-    for (float distance = laserScanParams_.range_min; distance < laserScanParams_.range_max; distance += mapParams_.resolution)
+    for (float distance = laserScanParams_.range_min; distance < laserScanParams_.range_max; distance += mapParams_.resolution/2)
     {
       if (obstacle_is_set) {continue;}
       float x = particle->getX() + distance * cos( particle->getTheta() + laserScanParams_.angle_min + i * laserScanParams_.angle_increment);
@@ -119,10 +119,10 @@ void ParticleFilter::extract_particle_local_scan(boost::shared_ptr<WheelBot>& pa
       {
         scanRanges.push_back(distance);
         obstacle_is_set = true;
-        break;
       }
 
     }
+
     if (!obstacle_is_set)
     {
       scanRanges.push_back(std::numeric_limits<float>::quiet_NaN());

@@ -91,12 +91,14 @@ void LocalizationNode::publishParticlesRViz() {
 void LocalizationNode::publishParticleRViz()
 {
 
+
   if (laserScanParamsInitialized && mapParamsInitialized) {
+    publishPoseTF();
     std::vector<float> ranges;
     particleFilter_.extract_particle_local_scan(initial_pose_, ranges);
     sensor_msgs::LaserScan laserScan;
     laserScan = *last_scan_msg_ptr;
-    laserScan.header.frame_id = "map";
+    laserScan.header.frame_id = "robot";
     laserScan.ranges = ranges;
     particle_laser_scan_pub_.publish(laserScan);
   }
@@ -153,4 +155,14 @@ visualization_msgs::Marker* LocalizationNode::generateMarker(boost::shared_ptr<W
   marker->color.b = 0.0;
   marker->lifetime = ros::Duration(1000);
   return marker;
+}
+
+void LocalizationNode::publishPoseTF()
+{
+  tf::Transform transform;
+  transform.setOrigin( tf::Vector3(initial_pose_->getX(), initial_pose_->getY(), 0.0) );
+  tf::Quaternion q;
+  q.setRPY(0, 0, initial_pose_->getTheta());
+  transform.setRotation(q);
+  pose_br_.sendTransform(tf::StampedTransform(transform, last_scan_msg_ptr->header.stamp, "map", "robot"));
 }
