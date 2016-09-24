@@ -8,5 +8,5 @@
 
     <node pkg="rviz" name="rviz" type="rviz" args="-d $(find auto_trax_localization)/data/map/cab.rviz" />
 
-    <node pkg="rosbag" name="cab_bag" type="play" args="$(find auto_trax_localization)/data/bag/cab_full_run_bag -l" />
+    <node pkg="rosbag" name="cab_bag" type="play" args="$(find auto_trax_localization)/data/bag/cab_full_run_bag -l -s 50" />
 </launch>

@@ -7,6 +7,8 @@ class WheelBot{
 
 public:
   WheelBot();
+  WheelBot(float initial_x, float initial_y, float initial_theta,
+            float sigma_x, float sigma_y, float sigma_theta);
   float getX();
   float getY();
   float getTheta();

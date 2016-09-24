@@ -34,6 +34,8 @@ public:
                                float origin_x, float origin_y, float origin_theta);
   void setMap(std::vector<int>& map);
   void spawnParticles();
+  void spawnParticles(WheelBot pose);
+  void clipToMap(int &x, int &y);
   void show(int n);
   void extract_particle_local_scan(boost::shared_ptr<WheelBot>& particle, std::vector<float>& scanRanges);
   boost::shared_ptr<WheelBot> getParticle(int i);
@@ -41,6 +43,8 @@ public:
   void propagate(float delta_x, float delta_y);
 
   geometry_msgs::PoseArray particlesToMarkers();
+
+  ParticleLaserScanParams getLaserScanParams() {return laserScanParams_;}
 
 private:
   void propagate();

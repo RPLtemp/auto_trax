@@ -24,7 +24,7 @@ LocalizationNode::LocalizationNode(ros::NodeHandle nh) : nh_(nh)
   particles_poses_pub_ = nh_.advertise<geometry_msgs::PoseArray>("particle_poses", 1);
 
   particleFilter_.setNParticles(100);
-  particleFilter_.spawnParticles();
+  particleFilter_.spawnParticles(*initial_pose_);
   ROS_INFO("Particles spawned!");
   int nToShow = 10;
   ROS_INFO("Displaying %i particles",nToShow);
@@ -93,11 +93,16 @@ void LocalizationNode::publishParticleRViz()
 
 
   if (laserScanParamsInitialized && mapParamsInitialized) {
-    publishPoseTF();
+    publishPoseTF(particleFilter_.getParticle(0));
     std::vector<float> ranges;
-    particleFilter_.extract_particle_local_scan(initial_pose_, ranges);
+    boost::shared_ptr<WheelBot> particle = boost::shared_ptr<WheelBot>(new WheelBot);
+    *particle = *particleFilter_.getParticle(0);
+    particleFilter_.extract_particle_local_scan(particle, ranges);
     sensor_msgs::LaserScan laserScan;
     laserScan = *last_scan_msg_ptr;
+    laserScan.angle_min = particleFilter_.getLaserScanParams().angle_min;
+    laserScan.angle_max = particleFilter_.getLaserScanParams().angle_max;
+    laserScan.angle_increment = particleFilter_.getLaserScanParams().angle_increment;
     laserScan.header.frame_id = "robot";
     laserScan.ranges = ranges;
     particle_laser_scan_pub_.publish(laserScan);
@@ -163,6 +168,16 @@ void LocalizationNode::publishPoseTF()
   transform.setOrigin( tf::Vector3(initial_pose_->getX(), initial_pose_->getY(), 0.0) );
   tf::Quaternion q;
   q.setRPY(0, 0, initial_pose_->getTheta());
+  transform.setRotation(q);
+  pose_br_.sendTransform(tf::StampedTransform(transform, last_scan_msg_ptr->header.stamp, "map", "robot"));
+}
+
+void LocalizationNode::publishPoseTF(boost::shared_ptr<WheelBot> particle)
+{
+  tf::Transform transform;
+  transform.setOrigin( tf::Vector3(particle->getX(), particle->getY(), 0.0) );
+  tf::Quaternion q;
+  q.setRPY(0, 0, particle->getTheta());
   transform.setRotation(q);
   pose_br_.sendTransform(tf::StampedTransform(transform, last_scan_msg_ptr->header.stamp, "map", "robot"));
 }

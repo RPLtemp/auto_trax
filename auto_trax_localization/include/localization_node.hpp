@@ -21,12 +21,15 @@ public:
   void publishPoseTF();
 
 
+
 private:
   void depthScanCB(const sensor_msgs::LaserScanConstPtr& scan_msg);
   void encoderCB(const barc::EncoderConstPtr& encoder_msg);
   void mapCB(const nav_msgs::OccupancyGridConstPtr& map_msg);
   void initializeParameters();
   visualization_msgs::Marker* generateMarker(boost::shared_ptr<WheelBot> particle);
+  void publishPoseTF(boost::shared_ptr<WheelBot> particle);
+
 
   bool laserScanParamsInitialized = false;
   bool mapParamsInitialized = false;

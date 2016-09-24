@@ -26,6 +26,16 @@ void ParticleFilter::spawnParticles()
   }
 }
 
+void ParticleFilter::spawnParticles(WheelBot pose)
+{
+  particles_.reserve(nParticles_);
+  for (int i = 0; i < nParticles_; i++)
+  {
+    particles_.push_back(boost::shared_ptr<WheelBot>(new WheelBot(pose.getX(),pose.getY(),pose.getTheta(),
+                                                         .001, .001, 0.5 )));
+  }
+}
+
 void ParticleFilter::show(int n)
 {
   if (n >= nParticles_)
@@ -58,7 +68,7 @@ void ParticleFilter::extract_particle_local_scan(boost::shared_ptr<WheelBot>& pa
 {
 
   scanRanges.clear();
-  int n = ( (std::abs(laserScanParams_.angle_max - laserScanParams_.angle_min) )/laserScanParams_.angle_increment ) ;
+  int n = ( (std::abs(laserScanParams_.angle_max - laserScanParams_.angle_min) )/laserScanParams_.angle_increment) ;
   //set up box to search
 //  int left_wall  = (particle->getX() - laserScanParams_.range_max - mapParams_.origin_x) / mapParams_.resolution;
 //  int right_wall = (particle->getX() + laserScanParams_.range_max - mapParams_.origin_x) / mapParams_.resolution;
@@ -102,9 +112,31 @@ void ParticleFilter::extract_particle_local_scan(boost::shared_ptr<WheelBot>& pa
 //  }
 
 
+  bool isInAWall = false;
+
+  float x = particle->getX();
+  float y = particle->getY();
+  int x_coord = round( (x - mapParams_.origin_x) / mapParams_.resolution);
+  int y_coord = round( (y - mapParams_.origin_y) / mapParams_.resolution);
+  clipToMap(x_coord,y_coord);
+
+  if (map_data_[y_coord * mapParams_.width + x_coord] > 0)
+  {
+    isInAWall = true;
+  }
+
+
+  if (isInAWall)
+  {
+    for (int i = 0; i < n; i++) {
+      scanRanges.push_back(std::numeric_limits<float>::quiet_NaN());
+    }
+    return;
+  }
 
   for (int i = 0; i < n; i++)
   {
+
     bool obstacle_is_set = false;
 
     for (float distance = laserScanParams_.range_min; distance < laserScanParams_.range_max; distance += mapParams_.resolution/2)
@@ -114,6 +146,8 @@ void ParticleFilter::extract_particle_local_scan(boost::shared_ptr<WheelBot>& pa
       float y = particle->getY() + distance * sin( particle->getTheta() + laserScanParams_.angle_min + i * laserScanParams_.angle_increment);
       int x_coord = round( (x - mapParams_.origin_x) / mapParams_.resolution);
       int y_coord = round( (y - mapParams_.origin_y) / mapParams_.resolution);
+      clipToMap(x_coord,y_coord);
+
 
       if (map_data_[y_coord * mapParams_.width + x_coord] > 0)
       {
@@ -129,6 +163,7 @@ void ParticleFilter::extract_particle_local_scan(boost::shared_ptr<WheelBot>& pa
     }
 
   }
+
 
 }
 
@@ -198,5 +233,17 @@ geometry_msgs::PoseArray ParticleFilter::particlesToMarkers() {
   poses.header.seq = 0;
 
   return poses;
+}
+
+void ParticleFilter::clipToMap(int &x, int &y)
+{
+    //clip left
+  x = x < 0 ? 0 : x;
+  //clip right
+  x = x > mapParams_.width ? mapParams_.width : x;
+  //clip top
+  y = y > mapParams_.height ? mapParams_.height : y;
+  //clip bottom
+  y = y < 0 ? 0 : y;
 }
 
