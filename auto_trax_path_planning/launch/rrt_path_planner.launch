@@ -25,7 +25,7 @@
     <include file="$(find auto_trax_io)/launch/driver_interface.launch" />
 
     <!-- Launch the occupancy grid processor -->
-    <node pkg="auto_trax_path_planning" type="occupancy_grid_node" name="oc_grid_test" output="screen" />
+    <node pkg="auto_trax_path_planning" type="occupancy_grid_node" name="oc_grid_" output="screen" />
 
     <!-- Launch the rrt path planner -->
     <node pkg="auto_trax_path_planning" type="rrt_path_node" name="rrt_path_planner_node" output="screen" >

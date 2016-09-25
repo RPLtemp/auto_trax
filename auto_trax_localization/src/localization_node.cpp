@@ -23,8 +23,9 @@ LocalizationNode::LocalizationNode(ros::NodeHandle nh) : nh_(nh)
   particle_pub_ = nh_.advertise<visualization_msgs::Marker>( "visualization_marker", 0 );
   particle_laser_scan_pub_ = nh_.advertise<sensor_msgs::LaserScan>("particle_laser_scan", 0);
   particles_poses_pub_ = nh_.advertise<geometry_msgs::PoseArray>("particle_poses", 1);
+  next_goal_state_pub_ = nh_.advertise<geometry_msgs::Point>("next_goal_state",1);
 
-  particleFilter_.setNParticles(50);
+  particleFilter_.setNParticles(100);
   particleFilter_.spawnParticles(*initial_pose_);
   ROS_INFO("Particles spawned!");
   int nToShow = 10;
@@ -57,6 +58,24 @@ void LocalizationNode::depthScanCB(const sensor_msgs::LaserScanConstPtr &scan_ms
     pose_estimate = particleFilter_.Resample();
     publishPoseTF(pose_estimate);
     publishParticleRViz(pose_estimate);
+    geometry_msgs::Point next_goal;
+
+    Eigen::Quaternionf vehicle_quaternion(cos(pose_estimate->getTheta()/2),0.0,0.0,sin(pose_estimate->getTheta()/2));
+    next_goal.x = 0;
+    next_goal.y = -10;
+    next_goal.x = next_goal.x - pose_estimate->getX();
+    next_goal.y = next_goal.y - pose_estimate->getY();
+
+    Eigen::Quaternionf global_goal_state(0,next_goal.x,next_goal.y,0);
+
+    Eigen::Quaternionf local_goal_state = vehicle_quaternion.inverse() * global_goal_state * vehicle_quaternion;
+
+    std::cout << "local goal state x: " << local_goal_state.x() << " y: " << local_goal_state.y() <<std::endl;
+
+    next_goal.x = local_goal_state.x(); next_goal.y = local_goal_state.y();
+
+
+    next_goal_state_pub_.publish(next_goal);
   }
 }
 
@@ -156,7 +175,7 @@ void LocalizationNode::publishParticlesRViz()
 void LocalizationNode::publishParticleRViz(boost::shared_ptr<WheelBot> particle)
 {
   if (laserScanParamsInitialized && mapParamsInitialized) {
-    /*std::vector<float> ranges;
+    std::vector<float> ranges;
     particleFilter_.extract_particle_local_scan(particle, ranges);
     sensor_msgs::LaserScan laserScan;
     laserScan = *last_scan_msg_ptr;
@@ -165,7 +184,7 @@ void LocalizationNode::publishParticleRViz(boost::shared_ptr<WheelBot> particle)
     laserScan.angle_increment = particleFilter_.getLaserScanParams().angle_increment;
     laserScan.header.frame_id = "robot";
     laserScan.ranges = ranges;
-    particle_laser_scan_pub_.publish(laserScan);*/
+    particle_laser_scan_pub_.publish(laserScan);
   }
 
   visualization_msgs::Marker *marker = generateMarker(particle);

@@ -33,6 +33,9 @@ RRTPathProcessor::RRTPathProcessor(const ros::NodeHandle& nh,
                                rrt_param_.queue_size_subscriber_oc_grid,
                                     &RRTPathProcessor::CallbackOCGrid,
                                     this);
+  sub_next_goal_state_ = nh_.subscribe("next_goal_state", 1,
+                                      &RRTPathProcessor::CallbackNextGoalState,
+                                      this);
   pub_path_ = nh_.advertise<nav_msgs::Path>(rrt_param_.published_rostopic_path,
                                             rrt_param_.queue_size_pub_path);
 
@@ -71,6 +74,27 @@ RRTPathProcessor::RRTPathProcessor(const ros::NodeHandle& nh,
 
 RRTPathProcessor::~RRTPathProcessor() { }
 
+void RRTPathProcessor::CallbackNextGoalState(const geometry_msgs::Point & next_goal)
+{
+  float goal_x = next_goal.x;
+  float goal_y = next_goal.y;
+
+  if (abs(goal_x) > rrt_param_.sensor_available_range/2 ||
+         abs( goal_y) > rrt_param_.sensor_available_range/2)
+  {
+    float norm = sqrt(goal_x * goal_x + goal_y * goal_y);
+    goal_x /= norm * rrt_param_.sensor_available_range/2;
+    goal_y /= norm * rrt_param_.sensor_available_range/2;
+  }
+
+
+  _biRRT->setGoalState(Vector2f((goal_x - rrt_param_.origin_position_x) /
+                                rrt_param_.grid_resolution,
+                                (goal_y - rrt_param_.origin_position_y) /
+                                rrt_param_.grid_resolution));
+}
+
+
 void RRTPathProcessor::CallbackOCGrid(const nav_msgs::OccupancyGrid &oc_grid) {
 
   clearObstacles();
@@ -106,6 +130,23 @@ void RRTPathProcessor::CallbackOCGrid(const nav_msgs::OccupancyGrid &oc_grid) {
   }
 
   if (findSolution()){
+
+    Eigen::Vector2f path_point =  _previousSolution.back();
+    float x = path_point.x() * rrt_param_.grid_resolution + rrt_param_.origin_position_x;
+    float y = path_point.y() * rrt_param_.grid_resolution + rrt_param_.origin_position_y;
+
+    if (x * x + y * y <= (rrt_param_.sensor_available_range/20) *
+                                 (rrt_param_.sensor_available_range/20) )
+    {
+      // close enough to goal
+      ROS_INFO("Goal Reached!");
+      result_.poses.clear();
+      pub_path_.publish(result_);
+      path_found_.data = false;
+      pub_path_found_.publish(path_found_);
+      return;
+    }
+
     printPath();
     pub_oc_grid_debug.publish(rrt_oc_grid_);
 

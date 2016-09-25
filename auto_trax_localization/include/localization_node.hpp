@@ -53,6 +53,7 @@ private:
   ros::Publisher particle_pub_;
   ros::Publisher particles_poses_pub_;
   ros::Publisher particle_laser_scan_pub_;
+  ros::Publisher next_goal_state_pub_;
 
   tf::TransformBroadcaster pose_br_;
   ros::ServiceServer steering_service_;

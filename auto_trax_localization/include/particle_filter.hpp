@@ -93,7 +93,11 @@ class ParticleFilter{
   void perturb();
   void resample();
 
- private:
+  // find if a point in world coordinates is an obstacle
+  bool isObstacle(float x, float y);
+
+
+private:
   int nParticles_;
 
   std::vector<boost::shared_ptr<WheelBot>> particles_;

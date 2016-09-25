@@ -11,6 +11,7 @@
 #include <std_msgs/Float64.h>
 #include <std_msgs/String.h>
 #include <std_msgs/Bool.h>
+#include <geometry_msgs/Point.h>
 #include <auto_trax_msgs/MergedScan.h>
 
 #include <Eigen/Dense>
@@ -72,6 +73,7 @@ public:
   virtual ~RRTPathProcessor();
 
   void CallbackOCGrid(const nav_msgs::OccupancyGrid &oc_grid);
+  void CallbackNextGoalState(const geometry_msgs::Point & next_goal);
 
   void reset();
   void setObstacleAt(float x, float y);
@@ -85,6 +87,7 @@ public:
 private:
   ros::NodeHandle nh_;
   ros::Subscriber sub_oc_grid_;
+  ros::Subscriber sub_next_goal_state_;
   ros::Publisher pub_path_;
   ros::Publisher pub_oc_grid_debug;
   ros::Publisher pub_setpoint_;

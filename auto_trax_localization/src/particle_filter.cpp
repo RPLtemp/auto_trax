@@ -38,7 +38,7 @@ void ParticleFilter::spawnParticles(WheelBot pose)
   for (int i = 0; i < nParticles_; i++)
   {
     particles_.push_back(boost::shared_ptr<WheelBot>(new WheelBot(pose.getX(),pose.getY(),pose.getTheta(),
-                                                         1.5, 1.5, 0.1 )));
+                                                         0.1, 0.1, 0.1 )));
   }
 }
 
@@ -72,8 +72,56 @@ boost::shared_ptr<WheelBot> ParticleFilter::getParticle(int i)
 
 void ParticleFilter::extract_particle_local_scan(boost::shared_ptr<WheelBot>& particle, std::vector<float>& scanRanges)
 {
+
+  //set up box to search
+//  int left_wall  = (particle->getX() - laserScanParams_.range_max - mapParams_.origin_x) / mapParams_.resolution;
+//  int right_wall = (particle->getX() + laserScanParams_.range_max - mapParams_.origin_x) / mapParams_.resolution;
+//  int up_wall    = (particle->getY() + laserScanParams_.range_max - mapParams_.origin_y) / mapParams_.resolution ;
+//  int down_wall  = (particle->getY() - laserScanParams_.range_max - mapParams_.origin_y) / mapParams_.resolution;
+//
+//  //clip left
+//  left_wall = left_wall < 0 ? 0 : left_wall; right_wall = right_wall < 0 ? 0 : right_wall;
+//  //clip right
+//  right_wall = right_wall > mapParams_.width ? mapParams_.width : right_wall;
+//  left_wall = left_wall > mapParams_.width ? mapParams_.width : left_wall;
+//  //clip top
+//  up_wall = up_wall > mapParams_.height ? mapParams_.height : up_wall;
+//  down_wall = down_wall > mapParams_.height ? mapParams_.height : down_wall;
+//  //clip bottom
+//  up_wall = up_wall < 0 ? 0 : up_wall; down_wall = down_wall < 0 ? 0 : down_wall;
+//
+//  for (int i = down_wall; i < up_wall; i++)
+//  {
+//    for (int j = left_wall; j < right_wall; j++)
+//    {
+//      if (map_data_[i * mapParams_.width + j] > 0) {
+////        std::cout << "Occupied" << std::endl;
+//        float obstacle_x = mapParams_.origin_x + i * mapParams_.resolution - particle->getX();
+//        float obstacle_y = mapParams_.origin_y + j * mapParams_.resolution - particle->getY();
+//        float obstacle_theta = atan(obstacle_y/ obstacle_x);
+////        Eigen::Quaternionf q(2, 0, 1, -3);
+//        Eigen::Quaternionf obstacle_quaternion(1.0,0.0,0.0,0.0);
+//
+//        Eigen::Quaternionf particle_quaternion(0.0,0.0,0.0,1.0);
+//
+//        Eigen::Quaternionf  obstacle_scan_quaternion = particle_quaternion * obstacle_quaternion.inverse();
+//
+//        float angle_to_turn = 2*acos(obstacle_scan_quaternion.w());
+//        angle_to_turn = atan2(sin(angle_to_turn), cos(angle_to_turn));
+////        std::cout << "Angle to turn: " << angle_to_turn << std::endl;
+//
+//
+//      } else {
+////        std::cout << "Not Occupied" << std::endl;
+//      }
+//    }
+//  }
+
   scanRanges.clear();
   int n = laserScanParams_.ranges_size;
+
+
+
 
   bool isInAWall = false;
 
@@ -161,8 +209,8 @@ void ParticleFilter::propagate(float delta_x, float delta_y)
 {
   for (int i = 0; i < nParticles_; i++)
   {
-    particles_.at(i)->addX(delta_x);
-    particles_.at(i)->addY(-delta_y);
+    particles_.at(i)->addX(delta_y * cos(particles_.at(i)->getTheta()));
+    particles_.at(i)->addY(delta_y * sin(particles_.at(i)->getTheta()));
   }
 }
 
@@ -181,8 +229,8 @@ geometry_msgs::PoseArray ParticleFilter::particlesToMarkers() {
     pose.position.z = 0.0;
     pose.orientation.x = 0.0;
     pose.orientation.y = 0.0;
-    pose.orientation.z = sin(0.5 * -0.5 * M_PI);
-    pose.orientation.w = cos(0.5 * -0.5 * M_PI);
+    pose.orientation.z = sin(particles_.at(i)->getTheta()/2);
+    pose.orientation.w = cos(particles_.at(i)->getTheta()/2);
 
     // Add the pose to the array
     poses.poses.push_back(pose);
@@ -209,6 +257,7 @@ void ParticleFilter::clipToMap(int &x, int &y)
 
 void ParticleFilter::GetParticleWeights(const sensor_msgs::LaserScanConstPtr& scan_msg) {
   double max_weight = std::numeric_limits<double>::min();
+  float min_observation_error = std::numeric_limits<float>::max();
 
   for (int i = 0; i < particles_.size(); ++i) {
     std::vector<geometry_msgs::Point> points;
@@ -216,38 +265,56 @@ void ParticleFilter::GetParticleWeights(const sensor_msgs::LaserScanConstPtr& sc
     // Convert sensor measurement to points in global map
     WheelBot particle = *(particles_.at(i));
 
-    ConvertSensorMeasurementToPoints(particle, scan_msg, points);
+    int correlation;
+    if (isObstacle(particle.getX(), particle.getY()))
+    {
+      correlation = 0;
+    } else {
+      ConvertSensorMeasurementToPoints(particle, scan_msg, points);
+      // Get correlation value of particle and map
+      correlation = CorrelationParticleMap(points);
+    }
 
-    // Get correlation value of particle and map
-    int correlation = CorrelationParticleMap(points);
 
     // get particle local view
     std::vector<float> ranges;
     extract_particle_local_scan(particles_.at(i), ranges);
-    // call agreement between particle view and laser scan measurement if a threshold of 5cm is met
+//     call agreement between particle view and laser scan measurement if a threshold of 5cm is met
     int modelObsCorrelation = 0;
+    float modelObsError = 0.0;
     for (int range_point = 0; range_point < ranges.size(); range_point++)
     {
-//      std::cout << ranges.size() << std::endl;
-//      std::cout << scan_msg->ranges.size() << std::endl;
-      if ( (ranges[range_point] - scan_msg->ranges[range_point]) < 0.05) /* ||
-                ( ranges[range_point] == std::numeric_limits<float>::quiet_NaN()
-                  && scan_msg->ranges[range_point] == std::numeric_limits<float>::quiet_NaN() )   )*/
+//      if (!isnan(ranges[range_point]) && !isnan(scan_msg->ranges[range_point]))
+//      {
+//        modelObsError += (ranges[range_point] - scan_msg->ranges[range_point]) *
+//                         (ranges[range_point] - scan_msg->ranges[range_point]);
+//      }
+      if ( abs(ranges[range_point] - scan_msg->ranges[range_point]) < 0.10
+           && !isnan(ranges[range_point])
+           && !isnan(scan_msg->ranges[range_point]) )
       {
-//        std::cout << "local measurement " << ranges[range_point] <<std::endl;
-//        std::cout << "scan measurement " << scan_msg->ranges[range_point]<<std::endl;
         modelObsCorrelation++;
       }
     }
+//    double particle_weight = static_cast<double>( modelObsError <= 0.0 ? std::numeric_limits<float>::quiet_NaN() : -log(modelObsError));
+//    particle_weight = particle_weight < 0.0 ? 0.0 : particle_weight;
 
-//    std::cout << "modelObsScore: " <<  modelObsCorrelation <<std::endl;
+    double particle_weight = static_cast<double>(modelObsCorrelation + correlation);
 
-    double particle_weight = static_cast<double>( modelObsCorrelation * 1.0);
+//    std::cout << "particle at " << i << " modelobserror: " << modelObsError <<std::endl;
+//    std::cout << "particleWeight: " <<  particle_weight <<std::endl;
+
+
+//    if (modelObsError < min_observation_error && !isnan(particle_weight) )
+//    {
+//      min_observation_error = modelObsError;
+//      *max_weight_particle_ = *particles_.at(i);
+//    }
 
     // Keep the particle with the highest weight
     if (particle_weight > max_weight) {
       max_weight = particle_weight;
-      max_weight_particle_ = particles_.at(i);
+      *max_weight_particle_ = *particles_.at(i);
     }
 
     particles_.at(i)->setWeight(particle_weight);
@@ -298,24 +365,30 @@ if (range > scan_msg->range_min && range < scan_msg->range_max) {
 }
 
 int ParticleFilter::CorrelationParticleMap(const std::vector<geometry_msgs::Point>& points) {
-int correlation = 0;
 
-for (int i = 0; i < points.size(); ++i) {
-int ind_j = round((points.at(i).x - mapParams_.origin_x)/mapParams_.resolution);
-int ind_i = round((points.at(i).y - mapParams_.origin_y)/mapParams_.resolution);
+  int correlation = 0;
 
-
-int map_index = ind_i * mapParams_.width + ind_j;
-
-if (ind_i > 0 && ind_i < mapParams_.height && ind_j > 0 && ind_j < mapParams_.width ) {
-  if (map_data_.at(map_index) > 0) {
-    correlation += 1;
+  for (int i = 0; i < points.size(); ++i) {
+    if ( isObstacle(points.at(i).x,points.at(i).y) )
+    {
+      correlation += 1;
+    }
+//
+//  int ind_j = round((points.at(i).x - mapParams_.origin_x)/mapParams_.resolution);
+//int ind_i = round((points.at(i).y - mapParams_.origin_y)/mapParams_.resolution);
+//
+//
+//int map_index = ind_i * mapParams_.width + ind_j;
+//
+//if (ind_i > 0 && ind_i < mapParams_.height && ind_j > 0 && ind_j < mapParams_.width ) {
+//  if (map_data_.at(map_index) > 0) {
+//    correlation += 1;
+//  }
   }
-}
+  return correlation;
+
 }
 
-return correlation;
-}
 
 void ParticleFilter::CleanWeightOfParticle(WheelBot particle,
                                        double& particle_weight) {
@@ -338,46 +411,19 @@ particles_ = resampler_->resample();
 return max_weight_particle_;
 }
 
+//Takes in a point in world coordinates
+bool ParticleFilter::isObstacle(float x, float y)
+{
+  bool result = false;
+  int ind_j = round(( x - mapParams_.origin_x)/mapParams_.resolution);
+  int ind_i = round(( y - mapParams_.origin_y)/mapParams_.resolution);
+  int map_index = ind_i + ind_j*mapParams_.width;
+  if (ind_i > 0 && ind_i < mapParams_.height && ind_j > 0 && ind_j < mapParams_.width ) {
+    if (map_data_.at(map_index) > 0) {
+      result = true;
+      return result;
+    }
+  }
+}
 
 
-//set up box to search
-//  int left_wall  = (particle->getX() - laserScanParams_.range_max - mapParams_.origin_x) / mapParams_.resolution;
-//  int right_wall = (particle->getX() + laserScanParams_.range_max - mapParams_.origin_x) / mapParams_.resolution;
-//  int up_wall    = (particle->getY() + laserScanParams_.range_max - mapParams_.origin_y) / mapParams_.resolution ;
-//  int down_wall  = (particle->getY() - laserScanParams_.range_max - mapParams_.origin_y) / mapParams_.resolution;
-//
-//  //clip left
-//  left_wall = left_wall < 0 ? 0 : left_wall; right_wall = right_wall < 0 ? 0 : right_wall;
-//  //clip right
-//  right_wall = right_wall > mapParams_.width ? mapParams_.width : right_wall;
-//  left_wall = left_wall > mapParams_.width ? mapParams_.width : left_wall;
-//  //clip top
-//  up_wall = up_wall > mapParams_.height ? mapParams_.height : up_wall;
-//  down_wall = down_wall > mapParams_.height ? mapParams_.height : down_wall;
-//  //clip bottom
-//  up_wall = up_wall < 0 ? 0 : up_wall; down_wall = down_wall < 0 ? 0 : down_wall;
-//
-//  for (int i = down_wall; i < up_wall; i++)
-//  {
-//    for (int j = left_wall; j < right_wall; j++)
-//    {
-//      if (map_data_[i * mapParams_.width + j] > 0) {
-//        std::cout << "Occupied" << std::endl;
-//        float obstacle_x = mapParams_.origin_x + i * mapParams_.resolution - particle->getX();
-//        float obstacle_y = mapParams_.origin_y + j * mapParams_.resolution - particle->getY();
-//        float obstacle_theta = atan2(obstacle_y, obstacle_x);
-////        Eigen::Quaternionf q(2, 0, 1, -3);
-//        Eigen::Quaternionf obstacle_quaternion(cos(obstacle_theta/2),0.0,0.0,sin(obstacle_theta/2));
-//
-//        Eigen::Quaternionf particle_quaternion(cos(particle->getTheta()/2),0.0,0.0, sin(particle->getTheta()/2));
-//
-//        Eigen::Quaternionf  obstacle_scan_quaternion = obstacle_quaternion * particle_quaternion.inverse();
-//
-//        std::cout <<"Angle to turn is: " << 2*acos(obstacle_scan_quaternion.w()) <<std::endl;
-//
-//
-//      } else {
-////        std::cout << "Not Occupied" << std::endl;
-//      }
-//    }
-//  }

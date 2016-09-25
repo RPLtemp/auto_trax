@@ -19,4 +19,5 @@
     <depend>std_msgs</depend>
     <depend>auto_trax_msgs</depend>
     <depend> tf </depend>
+    <depend> geometry_msgs</depend>
 </package>

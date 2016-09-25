@@ -84,9 +84,9 @@ std::vector<Particle> StochasticUniversalResampling::resample() {
 
 //          std::cout << "before: " << p->getTheta() << std::endl;
           // Add roughening
-          float delta_x = 0.02;
-          float delta_y = 0.02;
-          float delta_theta = 0.1;
+          float delta_x = .10;
+          float delta_y = .10;
+          float delta_theta = 0.01;
           float dx = ( 2 * delta_x * (float) rand() / (RAND_MAX)  - delta_x);
           float dy = ( 2 * delta_y * (float) rand() / (RAND_MAX)  - delta_y);
           float dtheta = ( 2 * delta_theta * (float) rand() / (RAND_MAX)  - delta_theta);
