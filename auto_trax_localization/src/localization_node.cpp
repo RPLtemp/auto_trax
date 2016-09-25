@@ -13,7 +13,12 @@ LocalizationNode::LocalizationNode(ros::NodeHandle nh) : nh_(nh)
           nh_.getNamespace() == "/" ? "" : nh_.getNamespace().c_str()));
   depthScanSub = nh_.subscribe("merged_scan",1,&LocalizationNode::depthScanCB, this);
   encoderSub   = nh_.subscribe("encoder", 1, &LocalizationNode::encoderCB, this);
-  mapSub       =nh_.subscribe("map", 1, &LocalizationNode::mapCB, this);
+  mapSub       = nh_.subscribe("map", 1, &LocalizationNode::mapCB, this);
+  steering_service_ = nh_.advertiseService(steering_service_name_,
+                                           &LocalizationNode::SteeringServiceCallback, this);
+
+  motor_service_ = nh_.advertiseService(motor_service_name_,
+                                        &LocalizationNode::MotorServiceCallback, this);
 
   particle_pub_ = nh_.advertise<visualization_msgs::Marker>( "visualization_marker", 0 );
   particle_laser_scan_pub_ = nh_.advertise<sensor_msgs::LaserScan>("particle_laser_scan", 0);
@@ -68,9 +73,69 @@ void LocalizationNode::encoderCB(const barc::EncoderConstPtr &encoder_msg)
   publishParticlesRViz();
 }
 
-void LocalizationNode::mapCB(const nav_msgs::OccupancyGridConstPtr& map_msg)
-{
-  if (!mapParamsInitialized) {
+bool LocalizationNode::SteeringServiceCallback(auto_trax_msgs::IOSetpoint::Request  &req,
+                                               auto_trax_msgs::IOSetpoint::Response &res) {
+  angle_in_radians_ = req.setpoint;
+  return true;
+}
+
+bool LocalizationNode::MotorServiceCallback(auto_trax_msgs::IOSetpoint::Request  &req,
+                                            auto_trax_msgs::IOSetpoint::Response &res) {
+  speed_in_m_s_ = req.setpoint;
+  return true;
+}
+
+void LocalizationNode::ForwardKinematics(Eigen::Matrix<float, 3, 1>& robot_velocity){
+  float beta = static_cast<float>(angle_in_radians_);
+  float l = 0.3; //m
+  float r = 0.0512; //m
+
+  Eigen::Matrix<float, 4, 3> A;
+  A <<
+           0,          1,             0,
+  cosf(beta), sinf(beta), -l*sinf(beta),
+           -1,          0,            0,
+  -sinf(beta), cosf(beta), l*sinf(beta);
+
+  Eigen::Matrix<float, 4, 2> B;
+  B <<
+  r, 0,
+  0, r,
+  0, 0,
+  0, 0;
+
+  // A*xi_dot_robot = B*phi_dot
+  // Forward kinematics: xi_dot_robot = (A.transpose * A).inverse * A.transose * B * phi_dot
+  Eigen::Matrix<float, 2, 1> phi_dot;
+  phi_dot << speed_in_m_s_, speed_in_m_s_; // TODO: Change velocity of steerable wheel entry 2
+  //  robot_velocity = (A.transpose() * A).inverse() * A.transpose() * B * phi_dot;
+
+  Eigen::Matrix<float, 3, 4> A_trans;
+  A_trans << A.transpose();
+  Eigen::Matrix<float, 3, 3> temp1;
+  temp1 << (A_trans*A);
+  Eigen::Matrix<float, 3, 3> temp1_inv;
+  temp1_inv = (temp1.inverse());
+  Eigen::Matrix<float, 3, 4> temp2;
+  temp2 << (temp1_inv*A_trans);
+  Eigen::Matrix<float, 3, 2> temp3;
+  temp3 << (temp2*B);
+  robot_velocity << (temp3*phi_dot);
+}
+
+void LocalizationNode::GetGlobalPosition(geometry_msgs::PointPtr robot_position,
+                                         const geometry_msgs::Point& start_position,
+                                         const Eigen::Matrix<float, 3, 1>& robot_velocity,
+                                         const double& delta_time){
+  robot_position->x = start_position.x + robot_velocity(1,1) * delta_time;
+  robot_position->y = start_position.y + robot_velocity(2,1) * delta_time;
+}
+
+
+void LocalizationNode::mapCB(const nav_msgs::OccupancyGridConstPtr& map_msg){
+  if (!mapParamsInitialized)
+  {
+
     ROS_INFO("Initializing map parameters");
     particleFilter_.initializeMapParameters(map_msg->info.resolution, map_msg->info.width, map_msg->info.height,
                                             map_msg->info.origin.position.x, map_msg->info.origin.position.y,
@@ -119,6 +184,8 @@ void LocalizationNode::initializeParameters()
   nh_.param("particle_marker_length", particleVisualProperties.length, DefaultParticleVisualLength);
   nh_.param("particle_marker_width", particleVisualProperties.width, DefaultParticleVisualLength);
   nh_.param("particle_marker_height", particleVisualProperties.height, DefaultParticleVisualLength);
+  nh_.getParam("steering_service_name", steering_service_name_);
+  nh_.getParam("motor_service_name", motor_service_name_);
 
   ROS_INFO("Particle length %.2f",particleVisualProperties.length);
 
