@@ -40,12 +40,28 @@ std::vector<Particle> StochasticUniversalResampling::resample() {
   // Current weight
   double curr_weight;
 
+  if (sample_d == 0.0)
+  {
+    std::cout << "Measurement gives no info " << std::endl;
+    for (int s = 0; s < samples_.size(); s++)
+    {
+      new_particles.push_back(samples_.at(s));
+    }
+    samples_.clear();
+
+    return new_particles;
+  }
+
   // Roughening samples
-  /*double dx = 0.0;
-  double dy = 0.0;
-  double dtheta = 0.0;
-  double xy_range = roughening_params_.xy_roughening_;
-  double th_range = roughening_params_.th_roughening_;*/
+//  double dx = 0.0;
+//  double dy = 0.0;
+//  double dtheta = 0.0;
+//  double xy_range = roughening_params_.xy_roughening_;
+//  double th_range = roughening_params_.th_roughening_;*/
+
+//  double xy_range = 0.2;
+//  double th_range = 0.2;
+
 
   // Draw the same number of particles as we had before
   for (int i = 0; i < samples_.size(); i++) {
@@ -61,18 +77,28 @@ std::vector<Particle> StochasticUniversalResampling::resample() {
       }
       else {
         if (samples_.at(s + 1)->getWeight() > curr_weight) {
-          prev_sample_ind = s;
 
           Particle p = samples_.at(s);
 
-          // Add roughening
-          /*dx = MathUtils::randNumInRange(-xy_range, xy_range);
-          dy = MathUtils::randNumInRange(-xy_range, xy_range);
-          dtheta = MathUtils::randNumInRange(-th_range, th_range);
-          p.addRoughening(dx, dy, dtheta);*/
+          prev_sample_ind = s;
 
-          new_particles.push_back(p);
-          break;
+//          std::cout << "before: " << p->getTheta() << std::endl;
+          // Add roughening
+          float delta_x = 0.02;
+          float delta_y = 0.02;
+          float delta_theta = 0.1;
+          float dx = ( 2 * delta_x * (float) rand() / (RAND_MAX)  - delta_x);
+          float dy = ( 2 * delta_y * (float) rand() / (RAND_MAX)  - delta_y);
+          float dtheta = ( 2 * delta_theta * (float) rand() / (RAND_MAX)  - delta_theta);
+
+          p->setPose(p->getX() + dx, p->getY() + dy, p->getTheta() + dtheta);
+
+//          std::cout << "after: " << p->getTheta() << std::endl;
+
+          Particle new_particle(new WheelBot());
+          new_particle->setPose(p->getX(), p->getY(), p->getTheta());
+          new_particles.push_back( new_particle);
+          s = samples_.size();
         }
       }
     }

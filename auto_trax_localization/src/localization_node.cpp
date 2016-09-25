@@ -19,7 +19,7 @@ LocalizationNode::LocalizationNode(ros::NodeHandle nh) : nh_(nh)
   particle_laser_scan_pub_ = nh_.advertise<sensor_msgs::LaserScan>("particle_laser_scan", 0);
   particles_poses_pub_ = nh_.advertise<geometry_msgs::PoseArray>("particle_poses", 1);
 
-  particleFilter_.setNParticles(100);
+  particleFilter_.setNParticles(50);
   particleFilter_.spawnParticles(*initial_pose_);
   ROS_INFO("Particles spawned!");
   int nToShow = 10;
@@ -38,24 +38,21 @@ void LocalizationNode::depthScanCB(const sensor_msgs::LaserScanConstPtr &scan_ms
   if (!laserScanParamsInitialized)
   {
     ROS_INFO("Initializing laser scan parameters");
-    particleFilter_.initializeLaserScanParameters(scan_msg->angle_min, scan_msg->angle_max, scan_msg->angle_increment,
-                                                  scan_msg->range_min, scan_msg->range_max);
     laserScanParamsInitialized = true;
     last_scan_msg_ptr = sensor_msgs::LaserScanPtr(new sensor_msgs::LaserScan);
   }
 
+  particleFilter_.setLaserScanParameters(scan_msg->angle_min, scan_msg->angle_max, scan_msg->angle_increment,
+                                                scan_msg->range_min, scan_msg->range_max, scan_msg->ranges.size());
   *last_scan_msg_ptr = *scan_msg;
 
-
-  particleFilter_.GetParticleWeights(scan_msg);
-  boost::shared_ptr<WheelBot> pose_estimate = boost::shared_ptr<WheelBot> (new WheelBot());
-  pose_estimate = particleFilter_.Resample();
-
-
-//  std::cout << "X: " << pose_estimate->getX() << " Y: " << pose_estimate->getY() <<std::endl;
-  publishPoseTF(pose_estimate);
-
-  publishParticleRViz(pose_estimate);
+  if (laserScanParamsInitialized && mapParamsInitialized) {
+    particleFilter_.GetParticleWeights(scan_msg);
+    boost::shared_ptr <WheelBot> pose_estimate = boost::shared_ptr<WheelBot>(new WheelBot());
+    pose_estimate = particleFilter_.Resample();
+    publishPoseTF(pose_estimate);
+    publishParticleRViz(pose_estimate);
+  }
 }
 
 void LocalizationNode::encoderCB(const barc::EncoderConstPtr &encoder_msg)

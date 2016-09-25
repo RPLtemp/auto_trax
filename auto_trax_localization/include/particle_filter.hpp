@@ -17,6 +17,7 @@ struct ParticleLaserScanParams {
   float angle_increment;
   float range_min;
   float range_max;
+  int ranges_size;
 };
 
 struct MapParams {
@@ -44,9 +45,9 @@ class ParticleFilter{
 
   void setNParticles(int nParticles);
 
-  void initializeLaserScanParameters(float angle_min, float angle_max,
+  void setLaserScanParameters(float angle_min, float angle_max,
                                      float angle_increment, float range_min,
-                                     float range_max);
+                                     float range_max, int ranges_size);
 
   void initializeMapParameters(float resolution,
                                int width, int height,
