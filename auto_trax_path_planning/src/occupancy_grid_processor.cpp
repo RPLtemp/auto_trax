@@ -80,8 +80,7 @@ void OCGridProcessor::CallbackScanSummary(const auto_trax_msgs::MergedScan &scan
     int scanned_point_index_i = scanned_point_y / result_.info.resolution;
     int scanned_point_index_j = scanned_point_x / result_.info.resolution;
 
-    int index_wise_padding = int(obstacle_padding_ / oc_grid_param_.grid_resolution);
-
+    int index_wise_padding = round(obstacle_padding_ / oc_grid_param_.grid_resolution);
     SetIsObstacle(scanned_point_index_i,scanned_point_index_j);
 
     for (int j = -index_wise_padding; j < index_wise_padding; j++){
@@ -94,31 +93,97 @@ void OCGridProcessor::CallbackScanSummary(const auto_trax_msgs::MergedScan &scan
 
   // Close the line between the origin and the left and right most corners from
   // the scan
-  float wall_angles[] = {scan_summary.valid_angle_min,scan_summary.valid_angle_max};
-  for (float scan_angle : wall_angles) {
-    for (float scanned_point_depth = 0; scanned_point_depth < scan_summary.valid_range_max;) {
-      // To be appended later to account for robot pose
-      float scanned_point_x = cos(scan_angle) * scanned_point_depth
-                              - oc_grid_param_.origin_position_x
-                              - 2 * obstacle_padding_;
-      float scanned_point_y = sin(scan_angle) * scanned_point_depth
-                              - oc_grid_param_.origin_position_y;
-      int scanned_point_index_i = scanned_point_y / result_.info.resolution;
-      int scanned_point_index_j = scanned_point_x / result_.info.resolution;
+  float left_wall_x, left_wall_y, right_wall_x, right_wall_y;
+  left_wall_x = 0 //cos(scan_summary.valid_angle_max) * scan_summary.merged_scan.ranges.back()
+           - oc_grid_param_.origin_position_x;
+  left_wall_y = sin(scan_summary.valid_angle_max) * scan_summary.merged_scan.ranges.back()
+                - oc_grid_param_.origin_position_y;
+  right_wall_x = 0 //cos(scan_summary.valid_angle_min) * scan_summary.merged_scan.ranges.at(0)
+                 - oc_grid_param_.origin_position_x;
+  right_wall_y = sin(scan_summary.valid_angle_min) * scan_summary.merged_scan.ranges.at(0)
+                 - oc_grid_param_.origin_position_y;
+//
+  // fill left wall
+  for (float x_point = left_wall_x;
+       x_point > - 2 * obstacle_padding_ - oc_grid_param_.origin_position_x;
+        x_point -= obstacle_padding_/2)
+  {
 
-      int index_wise_padding = int(obstacle_padding_ / oc_grid_param_.grid_resolution);
-
-      SetIsObstacle(scanned_point_index_i, scanned_point_index_j);
-
-      for (int j = -index_wise_padding; j < index_wise_padding; j++) {
-        for (int k = -index_wise_padding; k < index_wise_padding; k++) {
-          SetIsObstacle(scanned_point_index_i + j, scanned_point_index_j + k);
-        }
-      }
-
-      scanned_point_depth += 0.1;
+    if (sin(scan_summary.valid_angle_max) * scan_summary.merged_scan.ranges.back()
+            <=  2 * obstacle_padding_)
+    //wall too close
+    {
+        break;
     }
+
+    float y_point = left_wall_y;
+
+    int scanned_point_index_i = y_point / result_.info.resolution;
+    int scanned_point_index_j = x_point / result_.info.resolution;
+
+    int index_wise_padding = round(obstacle_padding_ / oc_grid_param_.grid_resolution);
+
+    SetIsObstacle(scanned_point_index_i, scanned_point_index_j);
+
+    for (int j = -index_wise_padding; j < index_wise_padding; j++) {
+      for (int k = -index_wise_padding; k < index_wise_padding; k++) {
+        SetIsObstacle(scanned_point_index_i + j, scanned_point_index_j + k);
+      }
+    }
+
   }
+////
+////  //fill right wall
+  for (float x_point = right_wall_x;
+       x_point > - 2 * obstacle_padding_  - oc_grid_param_.origin_position_x;
+       x_point -= obstacle_padding_/2)
+  {
+    if (sin(scan_summary.valid_angle_min) * scan_summary.merged_scan.ranges.at(0)
+        >=  - 2 * obstacle_padding_)
+      //wall too close
+    {
+      break;
+    }
+
+    float y_point = right_wall_y;
+
+    int scanned_point_index_i = y_point / result_.info.resolution;
+    int scanned_point_index_j = x_point / result_.info.resolution;
+
+    int index_wise_padding = round(obstacle_padding_ / oc_grid_param_.grid_resolution);
+
+    SetIsObstacle(scanned_point_index_i, scanned_point_index_j);
+
+    for (int j = -index_wise_padding; j < index_wise_padding; j++) {
+      for (int k = -index_wise_padding; k < index_wise_padding; k++) {
+        SetIsObstacle(scanned_point_index_i + j, scanned_point_index_j + k);
+      }
+    }
+
+  }
+//
+//  // fill bottom wall
+
+  for (float y_point = left_wall_y; y_point > right_wall_y;
+       y_point -= obstacle_padding_/2)
+  {
+    float x_point = - 2 * obstacle_padding_  - oc_grid_param_.origin_position_x;
+
+    int scanned_point_index_i = y_point / result_.info.resolution;
+    int scanned_point_index_j = x_point / result_.info.resolution;
+
+    int index_wise_padding = round(obstacle_padding_ / oc_grid_param_.grid_resolution);
+
+    SetIsObstacle(scanned_point_index_i, scanned_point_index_j);
+
+    for (int j = -index_wise_padding; j < index_wise_padding; j++) {
+      for (int k = -index_wise_padding; k < index_wise_padding; k++) {
+        SetIsObstacle(scanned_point_index_i + j, scanned_point_index_j + k);
+      }
+    }
+
+  }
+
 
   pub_oc_grid_.publish(result_);
   result_.data.clear();
