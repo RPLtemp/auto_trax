@@ -12,5 +12,5 @@ queue_size_pub_control_effort: 1                             # queue size of the
 
 output_service_name: auto_trax_io/apply_motor_speed          # name of the service for applying control effort
 
-setpoint: 0.0                                                # initial setpoint
+setpoint: 1.0                                                # initial setpoint
 

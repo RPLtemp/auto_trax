@@ -87,7 +87,7 @@ void RRTPathProcessor::CallbackNextGoalState(const geometry_msgs::Point & next_g
     goal_y /= norm * rrt_param_.sensor_available_range/2;
   }
 
-
+  std::cout << "current goal state: " << goal_x <<std::endl;
   _biRRT->setGoalState(Vector2f((goal_x - rrt_param_.origin_position_x) /
                                 rrt_param_.grid_resolution,
                                 (goal_y - rrt_param_.origin_position_y) /
@@ -135,11 +135,11 @@ void RRTPathProcessor::CallbackOCGrid(const nav_msgs::OccupancyGrid &oc_grid) {
     float x = path_point.x() * rrt_param_.grid_resolution + rrt_param_.origin_position_x;
     float y = path_point.y() * rrt_param_.grid_resolution + rrt_param_.origin_position_y;
 
-    if (x * x + y * y <= (rrt_param_.sensor_available_range/20) *
-                                 (rrt_param_.sensor_available_range/20) )
+    if (x * x + y * y <= (rrt_param_.sensor_available_range/100) *
+                                 (rrt_param_.sensor_available_range/100) )
     {
       // close enough to goal
-      ROS_INFO("Goal Reached!");
+      ROS_INFO("Close enough x:%.2f y:%.2f",x,y);
       result_.poses.clear();
       pub_path_.publish(result_);
       path_found_.data = false;

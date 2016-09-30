@@ -1,12 +1,12 @@
 ### PID Parameters
-Kp: 5
+Kp: 0.4
 Ki: 0.0
-Kd: 0.1
+Kd: 10
 
 ### Saturation and Windup Limits
 upper_limit: 2.0
 lower_limit: -2.0
-windup_limit: 10
+windup_limit: 100
 
 ### Cutoff Frequency
 cutoff_frequency: -1

@@ -34,9 +34,9 @@ ControllerProcessor::ControllerProcessor(const ros::NodeHandle& nodehandle,
       params_.queue_size_pub_control_effort);
 
   // Service for applying the controller output
-  /*ros::service::waitForService(params_.output_service_name);
+  ros::service::waitForService(params_.output_service_name);
   client_ = nh_.serviceClient<auto_trax_msgs::IOSetpoint>(
-      params_.output_service_name);*/
+      params_.output_service_name);
 }
 
 ControllerProcessor::~ControllerProcessor(){
@@ -69,35 +69,31 @@ void ControllerProcessor::CallbackPlantState(const std_msgs::Float64ConstPtr &st
 
   ROS_DEBUG("Control_effort: %f", control_effort);
 
-  /*float io_setpoint = static_cast<float>(control_effort);
+  float io_setpoint = static_cast<float>(control_effort);
   auto_trax_msgs::IOSetpoint srv;
   srv.request.setpoint = io_setpoint;
 
   if (client_.call(srv)) {
-    ROS_INFO("IO Setpoint: %d | %f \n", srv.response.success,
+    ROS_INFO("IO Setpoint from PID: %d | %f \n", srv.response.success,
              srv.request.setpoint);
   } else {
     ROS_INFO("Failed to call service!!");
-  }*/
+  }
 }
 
 void ControllerProcessor::CallbackPathState(const std_msgs::BoolConstPtr& path_state_msg) {
   path_valid_ = path_state_msg->data;
 
   if (!path_valid_) {
-    std_msgs::Float64 control_msg;
-    control_msg.data = 0.0;
-    pub_control_effort_.publish(control_msg);
-
-    /*auto_trax_msgs::IOSetpoint srv;
+    auto_trax_msgs::IOSetpoint srv;
     srv.request.setpoint = 0.0;
 
     if (client_.call(srv)) {
-      ROS_INFO("IO Setpoint: %d | %f \n", srv.response.success,
+      ROS_INFO("PathState calling stop: %d | %f \n", srv.response.success,
                srv.request.setpoint);
     } else {
       ROS_INFO("Failed to call service!!");
-    }*/
+    }
   }
 }
 
