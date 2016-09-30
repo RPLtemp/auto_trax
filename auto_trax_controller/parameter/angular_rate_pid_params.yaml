@@ -11,7 +11,3 @@ windup_limit: 100
 ### Cutoff Frequency
 cutoff_frequency: -1
 
-### Angular_rate PID Parameters
-Kp_angular_rate: 0.4
-Ki_angular_rate: 0.0
-Kd_angular_rate: 10

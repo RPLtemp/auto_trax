@@ -55,6 +55,9 @@ void InitializeParameters(ParameterBag* parameter) {
   pnh.param("Kp", parameter->pid_bag.Kp, kDefaultKp);
   pnh.param("Ki", parameter->pid_bag.Ki, kDefaultKi);
   pnh.param("Kd", parameter->pid_bag.Kd, kDefaultKd);
+  pnh.param("Kp_angular_rate", parameter->angular_rate_pid_bag.Kp, kDefaultKp);
+  pnh.param("Ki_angular_rate", parameter->angular_rate_pid_bag.Ki, kDefaultKi);
+  pnh.param("Kd_angular_rate", parameter->angular_rate_pid_bag.Kd, kDefaultKd);
   pnh.param("upper_limit", parameter->pid_bag.upper_limit, kDefaultUpperLimit);
   pnh.param("lower_limit", parameter->pid_bag.lower_limit, kDefaultLowerLimit);
   pnh.param("windup_limit", parameter->pid_bag.windup_limit,

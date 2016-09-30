@@ -15,6 +15,8 @@ struct ParameterBag {
   // Include other bags
   PidBag pid_bag;
 
+  PidBag angular_rate_pid_bag;
+
   // Parameter specific to parameter bag
   std::string node_name;
 

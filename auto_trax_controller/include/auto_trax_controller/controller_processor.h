@@ -8,6 +8,7 @@
 #include <auto_trax_msgs/IOSetpoint.h>
 #include <std_msgs/Bool.h>
 #include <std_msgs/Float64.h>
+#include <sensor_msgs/Imu.h>
 
 #include "auto_trax_controller/parameter/parameter_bag.h"
 #include "auto_trax_controller/pid.h"
@@ -31,19 +32,25 @@ class ControllerProcessor {
   void CallbackSetPoint(const std_msgs::Float64ConstPtr& set_point_msg);
   void CallbackPlantState(const std_msgs::Float64ConstPtr& plant_state_msg);
   void CallbackPathState(const std_msgs::BoolConstPtr& path_state_msg);
+  void CallbackIMU(const sensor_msgs::ImuConstPtr& imu_msg );
 
- private:
+
+private:
   ros::NodeHandle nh_;
   ParameterBag params_;
   PID pid_;
+  PID pid_angular_rate_;
 
   ros::Subscriber sub_set_point_;
   ros::Subscriber sub_plant_state_;
   ros::Subscriber sub_path_state_;
+  ros::Subscriber sub_imu_;
   ros::Publisher pub_control_effort_;
   ros::ServiceClient client_;
 
   float setpoint_;
+
+  float current_angular_rate_;
 
   bool path_valid_;
 };

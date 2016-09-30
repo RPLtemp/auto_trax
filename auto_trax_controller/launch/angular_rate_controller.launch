@@ -1,0 +1,10 @@
+<launch>
+  <node pkg="auto_trax_controller" name="angular_rate_controller_node"
+        type="controller_node" clear_params="true" output="screen" args="angular_rate" >
+
+    <rosparam command="load" file="$(find auto_trax_controller)/parameter/angular_rate_control_params.yaml" />
+    <rosparam command="load" file="$(find auto_trax_controller)/parameter/angular_rate_pid_params.yaml" />
+  </node>
+</launch>
+
+

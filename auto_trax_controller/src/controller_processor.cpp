@@ -11,6 +11,7 @@ ControllerProcessor::ControllerProcessor(const ros::NodeHandle& nodehandle,
     nh_(nodehandle),
     params_(params_bag),
     pid_(params_.pid_bag),
+    pid_angular_rate_(params_.angular_rate_pid_bag),
     setpoint_(params_.setpoint),
     path_valid_(false) {
   ROS_DEBUG("Auto_trax PID Processor started!");
@@ -26,6 +27,10 @@ ControllerProcessor::ControllerProcessor(const ros::NodeHandle& nodehandle,
   sub_path_state_ = nh_.subscribe(params_.subscribed_rostopic_pathstate,
                                   params_.queue_size_subscriber_pathstate,
                                   &ControllerProcessor::CallbackPathState,
+                                  this);
+  sub_imu_ = nh_.subscribe("imu",
+                                  1,
+                                  &ControllerProcessor::CallbackIMU,
                                   this);
 
   // Create Publisher for control effort
@@ -47,6 +52,11 @@ void ControllerProcessor::CallbackSetPoint(const std_msgs::Float64ConstPtr &setp
   setpoint_ = setpoint_msg->data;
 }
 
+void ControllerProcessor::CallbackIMU(const sensor_msgs::ImuConstPtr& imu_msg )
+{
+  current_angular_rate_ = imu_msg->angular_velocity.z;
+}
+
 void ControllerProcessor::CallbackPlantState(const std_msgs::Float64ConstPtr &state_msg) {
   ROS_DEBUG("Plant State received!");
 
@@ -54,7 +64,8 @@ void ControllerProcessor::CallbackPlantState(const std_msgs::Float64ConstPtr &st
 
   if (path_valid_) {
     float plant_state = state_msg->data;
-    control_effort = pid_.GetControlEffort(setpoint_, plant_state);
+    control_effort = pid_.GetControlEffort(setpoint_, plant_state)
+                    + pid_angular_rate_.GetControlEffort(0.0,current_angular_rate_);
   }
   else {
     //ROS_WARN("Path not valid, publishing control effort of zero");

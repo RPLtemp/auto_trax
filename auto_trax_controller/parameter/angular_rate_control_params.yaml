@@ -1,13 +1,10 @@
-subscribed_rostopic_setpoint: steering_plantstate            # rostopic for receiving controller setpoint
+subscribed_rostopic_setpoint: angular_rate_plantstate            # rostopic for receiving controller setpoint
 queue_size_subscriber_setpoint: 1                            # queue size of the setpoint topic
 
-subscribed_rostopic_plantstate: setpoint_angle               # rostopic for receiving current plant state
+subscribed_rostopic_plantstate: setpoint_angular_rate               # rostopic for receiving current plant state
 queue_size_subscriber_plantstate: 1                          # queue size of the plant state topic
 
 subscribed_rostopic_pathstate: /path_found                    # rostopic for receiving the validity of path information
-queue_size_subscriber_pathstate: 1                           # queue size of the path state topic
-
-subscribed_rostopic_imu: /imu                    # rostopic for receiving the validity of path information
 queue_size_subscriber_pathstate: 1                           # queue size of the path state topic
 
 pub_rostopic_control_effort: steering_control_effort         # rostopic for publishing control effort
