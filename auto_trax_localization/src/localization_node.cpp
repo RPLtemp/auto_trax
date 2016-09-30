@@ -70,9 +70,12 @@ void LocalizationNode::depthScanCB(const sensor_msgs::LaserScanConstPtr &scan_ms
 
     Eigen::Quaternionf local_goal_state = vehicle_quaternion.inverse() * global_goal_state * vehicle_quaternion;
 
-    std::cout << "local goal state x: " << local_goal_state.x() << " y: " << local_goal_state.y() <<std::endl;
 
-    next_goal.x = local_goal_state.x(); next_goal.y = local_goal_state.y();
+    float new_x = local_goal_state.x(); float new_y = local_goal_state.y();
+
+    next_goal.x = new_x; next_goal.y = new_y;
+
+    std::cout << "local goal state x: " << next_goal.x << " y: " << next_goal.y <<std::endl;
 
 
     next_goal_state_pub_.publish(next_goal);
