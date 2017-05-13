@@ -41,14 +41,6 @@ cs_add_executable(laser_scan_processor_node src/laser_scan_processor_node.cpp)
 target_link_libraries(laser_scan_processor_node ${catkin_LIBRARIES} ${roslib_LIBRARIES}
   auto_trax_laser_scan_processor)
 
-cs_add_executable(sign_detection_node src/sign_detection_node.cpp)
-target_link_libraries(sign_detection_node ${catkin_LIBRARIES} ${roslib_LIBRARIES}
-  ${OpenCV_LIBRARIES})
-
-cs_add_executable(april_tag_detection_node src/april_tag_detection_node.cpp)
-add_dependencies(april_tag_detection_node ${catkin_EXPORTED_TARGETS})
-target_link_libraries(april_tag_detection_node ${catkin_LIBRARIES} ${roslib_LIBRARIES} apriltags)
-
 cs_install()
 
 cs_export()
